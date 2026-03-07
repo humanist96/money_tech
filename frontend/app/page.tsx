@@ -23,22 +23,15 @@ async function getDashboardData() {
     const todayStats = stats.filter((s) => new Date(s.date).toISOString().split("T")[0] === today)
     const todayVideos = todayStats.reduce((sum, s) => sum + (s.total_videos ?? 0), 0)
 
-    const last7 = stats.filter(
-      (s) => new Date(s.date) >= new Date(Date.now() - 7 * 86400000)
-    )
+    const last7 = stats.filter((s) => new Date(s.date) >= new Date(Date.now() - 7 * 86400000))
     const catCounts: Record<string, number> = {}
     for (const s of last7) {
       catCounts[s.category] = (catCounts[s.category] ?? 0) + (s.total_videos ?? 0)
     }
     const topCatEntry = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]
-    const topCategory = topCatEntry
-      ? CATEGORY_LABELS[topCatEntry[0]] ?? topCatEntry[0]
-      : "-"
+    const topCategory = topCatEntry ? CATEGORY_LABELS[topCatEntry[0]] ?? topCatEntry[0] : "-"
 
-    const categoryData = Object.entries(catCounts).map(([category, count]) => ({
-      category,
-      count,
-    }))
+    const categoryData = Object.entries(catCounts).map(([category, count]) => ({ category, count }))
 
     const keywordMap = new Map<string, number>()
     for (const stat of last7) {
@@ -56,14 +49,8 @@ async function getDashboardData() {
     return { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords }
   } catch {
     return {
-      channels: [] as Channel[],
-      videos: [] as VideoWithChannel[],
-      stats: [] as DailyStat[],
-      totalVideos: 0,
-      todayVideos: 0,
-      topCategory: "-",
-      categoryData: [],
-      topKeywords: [],
+      channels: [] as Channel[], videos: [] as VideoWithChannel[], stats: [] as DailyStat[],
+      totalVideos: 0, todayVideos: 0, topCategory: "-", categoryData: [], topKeywords: [],
     }
   }
 }
@@ -73,10 +60,19 @@ export default async function DashboardPage() {
     await getDashboardData()
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">대시보드</h1>
-        <p className="text-muted-foreground">재테크 유튜브 채널 분석 현황</p>
+    <div className="space-y-8">
+      {/* Hero */}
+      <div className="relative">
+        <h1 className="text-4xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+          대시보드
+        </h1>
+        <p className="text-[#64748b] mt-1.5 text-sm">
+          재테크 유튜브 채널 실시간 분석 현황
+        </p>
+        <div className="absolute top-1 right-0 flex items-center gap-2 text-xs text-[#475569]">
+          <span className="w-2 h-2 rounded-full bg-[#00d4aa] pulse-dot" />
+          Live
+        </div>
       </div>
 
       <StatsCards
@@ -91,14 +87,15 @@ export default async function DashboardPage() {
         <TrendLineChart stats={stats} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-3">
           <VideoFeed videos={videos} />
         </div>
-        <KeywordCloud keywords={topKeywords} />
+        <div className="lg:col-span-2 space-y-6">
+          <KeywordCloud keywords={topKeywords} />
+          <ChannelRanking channels={channels.slice(0, 8)} title="TOP 채널" />
+        </div>
       </div>
-
-      <ChannelRanking channels={channels.slice(0, 10)} />
     </div>
   )
 }

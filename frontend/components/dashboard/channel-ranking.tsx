@@ -1,18 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import type { Channel } from "@/lib/types"
-import { CATEGORY_LABELS } from "@/lib/types"
+import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types"
 import { formatViewCount } from "@/lib/queries"
 
 interface ChannelRankingProps {
@@ -20,62 +10,72 @@ interface ChannelRankingProps {
   title?: string
 }
 
+function ChannelAvatar({ name, category }: { name: string; category: string }) {
+  const color = CATEGORY_COLORS[category] ?? "#6b7280"
+  return (
+    <div className={`avatar-ring cat-${category}`} style={{ '--cat-color': color } as React.CSSProperties}>
+      <div
+        className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+        style={{ background: `color-mix(in srgb, ${color} 20%, #0c1324)`, color }}
+      >
+        {name[0]}
+      </div>
+    </div>
+  )
+}
+
 export function ChannelRanking({ channels, title = "채널 랭킹" }: ChannelRankingProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">#</TableHead>
-              <TableHead>채널명</TableHead>
-              <TableHead>카테고리</TableHead>
-              <TableHead className="text-right">구독자</TableHead>
-              <TableHead className="text-right">총 조회수</TableHead>
-              <TableHead className="text-right">영상 수</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {channels.map((channel, index) => (
-              <TableRow key={channel.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>
-                  <Link
-                    href={`/channels/${channel.id}`}
-                    className="font-medium hover:underline"
-                  >
-                    {channel.name}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">
-                    {CATEGORY_LABELS[channel.category] ?? channel.category}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
+    <div className="glass-card rounded-xl overflow-hidden">
+      <div className="px-6 py-4 border-b border-[#1e293b]/60 flex items-center justify-between">
+        <h3 className="font-semibold text-white" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <Link href="/channels" className="text-xs text-[#00d4aa] hover:underline">
+          전체보기
+        </Link>
+      </div>
+      <div className="divide-y divide-[#1e293b]/40">
+        {channels.map((channel, index) => {
+          const color = CATEGORY_COLORS[channel.category] ?? "#6b7280"
+          return (
+            <Link
+              key={channel.id}
+              href={`/channels/${channel.id}`}
+              className="flex items-center gap-4 px-6 py-3.5 hover:bg-[#1e293b]/20 transition-colors"
+            >
+              <span className="text-xs font-bold text-[#475569] w-5 text-right tabular-nums">
+                {index + 1}
+              </span>
+              <ChannelAvatar name={channel.name} category={channel.category} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{channel.name}</p>
+                <span
+                  className={`cat-badge cat-${channel.category} text-[10px] font-medium px-1.5 py-0.5 rounded-full inline-block mt-0.5`}
+                  style={{ '--cat-color': color } as React.CSSProperties}
+                >
+                  {CATEGORY_LABELS[channel.category]}
+                </span>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-white tabular-nums">
                   {formatViewCount(channel.subscriber_count)}
-                </TableCell>
-                <TableCell className="text-right">
+                </p>
+                <p className="text-[10px] text-[#64748b]">구독자</p>
+              </div>
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-semibold text-[#94a3b8] tabular-nums">
                   {formatViewCount(channel.total_view_count)}
-                </TableCell>
-                <TableCell className="text-right">
-                  {channel.video_count ?? "-"}
-                </TableCell>
-              </TableRow>
-            ))}
-            {channels.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                  데이터를 수집 중입니다...
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                </p>
+                <p className="text-[10px] text-[#64748b]">조회수</p>
+              </div>
+            </Link>
+          )
+        })}
+        {channels.length === 0 && (
+          <div className="px-6 py-12 text-center text-[#64748b] text-sm">
+            데이터를 수집 중입니다...
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
