@@ -1,5 +1,5 @@
-import { getChannels, getRecentVideos, getDailyStats, getTotalVideoCount } from "@/lib/queries"
-import type { Channel, VideoWithChannel, DailyStat } from "@/lib/types"
+import { getChannels, getRecentVideosWithAssets, getDailyStats, getTotalVideoCount, getAssetMentions } from "@/lib/queries"
+import type { Channel, DailyStat } from "@/lib/types"
 import { CATEGORY_LABELS } from "@/lib/types"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { ChannelRanking } from "@/components/dashboard/channel-ranking"
@@ -7,16 +7,18 @@ import { VideoFeed } from "@/components/dashboard/video-feed"
 import { KeywordCloud } from "@/components/dashboard/keyword-cloud"
 import { CategoryBarChart } from "@/components/charts/category-bar-chart"
 import { TrendLineChart } from "@/components/charts/trend-line-chart"
+import { AssetHeatmap } from "@/components/charts/asset-heatmap"
 
 export const dynamic = "force-dynamic"
 
 async function getDashboardData() {
   try {
-    const [channels, videos, stats, totalVideos] = await Promise.all([
+    const [channels, videos, stats, totalVideos, assetMentions] = await Promise.all([
       getChannels(),
-      getRecentVideos(15),
+      getRecentVideosWithAssets(15),
       getDailyStats(30),
       getTotalVideoCount(),
+      getAssetMentions(7),
     ])
 
     const today = new Date().toISOString().split("T")[0]
@@ -46,17 +48,17 @@ async function getDashboardData() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 40)
 
-    return { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords }
+    return { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords, assetMentions }
   } catch {
     return {
-      channels: [] as Channel[], videos: [] as VideoWithChannel[], stats: [] as DailyStat[],
-      totalVideos: 0, todayVideos: 0, topCategory: "-", categoryData: [], topKeywords: [],
+      channels: [] as Channel[], videos: [] as any[], stats: [] as DailyStat[],
+      totalVideos: 0, todayVideos: 0, topCategory: "-", categoryData: [], topKeywords: [], assetMentions: [],
     }
   }
 }
 
 export default async function DashboardPage() {
-  const { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords } =
+  const { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords, assetMentions } =
     await getDashboardData()
 
   return (
@@ -86,6 +88,8 @@ export default async function DashboardPage() {
         <CategoryBarChart data={categoryData} />
         <TrendLineChart stats={stats} />
       </div>
+
+      <AssetHeatmap assets={assetMentions} />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">

@@ -6,25 +6,29 @@ import time
 from typing import Any
 
 
-def get_channel_info(channel_id: str) -> dict[str, Any] | None:
-    """Fetch channel metadata using yt-dlp."""
+def get_channel_info(channel_id: str) -> dict | None:
+    """Fetch channel metadata including subscriber count."""
+    url = f"https://www.youtube.com/channel/{channel_id}"
+    cmd = [
+        "yt-dlp",
+        "--dump-json",
+        "--playlist-items", "1",
+        "--no-warnings",
+        "--quiet",
+        url,
+    ]
     try:
-        result = subprocess.run(
-            [
-                "yt-dlp",
-                "--dump-json",
-                "--playlist-items", "0",
-                "--no-download",
-                f"https://www.youtube.com/channel/{channel_id}/about",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
             return None
-        return json.loads(result.stdout)
-    except (subprocess.TimeoutExpired, json.JSONDecodeError):
+        data = json.loads(result.stdout.strip().split('\n')[0])
+        return {
+            "subscriber_count": data.get("channel_follower_count"),
+            "description": data.get("channel_description") or data.get("description"),
+            "thumbnail_url": data.get("channel_url"),
+        }
+    except Exception as e:
+        print(f"  Warning: could not fetch channel info: {e}")
         return None
 
 

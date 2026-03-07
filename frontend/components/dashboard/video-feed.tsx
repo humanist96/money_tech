@@ -6,7 +6,7 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types"
 import { formatViewCount, formatDuration, timeAgo } from "@/lib/queries"
 
 interface VideoFeedProps {
-  videos: VideoWithChannel[]
+  videos: any[]  // VideoWithChannel or VideoWithAssets
   title?: string
 }
 
@@ -69,6 +69,30 @@ export function VideoFeed({ videos, title = "최신 영상" }: VideoFeedProps) {
                     <span>조회수 {formatViewCount(video.view_count)}</span>
                     <span>{timeAgo(video.published_at)}</span>
                   </div>
+                  {/* Mentioned Assets */}
+                  {video.mentioned_assets && video.mentioned_assets.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {video.mentioned_assets.slice(0, 5).map((asset: any, j: number) => {
+                        const sentimentColor = asset.sentiment === 'positive' ? '#10b981'
+                          : asset.sentiment === 'negative' ? '#ef4444' : '#6366f1'
+                        return (
+                          <a key={j} href={`/assets/${encodeURIComponent(asset.asset_code || asset.asset_name)}`}
+                            className="text-[10px] px-1.5 py-0.5 rounded-full hover:opacity-80 transition"
+                            style={{
+                              background: `color-mix(in srgb, ${sentimentColor} 12%, transparent)`,
+                              color: sentimentColor,
+                              border: `1px solid color-mix(in srgb, ${sentimentColor} 25%, transparent)`,
+                            }}>
+                            {asset.asset_name}
+                          </a>
+                        )
+                      })}
+                    </div>
+                  )}
+                  {/* Summary */}
+                  {video.summary && (
+                    <p className="text-[10px] text-[#475569] mt-1.5 line-clamp-1">{video.summary}</p>
+                  )}
                 </div>
               </div>
             </div>

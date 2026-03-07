@@ -10,9 +10,12 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
+from asset_dictionary import find_assets_in_text, analyze_sentiment, generate_simple_summary
 from youtube import (
+    get_channel_info,
     get_channel_videos,
     get_video_details,
+    get_video_subtitle,
     rate_limit_wait,
 )
 
@@ -193,19 +196,39 @@ def compute_daily_stats(cur, date_str: str) -> None:
         keyword_counts = Counter(all_keywords).most_common(30)
         top_keywords = [{"keyword": kw, "count": cnt} for kw, cnt in keyword_counts]
 
+        # Compute sentiment distribution from mentioned_assets
+        sentiment_distribution = {"positive": 0, "negative": 0, "neutral": 0}
+        try:
+            cur.execute(
+                """SELECT v.sentiment, COUNT(*) FROM videos v
+                JOIN channels c ON v.channel_id = c.id
+                WHERE c.category = %s
+                AND v.published_at >= %s AND v.published_at < %s::date + 1
+                AND v.sentiment IS NOT NULL
+                GROUP BY v.sentiment""",
+                (category, f"{date_str}T00:00:00Z", date_str),
+            )
+            for sentiment_val, cnt in cur.fetchall():
+                if sentiment_val in sentiment_distribution:
+                    sentiment_distribution[sentiment_val] = cnt
+        except Exception as e:
+            print(f"  Warning: sentiment distribution query failed: {e}")
+
         cur.execute(
-            """INSERT INTO daily_stats (date, category, total_videos, top_channels, top_keywords)
-            VALUES (%s, %s, %s, %s, %s)
+            """INSERT INTO daily_stats (date, category, total_videos, top_channels, top_keywords, sentiment_distribution)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON CONFLICT (date, category) DO UPDATE SET
                 total_videos = EXCLUDED.total_videos,
                 top_channels = EXCLUDED.top_channels,
-                top_keywords = EXCLUDED.top_keywords""",
+                top_keywords = EXCLUDED.top_keywords,
+                sentiment_distribution = EXCLUDED.sentiment_distribution""",
             (
                 date_str,
                 category,
                 len(videos),
                 json.dumps(top_channels),
                 json.dumps(top_keywords),
+                json.dumps(sentiment_distribution),
             ),
         )
 
@@ -233,6 +256,29 @@ def crawl() -> None:
                     conn.commit()
                     print(f"  Channel UUID: {channel_uuid}")
 
+                    # Fetch and update channel metadata
+                    try:
+                        ch_info = get_channel_info(ch["channel_id"])
+                        if ch_info:
+                            cur.execute(
+                                """UPDATE channels SET
+                                    subscriber_count = %s,
+                                    description = %s,
+                                    thumbnail_url = %s
+                                WHERE id = %s""",
+                                (
+                                    ch_info.get("subscriber_count"),
+                                    (ch_info.get("description") or "")[:2000],
+                                    ch_info.get("thumbnail_url"),
+                                    channel_uuid,
+                                ),
+                            )
+                            conn.commit()
+                            print(f"  Subscribers: {ch_info.get('subscriber_count')}")
+                    except Exception as e:
+                        print(f"  Warning: could not update channel info: {e}")
+                        conn.rollback()
+
                     videos = get_channel_videos(ch["channel_id"], max_items=20)
                     print(f"  Found {len(videos)} videos")
 
@@ -254,6 +300,61 @@ def crawl() -> None:
                             print(f"    NEW: {video.get('title', '')[:50]}")
                         else:
                             total_updated += 1
+
+                        # Fetch subtitle and run NLP analysis
+                        try:
+                            subtitle_text = get_video_subtitle(video_id)
+                            if subtitle_text:
+                                cur.execute(
+                                    "UPDATE videos SET subtitle_text = %s WHERE youtube_video_id = %s",
+                                    (subtitle_text, video_id),
+                                )
+                                conn.commit()
+                                print(f"    Subtitle collected ({len(subtitle_text)} chars)")
+
+                            title = (details or video).get("title", "")
+                            description = (details or video).get("description", "") or ""
+                            combined_text = f"{title} {description} {subtitle_text or ''}"
+
+                            found_assets = find_assets_in_text(combined_text)
+                            sentiment = analyze_sentiment(combined_text)
+
+                            if found_assets:
+                                cur.execute(
+                                    "SELECT id FROM videos WHERE youtube_video_id = %s",
+                                    (video_id,),
+                                )
+                                vid_row = cur.fetchone()
+                                if vid_row:
+                                    vid_uuid = str(vid_row[0])
+                                    for asset in found_assets:
+                                        cur.execute(
+                                            """INSERT INTO mentioned_assets
+                                            (video_id, asset_type, asset_name, asset_code, sentiment)
+                                            VALUES (%s, %s, %s, %s, %s)
+                                            ON CONFLICT (video_id, asset_name) DO UPDATE SET
+                                                sentiment = EXCLUDED.sentiment""",
+                                            (
+                                                vid_uuid,
+                                                asset["asset_type"],
+                                                asset["asset_name"],
+                                                asset["asset_code"],
+                                                sentiment,
+                                            ),
+                                        )
+                                conn.commit()
+                                print(f"    Found {len(found_assets)} assets mentioned")
+
+                            summary = generate_simple_summary(title, found_assets, sentiment)
+                            cur.execute(
+                                """UPDATE videos SET summary = %s, sentiment = %s
+                                WHERE youtube_video_id = %s""",
+                                (summary, sentiment, video_id),
+                            )
+                            conn.commit()
+                        except Exception as e:
+                            print(f"    Warning: NLP analysis failed: {e}")
+                            conn.rollback()
 
                         rate_limit_wait(2.0)
 
