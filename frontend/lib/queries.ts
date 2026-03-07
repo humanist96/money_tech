@@ -1,98 +1,59 @@
-import { supabase } from './supabase'
+import { getDb } from './db'
 import type { Channel, VideoWithChannel, DailyStat } from './types'
 
 export async function getChannels(category?: string): Promise<Channel[]> {
-  let query = supabase
-    .from('channels')
-    .select('*')
-    .order('subscriber_count', { ascending: false })
-
+  const sql = getDb()
   if (category) {
-    query = query.eq('category', category)
+    return await sql`SELECT * FROM channels WHERE category = ${category} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
   }
-
-  const { data, error } = await query
-  if (error) throw new Error(`Failed to fetch channels: ${error.message}`)
-  return data ?? []
+  return await sql`SELECT * FROM channels ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
 }
 
 export async function getChannelById(id: string): Promise<Channel | null> {
-  const { data, error } = await supabase
-    .from('channels')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error) return null
-  return data
+  const sql = getDb()
+  const rows = await sql`SELECT * FROM channels WHERE id = ${id} LIMIT 1` as unknown as Channel[]
+  return rows[0] ?? null
 }
 
-export async function getVideosByChannelId(
-  channelId: string,
-  limit = 20
-): Promise<VideoWithChannel[]> {
-  const { data, error } = await supabase
-    .from('videos')
-    .select('*, channels(name, category, thumbnail_url)')
-    .eq('channel_id', channelId)
-    .order('published_at', { ascending: false })
-    .limit(limit)
-
-  if (error) throw new Error(`Failed to fetch videos: ${error.message}`)
-  return (data as unknown as VideoWithChannel[]) ?? []
+export async function getRecentVideos(limit = 20): Promise<VideoWithChannel[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url) AS channels
+    FROM videos v
+    JOIN channels c ON v.channel_id = c.id
+    ORDER BY v.published_at DESC NULLS LAST
+    LIMIT ${limit}
+  `
+  return rows as unknown as VideoWithChannel[]
 }
 
-export async function getRecentVideos(
-  limit = 20,
-  category?: string
-): Promise<VideoWithChannel[]> {
-  let query = supabase
-    .from('videos')
-    .select('*, channels(name, category, thumbnail_url)')
-    .order('published_at', { ascending: false })
-    .limit(limit)
-
-  if (category) {
-    query = query.eq('channels.category', category)
-  }
-
-  const { data, error } = await query
-  if (error) throw new Error(`Failed to fetch recent videos: ${error.message}`)
-  return (data as unknown as VideoWithChannel[]) ?? []
+export async function getVideosByChannelId(channelId: string, limit = 50): Promise<VideoWithChannel[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url) AS channels
+    FROM videos v
+    JOIN channels c ON v.channel_id = c.id
+    WHERE v.channel_id = ${channelId}
+    ORDER BY v.published_at DESC NULLS LAST
+    LIMIT ${limit}
+  `
+  return rows as unknown as VideoWithChannel[]
 }
 
 export async function getDailyStats(days = 30): Promise<DailyStat[]> {
-  const fromDate = new Date()
-  fromDate.setDate(fromDate.getDate() - days)
-
-  const { data, error } = await supabase
-    .from('daily_stats')
-    .select('*')
-    .gte('date', fromDate.toISOString().split('T')[0])
-    .order('date', { ascending: true })
-
-  if (error) throw new Error(`Failed to fetch daily stats: ${error.message}`)
-  return data ?? []
+  const sql = getDb()
+  const rows = await sql`
+    SELECT * FROM daily_stats
+    WHERE date >= CURRENT_DATE - ${days}::integer
+    ORDER BY date ASC
+  `
+  return rows as unknown as DailyStat[]
 }
 
-export async function getTopKeywords(
-  days = 7
-): Promise<{ keyword: string; count: number }[]> {
-  const stats = await getDailyStats(days)
-
-  const keywordMap = new Map<string, number>()
-  for (const stat of stats) {
-    if (stat.top_keywords) {
-      for (const kw of stat.top_keywords) {
-        keywordMap.set(kw.keyword, (keywordMap.get(kw.keyword) ?? 0) + kw.count)
-      }
-    }
-  }
-
-  return Array.from(keywordMap.entries())
-    .map(([keyword, count]) => ({ keyword, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 50)
+export async function getTotalVideoCount(): Promise<number> {
+  const sql = getDb()
+  const rows = await sql`SELECT count(*)::integer AS count FROM videos`
+  return (rows[0] as { count: number }).count
 }
 
 export function formatViewCount(count: number | null): string {

@@ -1,39 +1,22 @@
 import { notFound } from "next/navigation"
-import { supabase } from "@/lib/supabase"
-import type { Channel, VideoWithChannel } from "@/lib/types"
+import { getChannelById, getVideosByChannelId, formatViewCount } from "@/lib/queries"
 import { CATEGORY_LABELS } from "@/lib/types"
-import { formatViewCount } from "@/lib/queries"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { VideoFeed } from "@/components/dashboard/video-feed"
 
 export const dynamic = "force-dynamic"
-export const revalidate = 3600
 
 interface PageProps {
   params: Promise<{ id: string }>
 }
 
-async function getChannelData(id: string) {
-  const [channelRes, videosRes] = await Promise.all([
-    supabase.from("channels").select("*").eq("id", id).single(),
-    supabase
-      .from("videos")
-      .select("*, channels(name, category, thumbnail_url)")
-      .eq("channel_id", id)
-      .order("published_at", { ascending: false })
-      .limit(50),
-  ])
-
-  return {
-    channel: channelRes.data as Channel | null,
-    videos: (videosRes.data ?? []) as unknown as VideoWithChannel[],
-  }
-}
-
 export default async function ChannelDetailPage({ params }: PageProps) {
   const { id } = await params
-  const { channel, videos } = await getChannelData(id)
+  const [channel, videos] = await Promise.all([
+    getChannelById(id),
+    getVideosByChannelId(id),
+  ])
 
   if (!channel) {
     notFound()
@@ -72,33 +55,23 @@ export default async function ChannelDetailPage({ params }: PageProps) {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              구독자 수
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">구독자 수</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">
-              {formatViewCount(channel.subscriber_count)}
-            </p>
+            <p className="text-2xl font-bold">{formatViewCount(channel.subscriber_count)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              총 조회수
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">총 조회수</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">
-              {formatViewCount(channel.total_view_count)}
-            </p>
+            <p className="text-2xl font-bold">{formatViewCount(channel.total_view_count)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              영상 수
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">영상 수</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{channel.video_count ?? "-"}</p>
@@ -112,9 +85,7 @@ export default async function ChannelDetailPage({ params }: PageProps) {
             <CardTitle>채널 소개</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-line">
-              {channel.description}
-            </p>
+            <p className="text-sm text-muted-foreground whitespace-pre-line">{channel.description}</p>
           </CardContent>
         </Card>
       )}

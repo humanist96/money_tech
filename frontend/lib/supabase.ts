@@ -1,11 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from './types'
+// Neon 연결을 supabase.ts 파일명 유지 (import 경로 호환)
+// 실제로는 Neon serverless driver 사용
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder'
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
-
-export const isSupabaseConfigured =
-  process.env.NEXT_PUBLIC_SUPABASE_URL !== undefined &&
-  process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder.supabase.co'
+export { neon } from '@neondatabase/serverless'

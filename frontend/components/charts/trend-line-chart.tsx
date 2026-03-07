@@ -26,8 +26,9 @@ export function TrendLineChart({
   const dateMap = new Map<string, Record<string, number>>()
 
   for (const stat of stats) {
-    const existing = dateMap.get(stat.date) ?? {}
-    dateMap.set(stat.date, {
+    const dateKey = new Date(stat.date).toISOString().split("T")[0]
+    const existing = dateMap.get(dateKey) ?? {}
+    dateMap.set(dateKey, {
       ...existing,
       [stat.category]: stat.total_videos ?? 0,
     })
@@ -35,7 +36,7 @@ export function TrendLineChart({
 
   const chartData = Array.from(dateMap.entries())
     .map(([date, categories]) => ({
-      date: date.slice(5),
+      date: date.slice(5), // MM-DD
       ...categories,
     }))
     .sort((a, b) => a.date.localeCompare(b.date))
