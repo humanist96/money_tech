@@ -8,6 +8,7 @@ export interface Channel {
   video_count: number | null
   thumbnail_url: string | null
   description: string | null
+  hit_rate: number | null
   created_at: string
   updated_at: string
 }
@@ -110,10 +111,200 @@ export const CATEGORY_LABELS: Record<string, string> = {
 }
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  stock: '#ef4444',
-  coin: '#f59e0b',
-  real_estate: '#10b981',
-  economy: '#3b82f6',
+  stock: '#ff5757',
+  coin: '#ffb84d',
+  real_estate: '#22c997',
+  economy: '#7c6cf0',
+}
+
+export interface MarketTemperature {
+  category: string
+  positive_count: number
+  negative_count: number
+  neutral_count: number
+  total_count: number
+  temperature: number
+}
+
+export interface ChannelAssetOpinion {
+  channel_id: string
+  channel_name: string
+  asset_name: string
+  asset_code: string
+  sentiment: string
+  mention_count: number
+}
+
+export interface AssetConsensus {
+  asset_name: string
+  asset_code: string
+  positive_pct: number
+  negative_pct: number
+  neutral_pct: number
+  total_mentions: number
+  channel_count: number
+  consensus_score: number
+}
+
+export interface SentimentTrendPoint {
+  date: string
+  category: string
+  positive_pct: number
+  negative_pct: number
+  neutral_pct: number
+}
+
+export interface MentionSpikeData {
+  date: string
+  mention_count: number
+  avg_count: number
+  is_spike: boolean
+}
+
+export interface PredictionFeedItem {
+  id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  channel_category: string
+  asset_name: string
+  asset_code: string | null
+  prediction_type: 'buy' | 'sell' | 'hold' | null
+  reason: string | null
+  predicted_at: string | null
+  is_accurate: boolean | null
+}
+
+export interface ChannelActivityData {
+  channel_id: string
+  channel_name: string
+  category: string
+  date: string
+  video_count: number
+}
+
+export interface TopAssetSentiment {
+  asset_name: string
+  asset_code: string
+  asset_type: string
+  positive_pct: number
+  negative_pct: number
+  neutral_pct: number
+  total_mentions: number
+}
+
+export interface ChannelSpecialtyItem {
+  asset_name: string
+  asset_code: string | null
+  mention_count: number
+  sentiment: string
+}
+
+export interface HotKeyword {
+  keyword: string
+  count: number
+  prev_count: number
+  rank_change: number
+}
+
+export interface HitRateLeaderboardItem {
+  channel_id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  category: string
+  hit_rate: number
+  total_predictions: number
+  accurate_count: number
+  recent_predictions: Array<{
+    prediction_type: string
+    is_accurate: boolean | null
+    asset_name: string
+  }>
+}
+
+// Asset YouTuber Timeline
+export interface AssetTimelineEntry {
+  channel_name: string
+  channel_id: string
+  channel_thumbnail: string | null
+  category: string
+  sentiment: string
+  prediction_type: string | null
+  video_title: string
+  youtube_video_id: string
+  published_at: string
+}
+
+// Buzz Alert
+export interface BuzzAlert {
+  asset_name: string
+  asset_code: string
+  asset_type: string
+  channel_count: number
+  mention_count: number
+  channels: string[]
+  dominant_sentiment: string
+  latest_at: string
+}
+
+// Asset Correlation Network
+export interface AssetCorrelation {
+  source: string
+  target: string
+  source_code: string
+  target_code: string
+  co_occurrence: number
+}
+
+// YouTube Search types
+export interface SearchResult {
+  videoId: string
+  title: string
+  channelTitle: string
+  channelId: string
+  publishedAt: string
+  viewCount: number
+  duration: number
+  thumbnailUrl: string
+  isRegisteredChannel: boolean
+  registeredChannelId?: string
+}
+
+export interface VideoAnalysis {
+  youtube_video_id: string
+  title: string | null
+  channel_name: string | null
+  channel_id: string | null
+  summary: string | null
+  sentiment: 'positive' | 'negative' | 'neutral' | null
+  mentioned_assets: AnalysisMentionedAsset[]
+  predictions: AnalysisPrediction[]
+  key_points: string[]
+  analyzed_at: string
+}
+
+export interface AnalysisMentionedAsset {
+  name: string
+  code: string | null
+  type: 'stock' | 'coin' | 'real_estate'
+  sentiment: 'positive' | 'negative' | 'neutral'
+}
+
+export interface AnalysisPrediction {
+  type: 'buy' | 'sell' | 'hold'
+  asset: string
+  reason: string
+}
+
+export interface SearchReport {
+  overall_summary: string
+  consensus: string
+  sentiment_distribution: {
+    positive: number
+    negative: number
+    neutral: number
+  }
+  key_arguments: string[]
+  conflicts: string[]
 }
 
 export type Database = {
