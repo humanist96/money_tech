@@ -1,0 +1,36 @@
+name: YouTube Crawler
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 매 6시간
+  workflow_dispatch:  # 수동 실행
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r crawler/requirements.txt
+          pip install yt-dlp --upgrade
+
+      - name: Run crawler
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          cd crawler
+          python main.py
+
+      - name: Log completion
+        if: always()
+        run: echo "Crawl finished at $(date -u)"
