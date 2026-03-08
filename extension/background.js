@@ -302,33 +302,49 @@ const handlers = {
     return { id: sourceId, title }
   },
 
+  // Helper: get source IDs from notebook
+  async _getSourceIds(notebookId) {
+    const result = await rpcCall(RPC.GET_NOTEBOOK, [notebookId, null, [2], null, 0], `/notebook/${notebookId}`)
+    const sourceIds = []
+    if (Array.isArray(result) && Array.isArray(result[0]) && Array.isArray(result[0][1])) {
+      for (const src of result[0][1]) {
+        if (Array.isArray(src) && Array.isArray(src[0]) && typeof src[0][0] === 'string') {
+          sourceIds.push(src[0][0])
+        }
+      }
+    }
+    return sourceIds
+  },
+
   async chat({ notebookId, question, conversationId }) {
     const auth = await getAuth()
-    let convId = conversationId
-    if (!convId) {
-      try {
-        const result = await rpcCall(
-          RPC.GET_CONVERSATION_ID,
-          [[], null, notebookId, 1],
-          `/notebook/${notebookId}`
-        )
-        if (Array.isArray(result) && result[0]) convId = result[0]
-      } catch {}
-      if (!convId) convId = crypto.randomUUID()
-    }
 
-    const innerParams = [[], question, null, [2, null, [1], [1]], convId, null, null, notebookId, 1]
-    const outerParams = [null, JSON.stringify(innerParams)]
-    const fReq = JSON.stringify([[['gEBPpe', JSON.stringify(outerParams), null, 'generic']]])
+    // Get source IDs for the notebook
+    const sourceIds = await handlers._getSourceIds(notebookId)
+    const sourcesArray = sourceIds.map(sid => [[sid]])
+
+    const convId = conversationId || crypto.randomUUID()
+
+    // Build params matching notebooklm-py _chat.py (compact JSON, no spaces)
+    const params = [sourcesArray, question, null, [2, null, [1]], convId]
+    const paramsJson = JSON.stringify(params)
+    const fReqInner = [null, paramsJson]
+    const fReqJson = JSON.stringify(fReqInner)
+    console.log('[NB] chat sourceIds:', sourceIds.length, 'convId:', convId)
+
+    // URL-encode body (matching Python's quote)
+    const bodyParts = [`f.req=${encodeURIComponent(fReqJson)}`]
+    if (auth.csrfToken) bodyParts.push(`at=${encodeURIComponent(auth.csrfToken)}`)
+    const body = bodyParts.join('&') + '&'
 
     const chatUrl = `${BASE_URL}/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed`
     const urlParams = new URLSearchParams({
+      bl: 'boq_labs-tailwind-frontend_20251221.14_p0',
       hl: 'en',
       _reqid: String(Math.floor(Math.random() * 900000) + 100000),
       rt: 'c',
-      'f.sid': auth.sessionId,
     })
-    const bodyParams = new URLSearchParams({ 'f.req': fReq, at: auth.csrfToken })
+    if (auth.sessionId) urlParams.set('f.sid', auth.sessionId)
 
     const res = await fetch(`${chatUrl}?${urlParams}`, {
       method: 'POST',
@@ -338,62 +354,97 @@ const handlers = {
         Origin: BASE_URL,
         'User-Agent': BROWSER_HEADERS['User-Agent'],
       },
-      body: bodyParams.toString(),
+      body,
     })
 
     const text = await res.text()
-    const cleaned = text.replace(/^\)\]\}'/, '')
+    console.log('[NB] chat raw response length:', text.length)
 
-    let answer = ''
-    const references = []
-    for (const line of cleaned.split('\n')) {
-      if (!line.trim().startsWith('[')) continue
+    // Parse chunked response - find longest answer (matching _parse_ask_response)
+    let cleaned = text
+    const xssiMatch = cleaned.match(/^\)\]\}'\r?\n/)
+    if (xssiMatch) cleaned = cleaned.slice(xssiMatch[0].length)
+
+    let longestAnswer = ''
+    const lines = cleaned.split('\n')
+    let i = 0
+    while (i < lines.length) {
+      const line = lines[i].trim()
+      if (!line) { i++; continue }
+      let jsonStr = null
+      if (/^\d+$/.test(line)) {
+        i++
+        if (i < lines.length) jsonStr = lines[i]
+        i++
+      } else {
+        jsonStr = line
+        i++
+      }
+      if (!jsonStr) continue
       try {
-        const parsed = JSON.parse(line)
-        if (!Array.isArray(parsed)) continue
-        for (const chunk of parsed) {
-          if (Array.isArray(chunk) && chunk[0] === 'wrb.fr') {
-            const inner = typeof chunk[2] === 'string' ? JSON.parse(chunk[2]) : chunk[2]
-            if (Array.isArray(inner) && inner[0]) {
-              const data = Array.isArray(inner[0]) ? inner[0] : inner
-              if (typeof data[0] === 'string') answer = data[0]
-              const refs = data[4]
-              if (Array.isArray(refs)) {
-                for (const ref of refs) {
-                  if (Array.isArray(ref) && typeof ref[0] === 'string') references.push({ text: ref[0] })
+        const data = JSON.parse(jsonStr)
+        if (!Array.isArray(data)) continue
+        for (const item of data) {
+          if (!Array.isArray(item) || item[0] !== 'wrb.fr') continue
+          const innerJson = item[2]
+          if (typeof innerJson !== 'string') continue
+          try {
+            const innerData = JSON.parse(innerJson)
+            if (Array.isArray(innerData) && Array.isArray(innerData[0])) {
+              const first = innerData[0]
+              if (typeof first[0] === 'string' && first[0].length > longestAnswer.length) {
+                // Check if it's an answer (first[4][-1] === 1)
+                let isAnswer = first[0].length > 20
+                if (Array.isArray(first[4]) && first[4].length > 0 && first[4][first[4].length - 1] === 1) {
+                  isAnswer = true
                 }
+                if (isAnswer) longestAnswer = first[0]
               }
             }
-          }
+          } catch {}
         }
-      } catch {
-        continue
-      }
+      } catch {}
     }
 
-    return { answer: answer || '응답을 받지 못했습니다', conversationId: convId, references }
+    return { answer: longestAnswer || '응답을 받지 못했습니다', conversationId: convId, references: [] }
   },
 
   async generateAudio({ notebookId, format = 'deep-dive' }) {
-    const formatMap = { 'deep-dive': 1, brief: 2, critique: 3, debate: 4 }
-    const result = await rpcCall(
-      RPC.CREATE_ARTIFACT,
-      [notebookId, [2], [1, formatMap[format] ?? 1], null, null],
-      `/notebook/${notebookId}`
-    )
-    return { id: Array.isArray(result) ? result[0] ?? '' : '', status: 'generating' }
+    const sourceIds = await handlers._getSourceIds(notebookId)
+    const sourceIdsTriple = sourceIds.map(sid => [[sid]])
+    const sourceIdsDouble = sourceIds.map(sid => [sid])
+    const formatMap = { 'deep-dive': null, brief: 2, critique: 3, debate: 4 }
+
+    // Matches _artifacts.py generate_audio params
+    const params = [
+      [2], notebookId,
+      [null, null, 1, sourceIdsTriple, null, null,
+        [null, [null, null, null, sourceIdsDouble, 'en', null, formatMap[format] ?? null]]
+      ]
+    ]
+    const result = await rpcCall('R7cb6c', params, `/notebook/${notebookId}`)
+    console.log('[NB] generateAudio raw:', JSON.stringify(result)?.slice(0, 500))
+    // Parse: result[0] = artifact data, result[0][0] = id, result[0][4] = status
+    let id = '', status = 'generating'
+    if (Array.isArray(result) && Array.isArray(result[0])) {
+      id = result[0][0] ?? ''
+      status = result[0][4] === 3 ? 'completed' : result[0][4] === 1 ? 'in_progress' : 'generating'
+    }
+    return { id, status }
   },
 
   async getArtifactStatus({ notebookId, artifactId }) {
-    const result = await rpcCall(RPC.LIST_ARTIFACTS, [notebookId, [2]], `/notebook/${notebookId}`)
+    // Matches _artifacts.py list params
+    const params = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"']
+    const result = await rpcCall(RPC.LIST_ARTIFACTS, params, `/notebook/${notebookId}`)
     if (Array.isArray(result)) {
-      const artifacts = result[0] ?? result
-      if (Array.isArray(artifacts)) {
-        for (const a of artifacts) {
-          if (Array.isArray(a) && a[0] === artifactId) {
-            const status = a[3] === 2 ? 'completed' : a[3] === 3 ? 'failed' : 'generating'
-            return { id: artifactId, status }
-          }
+      const artifacts = Array.isArray(result[0]) ? result[0] : result
+      for (const a of artifacts) {
+        if (!Array.isArray(a)) continue
+        // a[0]=id, a[1]=title, a[2]=type, a[4]=status (1=processing, 3=completed)
+        if (a[0] === artifactId) {
+          const status = a[4] === 3 ? 'completed' : a[4] === 1 ? 'in_progress' : 'generating'
+          return { id: artifactId, status }
         }
       }
     }
@@ -416,45 +467,52 @@ const handlers = {
   },
 
   async generateReport({ notebookId, reportType = 'briefing' }) {
-    const typeMap = { briefing: 2, study_guide: 3 }
-    const result = await rpcCall(
-      RPC.CREATE_ARTIFACT,
-      [notebookId, [2], [typeMap[reportType] ?? 2], null, null],
-      `/notebook/${notebookId}`
-    )
-    let id = '', content = ''
-    if (Array.isArray(result)) {
-      id = result[0] ?? ''
-      content = result[1] ?? result[2] ?? ''
+    const sourceIds = await handlers._getSourceIds(notebookId)
+    const sourceIdsTriple = sourceIds.map(sid => [[sid]])
+    const sourceIdsDouble = sourceIds.map(sid => [sid])
+
+    const configs = {
+      briefing: { title: 'Briefing Doc', desc: 'Key insights and important quotes', prompt: 'Create a comprehensive briefing document that includes an Executive Summary, detailed analysis of key themes, important quotes with context, and actionable insights.' },
+      study_guide: { title: 'Study Guide', desc: 'Short-answer quiz, essay questions, glossary', prompt: 'Create a comprehensive study guide that includes key concepts, short-answer practice questions, essay prompts for deeper exploration, and a glossary of important terms.' },
     }
-    return { id, content: typeof content === 'string' ? content : JSON.stringify(content) }
+    const config = configs[reportType] || configs.briefing
+
+    // Matches _artifacts.py generate_report params
+    const params = [
+      [2], notebookId,
+      [null, null, 2, sourceIdsTriple, null, null, null,
+        [null, [config.title, config.desc, null, sourceIdsDouble, 'en', config.prompt, null, true]]
+      ]
+    ]
+    const result = await rpcCall('R7cb6c', params, `/notebook/${notebookId}`)
+    console.log('[NB] generateReport raw:', JSON.stringify(result)?.slice(0, 500))
+    let id = '', status = 'generating'
+    if (Array.isArray(result) && Array.isArray(result[0])) {
+      id = result[0][0] ?? ''
+      status = result[0][4] === 3 ? 'completed' : 'in_progress'
+    }
+    return { id, status, content: '' }
   },
 
   async generateQuiz({ notebookId }) {
-    const result = await rpcCall(
-      RPC.CREATE_ARTIFACT,
-      [notebookId, [2], [4], null, null],
-      `/notebook/${notebookId}`
-    )
-    const questions = []
-    let id = ''
-    if (Array.isArray(result)) {
-      id = result[0] ?? ''
-      const quizData = result[1] ?? result[2]
-      if (Array.isArray(quizData)) {
-        for (const q of quizData) {
-          if (Array.isArray(q)) {
-            questions.push({
-              question: q[0] ?? '',
-              options: Array.isArray(q[1]) ? q[1] : [],
-              answer: q[2] ?? '',
-              explanation: q[3] ?? '',
-            })
-          }
-        }
-      }
+    const sourceIds = await handlers._getSourceIds(notebookId)
+    const sourceIdsTriple = sourceIds.map(sid => [[sid]])
+
+    // Matches _artifacts.py generate_quiz params (type 4, variant 2=quiz)
+    const params = [
+      [2], notebookId,
+      [null, null, 4, sourceIdsTriple, null, null, null, null, null,
+        [null, [2, null, null]]
+      ]
+    ]
+    const result = await rpcCall('R7cb6c', params, `/notebook/${notebookId}`)
+    console.log('[NB] generateQuiz raw:', JSON.stringify(result)?.slice(0, 500))
+    let id = '', status = 'generating'
+    if (Array.isArray(result) && Array.isArray(result[0])) {
+      id = result[0][0] ?? ''
+      status = result[0][4] === 3 ? 'completed' : 'in_progress'
     }
-    return { id, questions }
+    return { id, status, questions: [] }
   },
 
   async createResearchNotebook({ keyword, youtubeUrls, analysisText }) {
