@@ -307,6 +307,38 @@ export interface SearchReport {
   conflicts: string[]
 }
 
+// NotebookLM types
+export interface NotebookItem {
+  id: string
+  title: string
+}
+
+export interface NotebookSource {
+  id: string
+  title: string
+  type: string
+  status: string
+}
+
+export interface NotebookDetail {
+  id: string
+  title: string
+  sources: NotebookSource[]
+}
+
+export interface NotebookChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  references?: Array<{ source_id?: string; text: string }>
+}
+
+export interface NotebookQuizQuestion {
+  question: string
+  options: string[]
+  answer: string
+  explanation: string
+}
+
 export type Database = {
   public: {
     Tables: {

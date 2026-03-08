@@ -23,6 +23,9 @@ export default function SearchClient() {
   const [report, setReport] = useState<SearchReport | null>(null)
   const [generatingReport, setGeneratingReport] = useState(false)
 
+  // NotebookLM state
+  const [sendingToNotebook, setSendingToNotebook] = useState(false)
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem(RECENT_SEARCHES_KEY)
@@ -146,6 +149,50 @@ export default function SearchClient() {
     }
   }, [results, analyses])
 
+  const handleSendToNotebook = useCallback(async () => {
+    if (results.length === 0) return
+    setSendingToNotebook(true)
+
+    const top5 = results.slice(0, 5)
+    const youtubeUrls = top5.map((r) => `https://www.youtube.com/watch?v=${r.videoId}`)
+
+    // Build analysis text from report + individual analyses
+    let analysisText = ''
+    if (report) {
+      analysisText += `[종합 분석]\n${report.overall_summary}\n\n공통 의견: ${report.consensus}\n\n`
+      if (report.key_arguments.length > 0) {
+        analysisText += `주요 근거:\n${report.key_arguments.map((a) => `- ${a}`).join('\n')}\n\n`
+      }
+    }
+    const analyzedVideos = top5.filter((r) => analyses[r.videoId])
+    for (const v of analyzedVideos) {
+      const a = analyses[v.videoId]
+      if (a?.summary) {
+        analysisText += `[${v.title}]\n${a.summary}\n\n`
+      }
+    }
+
+    try {
+      const res = await fetch('/api/notebook/notebooks/research', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          keyword,
+          youtube_urls: youtubeUrls,
+          analysis_text: analysisText,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.id) {
+        window.location.href = `/notebook?id=${data.id}`
+      }
+    } catch {
+      // silent
+    } finally {
+      setSendingToNotebook(false)
+    }
+  }, [results, keyword, report, analyses])
+
   return (
     <div className="space-y-6">
       {/* Search Bar */}
@@ -240,19 +287,40 @@ export default function SearchClient() {
         <>
           <div className="flex items-center justify-between">
             <p className="text-sm text-[#8899b4]">{results.length}개 결과</p>
-            <button
-              onClick={handleReport}
-              disabled={generatingReport}
-              className="px-4 py-2 bg-[#1a2744] border border-[#00e8b8]/30 text-[#00e8b8] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40"
-            >
-              {generatingReport ? (
-                <span className="flex items-center gap-2">
-                  <Spinner /> 종합 분석 중...
-                </span>
-              ) : (
-                'Top 5 종합 분석'
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleReport}
+                disabled={generatingReport}
+                className="px-4 py-2 bg-[#1a2744] border border-[#00e8b8]/30 text-[#00e8b8] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40"
+              >
+                {generatingReport ? (
+                  <span className="flex items-center gap-2">
+                    <Spinner /> 종합 분석 중...
+                  </span>
+                ) : (
+                  'Top 5 종합 분석'
+                )}
+              </button>
+              <button
+                onClick={handleSendToNotebook}
+                disabled={sendingToNotebook}
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#1a2744] border border-[#7c6cf0]/30 text-[#7c6cf0] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40"
+              >
+                {sendingToNotebook ? (
+                  <span className="flex items-center gap-2">
+                    <Spinner /> 전송 중...
+                  </span>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    </svg>
+                    NotebookLM 리서치
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Report */}
