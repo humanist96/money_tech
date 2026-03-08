@@ -74,17 +74,26 @@ export default function NotebookClient() {
   const [quizRevealed, setQuizRevealed] = useState(false)
   const [generatingQuiz, setGeneratingQuiz] = useState(false)
 
-  // Check auth on mount
+  // Check auth on mount + listen for extension cookie updates
   useEffect(() => {
-    const cookies = getSavedCookies()
-    if (!cookies) {
-      setAuthenticated(false)
-      return
+    function checkAuth() {
+      const cookies = getSavedCookies()
+      if (!cookies) {
+        setAuthenticated(false)
+        return
+      }
+      nbFetch('/api/notebook/auth/status')
+        .then((r) => r.json())
+        .then((data) => setAuthenticated(data.authenticated === true))
+        .catch(() => setAuthenticated(false))
     }
-    nbFetch('/api/notebook/auth/status')
-      .then((r) => r.json())
-      .then((data) => setAuthenticated(data.authenticated === true))
-      .catch(() => setAuthenticated(false))
+
+    checkAuth()
+
+    // Listen for cookie updates from Chrome extension
+    const handleExtensionUpdate = () => checkAuth()
+    window.addEventListener('nb-cookies-updated', handleExtensionUpdate)
+    return () => window.removeEventListener('nb-cookies-updated', handleExtensionUpdate)
   }, [])
 
   // Load notebooks
@@ -288,42 +297,84 @@ export default function NotebookClient() {
     return (
       <div className="space-y-6">
         <PageHeader onSettingsClick={() => setShowSettings(true)} />
-        <div className="card p-8 text-center space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#556a8a" strokeWidth="1.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-white">Google 계정 연결</h3>
-          <p className="text-sm text-[#8899b4] max-w-lg mx-auto leading-relaxed">
-            NotebookLM 기능을 사용하려면 Google 쿠키가 필요합니다.
-          </p>
-          <div className="max-w-lg mx-auto text-left space-y-3">
-            <div className="p-3 bg-[#0a1628] rounded-lg border border-[#1a2744] text-xs text-[#c8d6e5] space-y-2">
-              <p className="font-semibold text-[#00e8b8]">쿠키 추출 방법:</p>
-              <ol className="list-decimal list-inside space-y-1 text-[#8899b4]">
-                <li>Chrome에서 <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">notebooklm.google.com</a> 로그인</li>
-                <li>F12 (개발자 도구) &gt; Application &gt; Cookies</li>
-                <li>SID, HSID, SSID, APISID, SAPISID 값 복사</li>
-                <li>아래 형식으로 입력: <code className="bg-[#1a2744] px-1 rounded">SID=xxx; HSID=yyy; SSID=zzz; APISID=aaa; SAPISID=bbb</code></li>
-              </ol>
+        <div className="card p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="1.5">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
             </div>
-            <textarea
-              value={cookieInput}
-              onChange={(e) => setCookieInput(e.target.value)}
-              placeholder="SID=xxx; HSID=yyy; SSID=zzz; APISID=aaa; SAPISID=bbb"
-              rows={3}
-              className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-3 text-xs text-white font-mono placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors resize-none"
-            />
-            {error && <p className="text-xs text-red-400">{error}</p>}
-            <button
-              onClick={handleSaveCookies}
-              disabled={!cookieInput.trim()}
-              className="w-full px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              연결하기
-            </button>
+            <h3 className="text-lg font-semibold text-white">Google NotebookLM 연결</h3>
+            <p className="text-sm text-[#8899b4]">
+              Chrome 확장 프로그램으로 원클릭 연동하거나, 수동으로 쿠키를 입력하세요.
+            </p>
+          </div>
+
+          {/* Method 1: Chrome Extension */}
+          <div className="max-w-lg mx-auto">
+            <div className="p-4 bg-[#0a1628] rounded-lg border border-[#00e8b8]/20 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">1</div>
+                <h4 className="text-sm font-semibold text-white">Chrome 확장 프로그램 (추천)</h4>
+              </div>
+              <ol className="text-xs text-[#8899b4] space-y-1.5 ml-8">
+                <li>Chrome에서 <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">notebooklm.google.com</a>에 Google 로그인</li>
+                <li>확장 프로그램 설치 후 아이콘 클릭</li>
+                <li>&quot;연결하기&quot; 버튼 클릭 - 끝!</li>
+              </ol>
+              <div className="flex gap-2 ml-8">
+                <a
+                  href="https://github.com/humanist96/money_tech/tree/main/extension"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-xs font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                  확장 프로그램 다운로드
+                </a>
+              </div>
+              <p className="text-[10px] text-[#556a8a] ml-8">
+                chrome://extensions &gt; 개발자 모드 ON &gt; &quot;압축해제된 확장 프로그램을 로드합니다&quot; &gt; extension 폴더 선택
+              </p>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="max-w-lg mx-auto flex items-center gap-3">
+            <div className="flex-1 h-px bg-[#1a2744]" />
+            <span className="text-xs text-[#556a8a]">또는</span>
+            <div className="flex-1 h-px bg-[#1a2744]" />
+          </div>
+
+          {/* Method 2: Manual Cookie */}
+          <div className="max-w-lg mx-auto">
+            <div className="p-4 bg-[#0a1628] rounded-lg border border-[#1a2744] space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-[#1a2744] flex items-center justify-center text-[#556a8a] text-xs font-bold">2</div>
+                <h4 className="text-sm font-semibold text-[#8899b4]">수동 쿠키 입력</h4>
+              </div>
+              <p className="text-[10px] text-[#556a8a] ml-8">
+                F12 &gt; Application &gt; Cookies &gt; .google.com &gt; SID, HSID, SSID, APISID, SAPISID 값 복사
+              </p>
+              <div className="ml-8 space-y-2">
+                <textarea
+                  value={cookieInput}
+                  onChange={(e) => setCookieInput(e.target.value)}
+                  placeholder="SID=xxx; HSID=yyy; SSID=zzz; APISID=aaa; SAPISID=bbb"
+                  rows={2}
+                  className="w-full bg-[#060e1a] border border-[#1a2744] rounded-lg px-3 py-2 text-[11px] text-white font-mono placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors resize-none"
+                />
+                {error && <p className="text-xs text-red-400">{error}</p>}
+                <button
+                  onClick={handleSaveCookies}
+                  disabled={!cookieInput.trim()}
+                  className="px-4 py-2 bg-[#1a2744] border border-[#1a2744] text-[#8899b4] text-xs font-medium rounded-lg hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  수동 연결
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

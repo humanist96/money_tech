@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "MoneyTech NotebookLM Connector",
+  "version": "1.0.0",
+  "description": "MoneyTech와 Google NotebookLM을 원클릭으로 연동합니다",
+  "permissions": ["cookies", "scripting", "storage"],
+  "host_permissions": [
+    "https://*.google.com/*",
+    "https://*.vercel.app/*",
+    "http://localhost:*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
