@@ -74,6 +74,22 @@ export default function NotebookClient() {
   const [conversationId, setConversationId] = useState<string | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
+  // Export cookies for Python testing
+  const handleExportCookies = useCallback(async () => {
+    try {
+      const data = await extensionCall<{ cookies: unknown[]; origins: unknown[] }>('exportCookies')
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'storage_state.json'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      setError(`쿠키 내보내기 실패: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }, [])
+
   // Feature states
   const [featureLoading, setFeatureLoading] = useState<string | null>(null)
   const [featureResult, setFeatureResult] = useState<string | null>(null)
@@ -304,7 +320,7 @@ export default function NotebookClient() {
   // --- Main UI ---
   return (
     <div className="space-y-6">
-      <PageHeader />
+      <PageHeader onExportCookies={handleExportCookies} />
 
       {/* Create Notebook */}
       <div className="card p-4">
@@ -567,18 +583,28 @@ export default function NotebookClient() {
 
 // --- Sub-components ---
 
-function PageHeader() {
+function PageHeader({ onExportCookies }: { onExportCookies?: () => void }) {
   return (
     <div className="flex items-center justify-between">
       <div>
         <h1 className="text-2xl font-bold text-white tracking-tight">NotebookLM 리서치</h1>
         <p className="text-sm text-[#556a8a] mt-1">노트북 관리, 소스 추가, AI 분석</p>
       </div>
-      <a href={NB_BASE} target="_blank" rel="noopener noreferrer"
-        className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        NotebookLM 홈
-      </a>
+      <div className="flex items-center gap-3">
+        {onExportCookies && (
+          <button onClick={onExportCookies}
+            className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1"
+            title="Python 테스트용 쿠키 내보내기">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            쿠키 내보내기
+          </button>
+        )}
+        <a href={NB_BASE} target="_blank" rel="noopener noreferrer"
+          className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          NotebookLM 홈
+        </a>
+      </div>
     </div>
   )
 }

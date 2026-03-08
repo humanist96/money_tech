@@ -515,6 +515,38 @@ const handlers = {
     return { id, status, questions: [] }
   },
 
+  async exportCookies() {
+    const cookieMap = new Map()
+    const urls = [
+      'https://notebooklm.google.com',
+      'https://accounts.google.com',
+      'https://www.google.com',
+    ]
+    for (const url of urls) {
+      const cookies = await chrome.cookies.getAll({ url })
+      for (const c of cookies) {
+        if (!cookieMap.has(c.name)) cookieMap.set(c.name, c)
+      }
+    }
+    const all = await chrome.cookies.getAll({})
+    for (const c of all) {
+      if (c.domain.includes('google') && !cookieMap.has(c.name)) {
+        cookieMap.set(c.name, c)
+      }
+    }
+    const storageCookies = Array.from(cookieMap.values()).map(c => ({
+      name: c.name,
+      value: c.value,
+      domain: c.domain,
+      path: c.path,
+      httpOnly: c.httpOnly,
+      secure: c.secure,
+      sameSite: c.sameSite === 'no_restriction' ? 'None' : c.sameSite === 'lax' ? 'Lax' : 'Strict',
+      expires: c.expirationDate || -1,
+    }))
+    return { cookies: storageCookies, origins: [] }
+  },
+
   async createResearchNotebook({ keyword, youtubeUrls, analysisText }) {
     const today = new Date().toISOString().slice(0, 10).replace(/-/g, '.')
     const title = `${keyword} 투자 분석 - ${today}`
