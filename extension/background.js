@@ -124,27 +124,50 @@ function buildBatchRequest(rpcId, params, auth, sourcePath = '/') {
 }
 
 function decodeBatchResponse(text, rpcId) {
-  const cleaned = text.replace(/^\)\]\}'/, '')
-  const lines = cleaned.split('\n').filter((l) => l.trim())
+  // Step 1: Strip anti-XSSI prefix
+  let cleaned = text
+  const xssiMatch = cleaned.match(/^\)\]\}'\r?\n/)
+  if (xssiMatch) cleaned = cleaned.slice(xssiMatch[0].length)
 
-  for (const line of lines) {
-    if (!line.trim().startsWith('[')) continue
-    try {
-      const parsed = JSON.parse(line)
-      if (Array.isArray(parsed)) {
-        for (const item of parsed) {
-          if (Array.isArray(item) && item[0] === 'wrb.fr' && item[1] === rpcId) {
-            const resultStr = item[2]
-            if (typeof resultStr === 'string') return JSON.parse(resultStr)
-            return resultStr
-          }
-        }
+  // Step 2: Parse chunked response (alternating byte_count + json_payload lines)
+  const chunks = []
+  const lines = cleaned.split('\n')
+  let i = 0
+  while (i < lines.length) {
+    const line = lines[i].trim()
+    if (!line) { i++; continue }
+    // Try as byte count
+    if (/^\d+$/.test(line)) {
+      i++
+      if (i < lines.length) {
+        try { chunks.push(JSON.parse(lines[i])) } catch {}
       }
-    } catch {
-      continue
+      i++
+    } else {
+      try { chunks.push(JSON.parse(line)) } catch {}
+      i++
     }
   }
-  throw new Error(`RPC ${rpcId}: 응답 파싱 실패`)
+
+  // Step 3: Extract RPC result
+  for (const chunk of chunks) {
+    if (!Array.isArray(chunk)) continue
+    const items = (chunk.length > 0 && Array.isArray(chunk[0])) ? chunk : [chunk]
+    for (const item of items) {
+      if (!Array.isArray(item) || item.length < 3) continue
+      if (item[0] === 'er' && item[1] === rpcId) {
+        throw new Error(`RPC 에러: ${item[2]}`)
+      }
+      if (item[0] === 'wrb.fr' && item[1] === rpcId) {
+        const resultData = item[2]
+        if (typeof resultData === 'string') {
+          try { return JSON.parse(resultData) } catch { return resultData }
+        }
+        return resultData
+      }
+    }
+  }
+  return null
 }
 
 async function rpcCall(rpcId, params, sourcePath) {
@@ -173,17 +196,18 @@ const handlers = {
 
   async listNotebooks() {
     const result = await rpcCall(RPC.LIST_NOTEBOOKS, [null, 1, null, [2]])
+    console.log('[NB] listNotebooks raw:', JSON.stringify(result)?.slice(0, 2000))
     const notebooks = []
     if (Array.isArray(result)) {
-      const list = result[0]
-      if (Array.isArray(list)) {
-        for (const item of list) {
-          if (Array.isArray(item)) {
-            const id = item[0]
-            const title = item[2]?.[0]?.[3]?.[1] ?? item[2]?.[0]?.[0] ?? 'Untitled'
-            if (id) notebooks.push({ id, title })
-          }
-        }
+      const rawList = Array.isArray(result[0]) ? result[0] : result
+      for (const item of rawList) {
+        if (!Array.isArray(item)) continue
+        // Notebook.from_api_response: data[0]=title, data[2]=id
+        const rawTitle = (typeof item[0] === 'string') ? item[0] : ''
+        const title = rawTitle.replace('thought\n', '').trim() || 'Untitled'
+        const id = (typeof item[2] === 'string') ? item[2] : ''
+        console.log('[NB] notebook:', { id: id?.slice(0, 20), title })
+        if (id) notebooks.push({ id, title })
       }
     }
     return notebooks
@@ -191,7 +215,9 @@ const handlers = {
 
   async createNotebook({ title }) {
     const result = await rpcCall(RPC.CREATE_NOTEBOOK, [title, null, null, [2], [1]])
-    const id = Array.isArray(result) ? result[0] : null
+    console.log('[NB] createNotebook raw:', JSON.stringify(result)?.slice(0, 500))
+    // from_api_response: data[0]=title, data[2]=id
+    const id = Array.isArray(result) && typeof result[2] === 'string' ? result[2] : (Array.isArray(result) ? result[0] : null)
     if (!id) throw new Error('노트북 생성 실패')
     return { id, title }
   },
@@ -202,20 +228,39 @@ const handlers = {
       [notebookId, null, [2], null, 0],
       `/notebook/${notebookId}`
     )
+    console.log('[NB] getNotebook raw:', JSON.stringify(result)?.slice(0, 2000))
+    // result[0] = notebook info (data[0]=title, data[2]=id)
+    // result[0][1] = sources list (from _sources.py)
     let title = 'Untitled'
     const sources = []
     if (Array.isArray(result)) {
-      title = result[0]?.[3]?.[1] ?? result[0]?.[0] ?? 'Untitled'
-      const sourceList = result[2]
+      const nbInfo = Array.isArray(result[0]) ? result[0] : result
+      const rawTitle = (typeof nbInfo[0] === 'string') ? nbInfo[0] : ''
+      title = rawTitle.replace('thought\n', '').trim() || 'Untitled'
+
+      // Sources at nbInfo[1]
+      const sourceList = nbInfo[1]
       if (Array.isArray(sourceList)) {
-        for (const s of sourceList) {
-          if (Array.isArray(s)) {
-            const sourceId = s[0]
-            const sourceTitle = s[2]?.[0] ?? s[1] ?? 'Untitled'
-            const sourceType =
-              s[3] != null ? ['text', 'url', 'youtube', 'file'][s[3]] ?? 'unknown' : 'unknown'
-            if (sourceId) sources.push({ id: sourceId, title: sourceTitle, type: sourceType, status: 'ready' })
+        for (const src of sourceList) {
+          if (!Array.isArray(src)) continue
+          // src[0][0] = source ID, src[1] = title
+          const sourceId = Array.isArray(src[0]) ? src[0][0] : src[0]
+          const sourceTitle = src[1] ?? 'Untitled'
+          // src[2][7] = URL for web/youtube sources
+          let url = null
+          if (Array.isArray(src[2]) && src[2].length > 7 && Array.isArray(src[2][7])) {
+            url = src[2][7][0] ?? null
           }
+          // src[3][1] = status (1=processing, 2=ready, 3=error)
+          let status = 'ready'
+          if (Array.isArray(src[3]) && src[3].length > 1) {
+            status = src[3][1] === 1 ? 'processing' : src[3][1] === 3 ? 'error' : 'ready'
+          }
+          let sourceType = 'text'
+          if (url) {
+            sourceType = (url.includes('youtube.com') || url.includes('youtu.be')) ? 'youtube' : 'url'
+          }
+          if (sourceId) sources.push({ id: String(sourceId), title: sourceTitle, type: sourceType, status, url })
         }
       }
     }
