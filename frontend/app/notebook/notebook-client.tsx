@@ -125,12 +125,22 @@ export default function NotebookClient() {
       .catch(() => setAuthenticated(false))
   }, [extensionReady])
 
+  // Debug
+  const [debugInfo, setDebugInfo] = useState<string>('')
+
   // Load notebooks
   const loadNotebooks = useCallback(async () => {
     try {
-      const data = await extensionCall<NotebookItem[]>('listNotebooks')
-      if (Array.isArray(data)) setNotebooks(data)
-    } catch { /* silent */ }
+      const data = await extensionCall<{ notebooks: NotebookItem[]; _debug?: string }>('listNotebooks')
+      if (data && typeof data === 'object' && 'notebooks' in data) {
+        setNotebooks(Array.isArray(data.notebooks) ? data.notebooks : [])
+        if (data._debug) setDebugInfo(data._debug)
+      } else if (Array.isArray(data)) {
+        setNotebooks(data as unknown as NotebookItem[])
+      }
+    } catch (e) {
+      setDebugInfo(`Error: ${e instanceof Error ? e.message : String(e)}`)
+    }
   }, [])
 
   useEffect(() => {
@@ -418,6 +428,12 @@ export default function NotebookClient() {
         <div className="space-y-2">
           <h3 className="text-xs font-semibold text-[#556a8a] uppercase tracking-wider px-1">노트북 목록</h3>
           {notebooks.length === 0 && <p className="text-sm text-[#556a8a] px-1">노트북이 없습니다</p>}
+          {debugInfo && (
+            <details className="px-1">
+              <summary className="text-[10px] text-[#334] cursor-pointer hover:text-[#556a8a]">API 디버그</summary>
+              <pre className="mt-1 p-2 bg-[#060e1a] border border-[#1a2744] rounded text-[9px] text-[#556a8a] overflow-x-auto max-h-[200px] overflow-y-auto whitespace-pre-wrap break-all">{debugInfo}</pre>
+            </details>
+          )}
           {notebooks.map((nb) => (
             <button
               key={nb.id}

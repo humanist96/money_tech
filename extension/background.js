@@ -196,7 +196,8 @@ const handlers = {
 
   async listNotebooks() {
     const result = await rpcCall(RPC.LIST_NOTEBOOKS, [null, 1, null, [2]])
-    console.log('[NB] listNotebooks raw:', JSON.stringify(result)?.slice(0, 2000))
+    const rawStr = JSON.stringify(result)?.slice(0, 3000)
+    console.log('[NB] listNotebooks raw:', rawStr)
     const notebooks = []
     if (Array.isArray(result)) {
       const rawList = Array.isArray(result[0]) ? result[0] : result
@@ -210,7 +211,8 @@ const handlers = {
         if (id) notebooks.push({ id, title })
       }
     }
-    return notebooks
+    // Return debug info along with notebooks
+    return { notebooks, _debug: rawStr }
   },
 
   async createNotebook({ title }) {
