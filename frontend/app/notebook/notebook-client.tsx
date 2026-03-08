@@ -208,11 +208,12 @@ export default function NotebookClient() {
       )
       setChatMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: data.answer, references: data.references },
+        { role: 'assistant', content: data.answer || '응답이 비어있습니다', references: data.references },
       ])
       if (data.conversationId) setConversationId(data.conversationId)
-    } catch {
-      setChatMessages((prev) => [...prev, { role: 'assistant', content: '응답 실패' }])
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setChatMessages((prev) => [...prev, { role: 'assistant', content: `오류: ${msg}` }])
     } finally { setChatLoading(false) }
   }, [chatInput, selectedId, conversationId])
 
@@ -226,41 +227,74 @@ export default function NotebookClient() {
     setGeneratingAudio(true)
     setAudioStatus('generating')
     setAudioUrl(null)
+    setError('')
 
     try {
-      const data = await extensionCall<{ id: string }>('generateAudio', { notebookId: selectedId, format: 'deep-dive' })
+      const data = await extensionCall<{ id: string; status: string }>('generateAudio', { notebookId: selectedId, format: 'deep-dive' })
       if (data.id) {
-        pollAudioStatus(selectedId, data.id)
+        pollArtifactStatus(selectedId, data.id, 'audio')
       } else {
         setAudioStatus('failed')
+        setError('오디오 생성 시작 실패: ID를 받지 못했습니다')
         setGeneratingAudio(false)
       }
-    } catch {
+    } catch (e) {
       setAudioStatus('failed')
+      setError(`오디오 생성 오류: ${e instanceof Error ? e.message : String(e)}`)
       setGeneratingAudio(false)
     }
   }, [selectedId])
 
-  const pollAudioStatus = useCallback(async (notebookId: string, artifactId: string) => {
-    for (let i = 0; i < 60; i++) {
+  const pollArtifactStatus = useCallback(async (notebookId: string, artifactId: string, type: 'audio' | 'report' | 'quiz') => {
+    for (let attempt = 0; attempt < 60; attempt++) {
       await new Promise((r) => setTimeout(r, 5000))
       try {
         const data = await extensionCall<{ id: string; status: string }>(
           'getArtifactStatus',
           { notebookId, artifactId }
         )
-        setAudioStatus(data.status)
+
+        if (type === 'audio') setAudioStatus(data.status)
+
         if (data.status === 'completed') {
-          const exported = await extensionCall<{ url?: string }>('exportArtifact', { notebookId, artifactId })
-          if (exported.url) setAudioUrl(exported.url)
-          setGeneratingAudio(false)
+          const exported = await extensionCall<{ url?: string; content?: string }>('exportArtifact', { notebookId, artifactId })
+          if (type === 'audio') {
+            if (exported.url) setAudioUrl(exported.url)
+            setGeneratingAudio(false)
+          } else if (type === 'report') {
+            setReportContent(exported.content || '보고서 내용을 가져올 수 없습니다')
+            setGeneratingReport(false)
+          } else if (type === 'quiz') {
+            // 퀴즈 내용은 텍스트로 받아서 파싱 시도
+            if (exported.content) {
+              try {
+                const parsed = JSON.parse(exported.content)
+                if (Array.isArray(parsed)) setQuizQuestions(parsed)
+                else setQuizQuestions([])
+              } catch {
+                // 텍스트 형태 퀴즈 - 그냥 표시
+                setReportContent(exported.content)
+                setActiveTab('report')
+              }
+            }
+            setGeneratingQuiz(false)
+          }
           return
         }
-        if (data.status === 'failed') { setGeneratingAudio(false); return }
-      } catch { /* continue */ }
+        if (data.status === 'failed') {
+          setError(`${type} 생성 실패`)
+          if (type === 'audio') setGeneratingAudio(false)
+          else if (type === 'report') setGeneratingReport(false)
+          else if (type === 'quiz') setGeneratingQuiz(false)
+          return
+        }
+      } catch (e) {
+        console.error(`Poll ${type} error:`, e)
+      }
     }
-    setAudioStatus('timeout')
-    setGeneratingAudio(false)
+    if (type === 'audio') { setAudioStatus('timeout'); setGeneratingAudio(false) }
+    else if (type === 'report') { setError('보고서 생성 시간 초과'); setGeneratingReport(false) }
+    else if (type === 'quiz') { setError('퀴즈 생성 시간 초과'); setGeneratingQuiz(false) }
   }, [])
 
   // Report
@@ -268,12 +302,24 @@ export default function NotebookClient() {
     if (!selectedId) return
     setGeneratingReport(true)
     setReportContent(null)
+    setError('')
     try {
-      const data = await extensionCall<{ content: string }>('generateReport', { notebookId: selectedId, reportType: type })
-      setReportContent(data.content)
-    } catch { /* silent */ }
-    finally { setGeneratingReport(false) }
-  }, [selectedId])
+      const data = await extensionCall<{ id: string; status: string; content: string }>('generateReport', { notebookId: selectedId, reportType: type })
+      if (data.content) {
+        setReportContent(data.content)
+        setGeneratingReport(false)
+      } else if (data.id) {
+        // 아티팩트 생성 시작됨 → 폴링
+        pollArtifactStatus(selectedId, data.id, 'report')
+      } else {
+        setError('보고서 생성 실패: 응답을 받지 못했습니다')
+        setGeneratingReport(false)
+      }
+    } catch (e) {
+      setError(`보고서 생성 오류: ${e instanceof Error ? e.message : String(e)}`)
+      setGeneratingReport(false)
+    }
+  }, [selectedId, pollArtifactStatus])
 
   // Quiz
   const handleGenerateQuiz = useCallback(async () => {
@@ -282,12 +328,24 @@ export default function NotebookClient() {
     setQuizQuestions([])
     setQuizAnswers({})
     setQuizRevealed(false)
+    setError('')
     try {
-      const data = await extensionCall<{ questions: NotebookQuizQuestion[] }>('generateQuiz', { notebookId: selectedId })
-      if (data.questions) setQuizQuestions(data.questions)
-    } catch { /* silent */ }
-    finally { setGeneratingQuiz(false) }
-  }, [selectedId])
+      const data = await extensionCall<{ id: string; status: string; questions: NotebookQuizQuestion[] }>('generateQuiz', { notebookId: selectedId })
+      if (data.questions && data.questions.length > 0) {
+        setQuizQuestions(data.questions)
+        setGeneratingQuiz(false)
+      } else if (data.id) {
+        // 아티팩트 생성 시작됨 → 폴링
+        pollArtifactStatus(selectedId, data.id, 'quiz')
+      } else {
+        setError('퀴즈 생성 실패: 응답을 받지 못했습니다')
+        setGeneratingQuiz(false)
+      }
+    } catch (e) {
+      setError(`퀴즈 생성 오류: ${e instanceof Error ? e.message : String(e)}`)
+      setGeneratingQuiz(false)
+    }
+  }, [selectedId, pollArtifactStatus])
 
   // --- Extension not installed screen ---
   if (!extensionReady) {
