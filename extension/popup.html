@@ -88,6 +88,10 @@
     .url-input:focus { border-color: rgba(0, 232, 184, 0.5); }
     label { font-size: 11px; color: #556a8a; display: block; margin-bottom: 4px; }
     .hint { font-size: 10px; color: #556a8a; margin-top: 8px; line-height: 1.5; }
+    .hint a { text-decoration: underline; }
+    .debug-btn { background: none; border: none; color: #334; font-size: 9px; cursor: pointer; margin-top: 10px; padding: 0; }
+    .debug-btn:hover { color: #556a8a; }
+    .debug-area { display: none; margin-top: 6px; padding: 8px; background: #0a1020; border: 1px solid #1a2744; border-radius: 4px; font-size: 9px; color: #667; white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -107,6 +111,9 @@
   <button id="disconnectBtn" class="btn btn-danger" style="display:none">연결 해제</button>
 
   <p class="hint" id="hint"></p>
+
+  <button class="debug-btn" id="debugBtn">🔍 디버그 정보</button>
+  <pre class="debug-area" id="debug"></pre>
 
   <script src="popup.js"></script>
 </body>

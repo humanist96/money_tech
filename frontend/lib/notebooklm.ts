@@ -50,7 +50,15 @@ export function parseCookieInput(input: string): string {
 
 export async function extractTokens(cookieString: string): Promise<AuthTokens> {
   const res = await fetch(BASE_URL, {
-    headers: { Cookie: cookieString },
+    headers: {
+      'Cookie': cookieString,
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+    },
     redirect: 'follow',
   })
 
@@ -60,7 +68,24 @@ export async function extractTokens(cookieString: string): Promise<AuthTokens> {
   const sessionMatch = html.match(/"FdrFJe"\s*:\s*"([^"]+)"/)
 
   if (!csrfMatch || !sessionMatch) {
-    throw new Error('인증 토큰 추출 실패. 쿠키가 만료되었을 수 있습니다.')
+    // Provide debug info about what we got
+    const hasLoginForm = html.includes('accounts.google.com') || html.includes('ServiceLogin')
+    const htmlLen = html.length
+    const cookieNames = cookieString
+      .split(';')
+      .map((c) => c.trim().split('=')[0])
+      .filter(Boolean)
+      .join(', ')
+
+    if (hasLoginForm) {
+      throw new Error(
+        `Google 로그인 페이지로 리다이렉트됨. 쿠키가 유효하지 않습니다. ` +
+        `(쿠키 ${cookieNames.split(', ').length}개: ${cookieNames.slice(0, 100)})`
+      )
+    }
+    throw new Error(
+      `인증 토큰 추출 실패. 응답 길이: ${htmlLen}, 쿠키: ${cookieNames.slice(0, 100)}`
+    )
   }
 
   return {
@@ -118,6 +143,8 @@ function buildBatchRequest(
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
       'Cookie': auth.cookies,
       'Origin': BASE_URL,
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      'Referer': `${BASE_URL}/`,
     },
   }
 }
