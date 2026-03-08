@@ -94,6 +94,7 @@ function clearAuthCache() {
 // --- batchexecute ---
 
 function buildBatchRequest(rpcId, params, auth, sourcePath = '/') {
+  // Match notebooklm-py encoder.py: compact JSON (no spaces)
   const paramsJson = JSON.stringify(params)
   const outerArray = [[[rpcId, paramsJson, null, 'generic']]]
   const fReq = JSON.stringify(outerArray)
@@ -102,17 +103,16 @@ function buildBatchRequest(rpcId, params, auth, sourcePath = '/') {
     rpcids: rpcId,
     'source-path': sourcePath,
     'f.sid': auth.sessionId,
+    hl: 'en',
     rt: 'c',
   })
 
-  const bodyParams = new URLSearchParams({
-    'f.req': fReq,
-    at: auth.csrfToken,
-  })
+  // Match Python's quote(safe='') + form encoding
+  const body = `f.req=${encodeURIComponent(fReq)}&at=${encodeURIComponent(auth.csrfToken)}&`
 
   return {
     url: `${BATCH_URL}?${urlParams}`,
-    body: bodyParams.toString(),
+    body,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
       Cookie: auth.cookies,
@@ -325,21 +325,20 @@ const handlers = {
 
     const convId = conversationId || crypto.randomUUID()
 
-    // Build params matching notebooklm-py _chat.py (compact JSON, no spaces)
+    // Match notebooklm-py _chat.py exactly:
+    // params = [sources_array, question, conversation_history, [2, None, [1]], conversation_id]
     const params = [sourcesArray, question, null, [2, null, [1]], convId]
-    const paramsJson = JSON.stringify(params)
+    // Compact JSON (no spaces) matching Python separators=(",",":")
+    const paramsJson = JSON.stringify(params).replace(/,\s+/g, ',')
     const fReqInner = [null, paramsJson]
     const fReqJson = JSON.stringify(fReqInner)
     console.log('[NB] chat sourceIds:', sourceIds.length, 'convId:', convId)
 
-    // URL-encode body (matching Python's quote)
-    const bodyParts = [`f.req=${encodeURIComponent(fReqJson)}`]
-    if (auth.csrfToken) bodyParts.push(`at=${encodeURIComponent(auth.csrfToken)}`)
-    const body = bodyParts.join('&') + '&'
+    // URL-encode body matching Python's quote(safe='')
+    const body = `f.req=${encodeURIComponent(fReqJson)}&at=${encodeURIComponent(auth.csrfToken)}&`
 
     const chatUrl = `${BASE_URL}/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed`
     const urlParams = new URLSearchParams({
-      bl: 'boq_labs-tailwind-frontend_20251221.14_p0',
       hl: 'en',
       _reqid: String(Math.floor(Math.random() * 900000) + 100000),
       rt: 'c',
@@ -359,8 +358,9 @@ const handlers = {
 
     const text = await res.text()
     console.log('[NB] chat raw response length:', text.length)
+    console.log('[NB] chat raw first 500:', text.slice(0, 500))
 
-    // Parse chunked response - find longest answer (matching _parse_ask_response)
+    // Parse chunked response matching notebooklm-py decoder
     let cleaned = text
     const xssiMatch = cleaned.match(/^\)\]\}'\r?\n/)
     if (xssiMatch) cleaned = cleaned.slice(xssiMatch[0].length)
@@ -384,24 +384,24 @@ const handlers = {
       try {
         const data = JSON.parse(jsonStr)
         if (!Array.isArray(data)) continue
-        for (const item of data) {
-          if (!Array.isArray(item) || item[0] !== 'wrb.fr') continue
-          const innerJson = item[2]
-          if (typeof innerJson !== 'string') continue
-          try {
-            const innerData = JSON.parse(innerJson)
-            if (Array.isArray(innerData) && Array.isArray(innerData[0])) {
-              const first = innerData[0]
-              if (typeof first[0] === 'string' && first[0].length > longestAnswer.length) {
-                // Check if it's an answer (first[4][-1] === 1)
-                let isAnswer = first[0].length > 20
-                if (Array.isArray(first[4]) && first[4].length > 0 && first[4][first[4].length - 1] === 1) {
-                  isAnswer = true
+        // Look through all items in the chunk
+        const items = Array.isArray(data[0]) && typeof data[0][0] === 'string' ? [data] : data
+        for (const item of items) {
+          if (!Array.isArray(item)) continue
+          // wrb.fr response
+          if (item[0] === 'wrb.fr') {
+            const innerJson = item[2]
+            if (typeof innerJson !== 'string') continue
+            try {
+              const innerData = JSON.parse(innerJson)
+              if (Array.isArray(innerData) && Array.isArray(innerData[0])) {
+                const first = innerData[0]
+                if (typeof first[0] === 'string' && first[0].length > longestAnswer.length) {
+                  longestAnswer = first[0]
                 }
-                if (isAnswer) longestAnswer = first[0]
               }
-            }
-          } catch {}
+            } catch {}
+          }
         }
       } catch {}
     }
@@ -409,22 +409,24 @@ const handlers = {
     return { answer: longestAnswer || '응답을 받지 못했습니다', conversationId: convId, references: [] }
   },
 
-  async generateAudio({ notebookId, format = 'deep-dive' }) {
+  async generateAudio({ notebookId, format = 'deep-dive', language = 'ko' }) {
     const sourceIds = await handlers._getSourceIds(notebookId)
     const sourceIdsTriple = sourceIds.map(sid => [[sid]])
     const sourceIdsDouble = sourceIds.map(sid => [sid])
-    const formatMap = { 'deep-dive': null, brief: 2, critique: 3, debate: 4 }
+    // AudioFormat: 1=DEEP_DIVE, 2=BRIEF, 3=CRITIQUE, 4=DEBATE
+    const formatMap = { 'deep-dive': 1, brief: 2, critique: 3, debate: 4 }
+    // AudioLength: 1=SHORT, 2=DEFAULT, 3=LONG
+    const audioLength = 2
 
-    // Matches _artifacts.py generate_audio params
+    // Match notebooklm-py _artifacts.py generate_audio exactly
     const params = [
       [2], notebookId,
       [null, null, 1, sourceIdsTriple, null, null,
-        [null, [null, null, null, sourceIdsDouble, 'en', null, formatMap[format] ?? null]]
+        [null, [null, audioLength, null, sourceIdsDouble, language, null, formatMap[format] ?? 1]]
       ]
     ]
     const result = await rpcCall('R7cb6c', params, `/notebook/${notebookId}`)
     console.log('[NB] generateAudio raw:', JSON.stringify(result)?.slice(0, 500))
-    // Parse: result[0] = artifact data, result[0][0] = id, result[0][4] = status
     let id = '', status = 'generating'
     if (Array.isArray(result) && Array.isArray(result[0])) {
       id = result[0][0] ?? ''
@@ -466,7 +468,7 @@ const handlers = {
     return {}
   },
 
-  async generateReport({ notebookId, reportType = 'briefing' }) {
+  async generateReport({ notebookId, reportType = 'briefing', language = 'ko' }) {
     const sourceIds = await handlers._getSourceIds(notebookId)
     const sourceIdsTriple = sourceIds.map(sid => [[sid]])
     const sourceIdsDouble = sourceIds.map(sid => [sid])
@@ -477,11 +479,11 @@ const handlers = {
     }
     const config = configs[reportType] || configs.briefing
 
-    // Matches _artifacts.py generate_report params
+    // Match notebooklm-py _artifacts.py generate_report exactly
     const params = [
       [2], notebookId,
       [null, null, 2, sourceIdsTriple, null, null, null,
-        [null, [config.title, config.desc, null, sourceIdsDouble, 'en', config.prompt, null, true]]
+        [null, [config.title, config.desc, null, sourceIdsDouble, language, config.prompt, null, true]]
       ]
     ]
     const result = await rpcCall('R7cb6c', params, `/notebook/${notebookId}`)
@@ -498,11 +500,13 @@ const handlers = {
     const sourceIds = await handlers._getSourceIds(notebookId)
     const sourceIdsTriple = sourceIds.map(sid => [[sid]])
 
-    // Matches _artifacts.py generate_quiz params (type 4, variant 2=quiz)
+    // Match notebooklm-py _artifacts.py generate_quiz exactly
+    // type=4 (QUIZ_FLASHCARD), variant=2 (quiz, not flashcard)
+    // QuizQuantity: 2=STANDARD, QuizDifficulty: 2=MEDIUM
     const params = [
       [2], notebookId,
       [null, null, 4, sourceIdsTriple, null, null, null, null, null,
-        [null, [2, null, null]]
+        [null, [2, null, null, null, null, null, null, [2, 2]]]
       ]
     ]
     const result = await rpcCall('R7cb6c', params, `/notebook/${notebookId}`)
