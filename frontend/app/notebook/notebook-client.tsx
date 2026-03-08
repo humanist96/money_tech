@@ -11,38 +11,66 @@ import type {
 
 type ActiveTab = 'chat' | 'audio' | 'report' | 'quiz'
 
-const NB_COOKIES_KEY = 'moneytech_nb_cookies'
+// --- Extension bridge ---
+// All NotebookLM calls go through the Chrome extension (user's browser → Google)
 
-function getSavedCookies(): string {
-  if (typeof window === 'undefined') return ''
-  return localStorage.getItem(NB_COOKIES_KEY) || ''
+let requestId = 0
+const pendingRequests = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>()
+
+function extensionCall<T = unknown>(action: string, data?: Record<string, unknown>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const id = ++requestId
+    const timeout = setTimeout(() => {
+      pendingRequests.delete(id)
+      reject(new Error('확장 프로그램 응답 시간 초과. 확장 프로그램이 설치되어 있는지 확인하세요.'))
+    }, 60000)
+
+    pendingRequests.set(id, {
+      resolve: (v) => {
+        clearTimeout(timeout)
+        pendingRequests.delete(id)
+        resolve(v as T)
+      },
+      reject: (e) => {
+        clearTimeout(timeout)
+        pendingRequests.delete(id)
+        reject(e)
+      },
+    })
+
+    window.postMessage({ type: 'MONEYTECH_NB_REQUEST', id, action, data }, '*')
+  })
 }
 
-function saveCookies(cookies: string) {
-  localStorage.setItem(NB_COOKIES_KEY, cookies)
-}
+// Listen for responses from the content script
+if (typeof window !== 'undefined') {
+  window.addEventListener('message', (event) => {
+    if (event.source !== window) return
+    if (!event.data || event.data.type !== 'MONEYTECH_NB_RESPONSE') return
 
-function nbFetch(url: string, options: RequestInit = {}) {
-  const cookies = getSavedCookies()
-  const headers = new Headers(options.headers || {})
-  if (cookies) headers.set('x-nb-cookies', cookies)
-  return fetch(url, { ...options, headers })
+    const { id, success, data, error } = event.data
+    const pending = pendingRequests.get(id)
+    if (!pending) return
+
+    if (success) {
+      pending.resolve(data)
+    } else {
+      pending.reject(new Error(error || 'Unknown error'))
+    }
+  })
 }
 
 export default function NotebookClient() {
   const searchParams = useSearchParams()
   const initialId = searchParams.get('id')
 
+  const [extensionReady, setExtensionReady] = useState(false)
   const [authenticated, setAuthenticated] = useState<boolean | null>(null)
   const [notebooks, setNotebooks] = useState<NotebookItem[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [detail, setDetail] = useState<NotebookDetail | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  // Cookie settings
-  const [showSettings, setShowSettings] = useState(false)
-  const [cookieInput, setCookieInput] = useState('')
 
   // Create notebook
   const [newTitle, setNewTitle] = useState('')
@@ -60,7 +88,6 @@ export default function NotebookClient() {
 
   // Audio
   const [audioStatus, setAudioStatus] = useState<string | null>(null)
-  const [audioArtifactId, setAudioArtifactId] = useState<string | null>(null)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [generatingAudio, setGeneratingAudio] = useState(false)
 
@@ -74,33 +101,34 @@ export default function NotebookClient() {
   const [quizRevealed, setQuizRevealed] = useState(false)
   const [generatingQuiz, setGeneratingQuiz] = useState(false)
 
-  // Check auth on mount + listen for extension cookie updates
+  // Listen for extension ready signal
   useEffect(() => {
-    function checkAuth() {
-      const cookies = getSavedCookies()
-      if (!cookies) {
-        setAuthenticated(false)
-        return
+    function handleMessage(event: MessageEvent) {
+      if (event.source !== window) return
+      if (event.data?.type === 'MONEYTECH_NB_READY') {
+        setExtensionReady(true)
       }
-      nbFetch('/api/notebook/auth/status')
-        .then((r) => r.json())
-        .then((data) => setAuthenticated(data.authenticated === true))
-        .catch(() => setAuthenticated(false))
     }
+    window.addEventListener('message', handleMessage)
 
-    checkAuth()
+    // Check if extension is already ready (send a ping)
+    window.postMessage({ type: 'MONEYTECH_NB_PING' }, '*')
 
-    // Listen for cookie updates from Chrome extension
-    const handleExtensionUpdate = () => checkAuth()
-    window.addEventListener('nb-cookies-updated', handleExtensionUpdate)
-    return () => window.removeEventListener('nb-cookies-updated', handleExtensionUpdate)
+    return () => window.removeEventListener('message', handleMessage)
   }, [])
+
+  // Check auth when extension becomes ready
+  useEffect(() => {
+    if (!extensionReady) return
+    extensionCall<{ authenticated: boolean; error?: string }>('checkAuth')
+      .then((result) => setAuthenticated(result.authenticated))
+      .catch(() => setAuthenticated(false))
+  }, [extensionReady])
 
   // Load notebooks
   const loadNotebooks = useCallback(async () => {
     try {
-      const res = await nbFetch('/api/notebook/notebooks')
-      const data = await res.json()
+      const data = await extensionCall<NotebookItem[]>('listNotebooks')
       if (Array.isArray(data)) setNotebooks(data)
     } catch { /* silent */ }
   }, [])
@@ -116,12 +144,10 @@ export default function NotebookClient() {
     setError('')
     resetFeatureState()
     try {
-      const res = await nbFetch(`/api/notebook/notebooks/${id}`)
-      const data = await res.json()
-      if (res.ok) setDetail(data)
-      else setError(data.error || 'Failed to load notebook')
-    } catch {
-      setError('Network error')
+      const data = await extensionCall<NotebookDetail>('getNotebook', { notebookId: id })
+      setDetail(data)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load notebook')
     } finally {
       setLoading(false)
     }
@@ -137,7 +163,6 @@ export default function NotebookClient() {
     setChatInput('')
     setConversationId(null)
     setAudioStatus(null)
-    setAudioArtifactId(null)
     setAudioUrl(null)
     setReportContent(null)
     setQuizQuestions([])
@@ -145,36 +170,15 @@ export default function NotebookClient() {
     setQuizRevealed(false)
   }
 
-  // Save cookies and verify
-  const handleSaveCookies = useCallback(async () => {
-    if (!cookieInput.trim()) return
-    saveCookies(cookieInput.trim())
-    setShowSettings(false)
-
-    const res = await nbFetch('/api/notebook/auth/status')
-    const data = await res.json()
-    setAuthenticated(data.authenticated === true)
-    if (!data.authenticated) {
-      setError('쿠키 인증 실패. 쿠키가 올바른지 확인해주세요.')
-    }
-  }, [cookieInput])
-
   // Create notebook
   const handleCreate = useCallback(async () => {
     if (!newTitle.trim()) return
     setCreating(true)
     try {
-      const res = await nbFetch('/api/notebook/notebooks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setNewTitle('')
-        await loadNotebooks()
-        loadDetail(data.id)
-      }
+      const data = await extensionCall<{ id: string; title: string }>('createNotebook', { title: newTitle })
+      setNewTitle('')
+      await loadNotebooks()
+      loadDetail(data.id)
     } catch { /* silent */ }
     finally { setCreating(false) }
   }, [newTitle, loadNotebooks, loadDetail])
@@ -188,19 +192,15 @@ export default function NotebookClient() {
     setChatLoading(true)
 
     try {
-      const res = await nbFetch(`/api/notebook/notebooks/${selectedId}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, conversation_id: conversationId }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setChatMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: data.answer, references: data.references },
-        ])
-        if (data.conversationId) setConversationId(data.conversationId)
-      }
+      const data = await extensionCall<{ answer: string; conversationId: string; references: Array<{ text: string }> }>(
+        'chat',
+        { notebookId: selectedId, question, conversationId }
+      )
+      setChatMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: data.answer, references: data.references },
+      ])
+      if (data.conversationId) setConversationId(data.conversationId)
     } catch {
       setChatMessages((prev) => [...prev, { role: 'assistant', content: '응답 실패' }])
     } finally { setChatLoading(false) }
@@ -218,14 +218,8 @@ export default function NotebookClient() {
     setAudioUrl(null)
 
     try {
-      const res = await nbFetch(`/api/notebook/notebooks/${selectedId}/audio`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ format: 'deep-dive' }),
-      })
-      const data = await res.json()
-      if (res.ok && data.id) {
-        setAudioArtifactId(data.id)
+      const data = await extensionCall<{ id: string }>('generateAudio', { notebookId: selectedId, format: 'deep-dive' })
+      if (data.id) {
         pollAudioStatus(selectedId, data.id)
       } else {
         setAudioStatus('failed')
@@ -241,11 +235,14 @@ export default function NotebookClient() {
     for (let i = 0; i < 60; i++) {
       await new Promise((r) => setTimeout(r, 5000))
       try {
-        const res = await nbFetch(`/api/notebook/notebooks/${notebookId}/audio/${artifactId}/status`)
-        const data = await res.json()
+        const data = await extensionCall<{ id: string; status: string }>(
+          'getArtifactStatus',
+          { notebookId, artifactId }
+        )
         setAudioStatus(data.status)
         if (data.status === 'completed') {
-          setAudioUrl(`/api/notebook/notebooks/${notebookId}/audio/${artifactId}/download`)
+          const exported = await extensionCall<{ url?: string }>('exportArtifact', { notebookId, artifactId })
+          if (exported.url) setAudioUrl(exported.url)
           setGeneratingAudio(false)
           return
         }
@@ -262,13 +259,8 @@ export default function NotebookClient() {
     setGeneratingReport(true)
     setReportContent(null)
     try {
-      const res = await nbFetch(`/api/notebook/notebooks/${selectedId}/report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ report_type: type }),
-      })
-      const data = await res.json()
-      if (res.ok) setReportContent(data.content)
+      const data = await extensionCall<{ content: string }>('generateReport', { notebookId: selectedId, reportType: type })
+      setReportContent(data.content)
     } catch { /* silent */ }
     finally { setGeneratingReport(false) }
   }, [selectedId])
@@ -281,22 +273,85 @@ export default function NotebookClient() {
     setQuizAnswers({})
     setQuizRevealed(false)
     try {
-      const res = await nbFetch(`/api/notebook/notebooks/${selectedId}/quiz`, { method: 'POST' })
-      const data = await res.json()
-      if (res.ok && data.questions) setQuizQuestions(data.questions)
+      const data = await extensionCall<{ questions: NotebookQuizQuestion[] }>('generateQuiz', { notebookId: selectedId })
+      if (data.questions) setQuizQuestions(data.questions)
     } catch { /* silent */ }
     finally { setGeneratingQuiz(false) }
   }, [selectedId])
 
-  // --- Auth / Settings screen ---
+  // --- Extension not installed screen ---
+  if (!extensionReady) {
+    return (
+      <div className="space-y-6">
+        <PageHeader />
+        <div className="card p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5757" strokeWidth="1.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-white">Chrome 확장 프로그램 필요</h3>
+            <p className="text-sm text-[#8899b4]">
+              NotebookLM 기능을 사용하려면 MoneyTech 확장 프로그램을 설치해야 합니다.
+            </p>
+          </div>
+
+          <div className="max-w-lg mx-auto p-5 bg-[#0a1628] rounded-lg border border-[#1a2744] space-y-4">
+            <h4 className="text-sm font-semibold text-white">설치 방법</h4>
+            <ol className="text-sm text-[#8899b4] space-y-3">
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">1</span>
+                <span>Chrome에서 <code className="text-[#00e8b8] bg-[#060e1a] px-1.5 py-0.5 rounded text-xs">chrome://extensions</code> 접속</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">2</span>
+                <span>우측 상단 <strong className="text-white">개발자 모드</strong> 활성화</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">3</span>
+                <span><strong className="text-white">&quot;압축해제된 확장 프로그램을 로드합니다&quot;</strong> 클릭</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">4</span>
+                <span>다운로드한 <code className="text-[#00e8b8] bg-[#060e1a] px-1.5 py-0.5 rounded text-xs">extension/</code> 폴더 선택</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">5</span>
+                <span><strong className="text-white">이 페이지를 새로고침</strong>하면 자동 연결됩니다</span>
+              </li>
+            </ol>
+            <a
+              href="https://github.com/humanist96/money_tech/tree/main/extension"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+              확장 프로그램 다운로드
+            </a>
+          </div>
+
+          <p className="text-center text-xs text-[#556a8a]">
+            이미 설치했다면, <code className="text-[#00e8b8]">chrome://extensions</code>에서 확장 프로그램을 새로고침한 뒤 이 페이지를 새로고침하세요.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Auth checking ---
   if (authenticated === null) {
     return <div className="flex items-center justify-center min-h-[400px]"><Spinner size="lg" /></div>
   }
 
+  // --- Not authenticated ---
   if (!authenticated) {
     return (
       <div className="space-y-6">
-        <PageHeader onSettingsClick={() => setShowSettings(true)} />
+        <PageHeader />
         <div className="card p-8 space-y-6">
           <div className="text-center space-y-2">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
@@ -305,76 +360,28 @@ export default function NotebookClient() {
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-white">Google NotebookLM 연결</h3>
+            <h3 className="text-lg font-semibold text-white">Google 로그인 필요</h3>
             <p className="text-sm text-[#8899b4]">
-              Chrome 확장 프로그램으로 원클릭 연동하거나, 수동으로 쿠키를 입력하세요.
+              NotebookLM을 사용하려면 Chrome에서 Google에 로그인되어 있어야 합니다.
             </p>
           </div>
 
-          {/* Method 1: Chrome Extension */}
-          <div className="max-w-lg mx-auto">
-            <div className="p-4 bg-[#0a1628] rounded-lg border border-[#00e8b8]/20 space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">1</div>
-                <h4 className="text-sm font-semibold text-white">Chrome 확장 프로그램 (추천)</h4>
-              </div>
-              <ol className="text-xs text-[#8899b4] space-y-1.5 ml-8">
-                <li>Chrome에서 <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">notebooklm.google.com</a>에 Google 로그인</li>
-                <li>확장 프로그램 설치 후 아이콘 클릭</li>
-                <li>&quot;연결하기&quot; 버튼 클릭 - 끝!</li>
-              </ol>
-              <div className="flex gap-2 ml-8">
-                <a
-                  href="https://github.com/humanist96/money_tech/tree/main/extension"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-xs font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                  확장 프로그램 다운로드
-                </a>
-              </div>
-              <p className="text-[10px] text-[#556a8a] ml-8">
-                chrome://extensions &gt; 개발자 모드 ON &gt; &quot;압축해제된 확장 프로그램을 로드합니다&quot; &gt; extension 폴더 선택
-              </p>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="max-w-lg mx-auto flex items-center gap-3">
-            <div className="flex-1 h-px bg-[#1a2744]" />
-            <span className="text-xs text-[#556a8a]">또는</span>
-            <div className="flex-1 h-px bg-[#1a2744]" />
-          </div>
-
-          {/* Method 2: Manual Cookie */}
-          <div className="max-w-lg mx-auto">
-            <div className="p-4 bg-[#0a1628] rounded-lg border border-[#1a2744] space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-[#1a2744] flex items-center justify-center text-[#556a8a] text-xs font-bold">2</div>
-                <h4 className="text-sm font-semibold text-[#8899b4]">수동 쿠키 입력</h4>
-              </div>
-              <p className="text-[10px] text-[#556a8a] ml-8">
-                F12 &gt; Application &gt; Cookies &gt; .google.com &gt; SID, HSID, SSID, APISID, SAPISID 값 복사
-              </p>
-              <div className="ml-8 space-y-2">
-                <textarea
-                  value={cookieInput}
-                  onChange={(e) => setCookieInput(e.target.value)}
-                  placeholder="SID=xxx; HSID=yyy; SSID=zzz; APISID=aaa; SAPISID=bbb"
-                  rows={2}
-                  className="w-full bg-[#060e1a] border border-[#1a2744] rounded-lg px-3 py-2 text-[11px] text-white font-mono placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors resize-none"
-                />
-                {error && <p className="text-xs text-red-400">{error}</p>}
-                <button
-                  onClick={handleSaveCookies}
-                  disabled={!cookieInput.trim()}
-                  className="px-4 py-2 bg-[#1a2744] border border-[#1a2744] text-[#8899b4] text-xs font-medium rounded-lg hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  수동 연결
-                </button>
-              </div>
-            </div>
+          <div className="max-w-lg mx-auto p-5 bg-[#0a1628] rounded-lg border border-[#1a2744] space-y-3">
+            <ol className="text-sm text-[#8899b4] space-y-2">
+              <li>1. <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">notebooklm.google.com</a>에 Google 계정으로 로그인</li>
+              <li>2. 이 페이지를 새로고침</li>
+            </ol>
+            <button
+              onClick={() => {
+                setAuthenticated(null)
+                extensionCall<{ authenticated: boolean }>('checkAuth')
+                  .then((r) => setAuthenticated(r.authenticated))
+                  .catch(() => setAuthenticated(false))
+              }}
+              className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all"
+            >
+              다시 확인
+            </button>
           </div>
         </div>
       </div>
@@ -384,29 +391,7 @@ export default function NotebookClient() {
   // --- Main UI ---
   return (
     <div className="space-y-6">
-      <PageHeader onSettingsClick={() => setShowSettings(true)} />
-
-      {/* Settings Modal */}
-      {showSettings && (
-        <SettingsModal
-          cookies={getSavedCookies()}
-          onSave={(c) => {
-            saveCookies(c)
-            setShowSettings(false)
-            setAuthenticated(null)
-            nbFetch('/api/notebook/auth/status')
-              .then((r) => r.json())
-              .then((data) => setAuthenticated(data.authenticated === true))
-              .catch(() => setAuthenticated(false))
-          }}
-          onClose={() => setShowSettings(false)}
-          onDisconnect={() => {
-            localStorage.removeItem(NB_COOKIES_KEY)
-            setAuthenticated(false)
-            setShowSettings(false)
-          }}
-        />
-      )}
+      <PageHeader />
 
       {/* Create Notebook */}
       <div className="card p-4">
@@ -533,72 +518,11 @@ export default function NotebookClient() {
 
 // --- Sub-components ---
 
-function PageHeader({ onSettingsClick }: { onSettingsClick?: () => void }) {
+function PageHeader() {
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">NotebookLM 리서치</h1>
-        <p className="text-sm text-[#556a8a] mt-1">AI 오디오 브리핑, 소스 기반 Q&A, 퀴즈, 보고서</p>
-      </div>
-      {onSettingsClick && (
-        <button onClick={onSettingsClick}
-          className="p-2 rounded-lg text-[#556a8a] hover:text-white hover:bg-[#1a2744] transition-colors"
-          title="설정">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </svg>
-        </button>
-      )}
-    </div>
-  )
-}
-
-function SettingsModal({
-  cookies,
-  onSave,
-  onClose,
-  onDisconnect,
-}: {
-  cookies: string
-  onSave: (c: string) => void
-  onClose: () => void
-  onDisconnect: () => void
-}) {
-  const [input, setInput] = useState(cookies)
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="card p-6 w-full max-w-lg space-y-4" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-lg font-semibold text-white">NotebookLM 설정</h3>
-        <div className="space-y-2">
-          <label className="text-xs text-[#8899b4]">Google 쿠키</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="SID=xxx; HSID=yyy; SSID=zzz; APISID=aaa; SAPISID=bbb"
-            rows={4}
-            className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-3 text-xs text-white font-mono placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors resize-none"
-          />
-          <p className="text-[10px] text-[#556a8a]">
-            쿠키는 브라우저의 localStorage에만 저장됩니다. 서버에 저장되지 않습니다.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => onSave(input)}
-            className="flex-1 px-4 py-2 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg">
-            저장
-          </button>
-          <button onClick={onDisconnect}
-            className="px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg hover:bg-red-500/20 transition-colors">
-            연결 해제
-          </button>
-          <button onClick={onClose}
-            className="px-4 py-2 bg-[#1a2744] text-[#8899b4] text-sm rounded-lg hover:text-white transition-colors">
-            취소
-          </button>
-        </div>
-      </div>
+    <div>
+      <h1 className="text-2xl font-bold text-white tracking-tight">NotebookLM 리서치</h1>
+      <p className="text-sm text-[#556a8a] mt-1">AI 오디오 브리핑, 소스 기반 Q&A, 퀴즈, 보고서</p>
     </div>
   )
 }
