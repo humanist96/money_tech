@@ -1,6 +1,7 @@
 /**
  * NotebookLM TypeScript client - Direct Google RPC API calls.
- * Replaces Python notebooklm-py, runs on Vercel serverless.
+ * Each user provides their own Google cookies (per-user auth).
+ * No server-side env var needed - runs on Vercel serverless.
  */
 
 // --- RPC Method IDs ---
@@ -30,9 +31,10 @@ interface AuthTokens {
   sessionId: string
 }
 
-function parseCookiesFromStorageState(storageState: string): string {
+export function parseCookieInput(input: string): string {
+  // Accept either Playwright storage_state.json format or raw cookie string
   try {
-    const state = JSON.parse(storageState)
+    const state = JSON.parse(input)
     const cookies = state.cookies || []
     const googleCookies = cookies.filter(
       (c: { domain: string }) =>
@@ -42,13 +44,13 @@ function parseCookiesFromStorageState(storageState: string): string {
       .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
       .join('; ')
   } catch {
-    return storageState // assume it's already a cookie string
+    return input // already a cookie string like "SID=xxx; HSID=yyy"
   }
 }
 
-async function extractTokens(cookies: string): Promise<AuthTokens> {
+export async function extractTokens(cookieString: string): Promise<AuthTokens> {
   const res = await fetch(BASE_URL, {
-    headers: { Cookie: cookies },
+    headers: { Cookie: cookieString },
     redirect: 'follow',
   })
 
@@ -58,35 +60,31 @@ async function extractTokens(cookies: string): Promise<AuthTokens> {
   const sessionMatch = html.match(/"FdrFJe"\s*:\s*"([^"]+)"/)
 
   if (!csrfMatch || !sessionMatch) {
-    throw new Error('Failed to extract auth tokens from NotebookLM. Cookie may be expired.')
+    throw new Error('인증 토큰 추출 실패. 쿠키가 만료되었을 수 있습니다.')
   }
 
   return {
-    cookies,
+    cookies: cookieString,
     csrfToken: csrfMatch[1],
     sessionId: sessionMatch[1],
   }
 }
 
-let cachedAuth: AuthTokens | null = null
-let cacheTimestamp = 0
-const CACHE_TTL = 10 * 60 * 1000 // 10 minutes
+// Per-user token cache (keyed by first 20 chars of cookie string)
+const tokenCache = new Map<string, { auth: AuthTokens; ts: number }>()
+const CACHE_TTL = 10 * 60 * 1000
 
-async function getAuth(): Promise<AuthTokens> {
+async function getAuth(cookieString: string): Promise<AuthTokens> {
+  const cacheKey = cookieString.slice(0, 40)
   const now = Date.now()
-  if (cachedAuth && now - cacheTimestamp < CACHE_TTL) {
-    return cachedAuth
+  const cached = tokenCache.get(cacheKey)
+  if (cached && now - cached.ts < CACHE_TTL) {
+    return cached.auth
   }
 
-  const authJson = process.env.NOTEBOOKLM_AUTH_JSON
-  if (!authJson) {
-    throw new Error('NOTEBOOKLM_AUTH_JSON environment variable not set')
-  }
-
-  const cookies = parseCookiesFromStorageState(authJson)
-  cachedAuth = await extractTokens(cookies)
-  cacheTimestamp = now
-  return cachedAuth
+  const auth = await extractTokens(cookieString)
+  tokenCache.set(cacheKey, { auth, ts: now })
+  return auth
 }
 
 // --- batchexecute protocol ---
@@ -125,18 +123,13 @@ function buildBatchRequest(
 }
 
 function decodeBatchResponse(text: string, rpcId: string): unknown {
-  // Strip anti-XSSI prefix
   const cleaned = text.replace(/^\)\]\}'/, '')
-
-  // Parse chunked format: alternating lines of byte_count and json_payload
   const lines = cleaned.split('\n').filter((l) => l.trim())
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (!line.startsWith('[')) continue
 
+  for (const line of lines) {
+    if (!line.trim().startsWith('[')) continue
     try {
       const parsed = JSON.parse(line)
-      // Look for ["wrb.fr", "<rpcId>", <result>, ...]
       if (Array.isArray(parsed)) {
         for (const item of parsed) {
           if (
@@ -157,47 +150,42 @@ function decodeBatchResponse(text: string, rpcId: string): unknown {
     }
   }
 
-  throw new Error(`No result found for RPC ${rpcId}`)
+  throw new Error(`RPC ${rpcId}: 응답을 파싱할 수 없습니다`)
 }
 
 async function rpcCall(
+  cookies: string,
   rpcId: string,
   params: unknown[],
   sourcePath?: string
 ): Promise<unknown> {
-  const auth = await getAuth()
+  const auth = await getAuth(cookies)
   const { url, body, headers } = buildBatchRequest(rpcId, params, auth, sourcePath)
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers,
-    body,
-  })
+  const res = await fetch(url, { method: 'POST', headers, body })
 
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(`RPC ${rpcId} failed: ${res.status} ${text.slice(0, 200)}`)
+    throw new Error(`RPC 실패 (${res.status}): ${text.slice(0, 200)}`)
   }
 
   const text = await res.text()
   return decodeBatchResponse(text, rpcId)
 }
 
-// --- Public API ---
+// --- Public API (all functions take cookies as first param) ---
 
-export async function checkAuth(): Promise<{ authenticated: boolean; error?: string }> {
+export async function checkAuth(cookies: string): Promise<{ authenticated: boolean; error?: string }> {
   try {
-    await getAuth()
+    await getAuth(cookies)
     return { authenticated: true }
   } catch (e) {
     return { authenticated: false, error: e instanceof Error ? e.message : 'Unknown error' }
   }
 }
 
-export async function listNotebooks(): Promise<
-  Array<{ id: string; title: string }>
-> {
-  const result = await rpcCall(RPC.LIST_NOTEBOOKS, [null, 1, null, [2]])
+export async function listNotebooks(cookies: string): Promise<Array<{ id: string; title: string }>> {
+  const result = await rpcCall(cookies, RPC.LIST_NOTEBOOKS, [null, 1, null, [2]])
   const notebooks: Array<{ id: string; title: string }> = []
 
   if (Array.isArray(result)) {
@@ -216,14 +204,15 @@ export async function listNotebooks(): Promise<
   return notebooks
 }
 
-export async function createNotebook(title: string): Promise<{ id: string; title: string }> {
-  const result = await rpcCall(RPC.CREATE_NOTEBOOK, [title, null, null, [2], [1]])
+export async function createNotebook(cookies: string, title: string): Promise<{ id: string; title: string }> {
+  const result = await rpcCall(cookies, RPC.CREATE_NOTEBOOK, [title, null, null, [2], [1]])
   const id = Array.isArray(result) ? result[0] : null
-  if (!id) throw new Error('Failed to create notebook')
+  if (!id) throw new Error('노트북 생성 실패')
   return { id, title }
 }
 
 export async function getNotebook(
+  cookies: string,
   notebookId: string
 ): Promise<{
   id: string
@@ -231,6 +220,7 @@ export async function getNotebook(
   sources: Array<{ id: string; title: string; type: string; status: string }>
 }> {
   const result = await rpcCall(
+    cookies,
     RPC.GET_NOTEBOOK,
     [notebookId, null, [2], null, 0],
     `/notebook/${notebookId}`
@@ -250,12 +240,7 @@ export async function getNotebook(
           const sourceTitle = s[2]?.[0] ?? s[1] ?? 'Untitled'
           const sourceType = s[3] != null ? (['text', 'url', 'youtube', 'file'][s[3]] ?? 'unknown') : 'unknown'
           if (sourceId) {
-            sources.push({
-              id: sourceId,
-              title: sourceTitle,
-              type: sourceType,
-              status: 'ready',
-            })
+            sources.push({ id: sourceId, title: sourceTitle, type: sourceType, status: 'ready' })
           }
         }
       }
@@ -265,12 +250,13 @@ export async function getNotebook(
   return { id: notebookId, title, sources }
 }
 
-export async function deleteNotebook(notebookId: string): Promise<{ deleted: boolean }> {
-  await rpcCall(RPC.DELETE_NOTEBOOK, [[notebookId], [2]])
+export async function deleteNotebook(cookies: string, notebookId: string): Promise<{ deleted: boolean }> {
+  await rpcCall(cookies, RPC.DELETE_NOTEBOOK, [[notebookId], [2]])
   return { deleted: true }
 }
 
 export async function addSourceUrl(
+  cookies: string,
   notebookId: string,
   url: string
 ): Promise<{ id: string; title: string }> {
@@ -279,19 +265,15 @@ export async function addSourceUrl(
   const params = isYoutube
     ? [
         [[null, null, null, null, null, null, null, [url], null, null, 1]],
-        notebookId,
-        [2],
+        notebookId, [2],
         [1, null, null, null, null, null, null, null, null, null, [1]],
       ]
     : [
         [[null, null, [url], null, null, null, null, null]],
-        notebookId,
-        [2],
-        null,
-        null,
+        notebookId, [2], null, null,
       ]
 
-  const result = await rpcCall(RPC.ADD_SOURCE, params, `/notebook/${notebookId}`)
+  const result = await rpcCall(cookies, RPC.ADD_SOURCE, params, `/notebook/${notebookId}`)
 
   let sourceId = ''
   let sourceTitle = url
@@ -304,19 +286,17 @@ export async function addSourceUrl(
 }
 
 export async function addSourceText(
+  cookies: string,
   notebookId: string,
   title: string,
   content: string
 ): Promise<{ id: string; title: string }> {
   const params = [
     [[null, [title, content], null, null, null, null, null, null]],
-    notebookId,
-    [2],
-    null,
-    null,
+    notebookId, [2], null, null,
   ]
 
-  const result = await rpcCall(RPC.ADD_SOURCE, params, `/notebook/${notebookId}`)
+  const result = await rpcCall(cookies, RPC.ADD_SOURCE, params, `/notebook/${notebookId}`)
 
   let sourceId = ''
   if (Array.isArray(result)) {
@@ -331,71 +311,45 @@ export async function addSourceText(
 let chatReqId = 100000
 
 export async function chat(
+  cookies: string,
   notebookId: string,
   question: string,
   conversationId?: string | null
 ): Promise<{ answer: string; conversationId: string; references: Array<{ text: string }> }> {
-  const auth = await getAuth()
+  const auth = await getAuth(cookies)
   const bl = process.env.NOTEBOOKLM_BL || 'boq_labs-tailwind-frontend_20260301.03_p0'
 
-  // Get or create conversation ID
   let convId = conversationId
   if (!convId) {
     try {
       const result = await rpcCall(
-        RPC.GET_CONVERSATION_ID,
+        cookies, RPC.GET_CONVERSATION_ID,
         [[], null, notebookId, 1],
         `/notebook/${notebookId}`
       )
-      if (Array.isArray(result) && result[0]) {
-        convId = result[0]
-      }
-    } catch {
-      // Will create new conversation
-    }
-    if (!convId) {
-      convId = crypto.randomUUID()
-    }
+      if (Array.isArray(result) && result[0]) convId = result[0] as string
+    } catch { /* new conversation */ }
+    if (!convId) convId = crypto.randomUUID()
   }
 
-  const innerParams = [
-    [],          // sources (empty = all)
-    question,
-    null,        // conversation history
-    [2, null, [1], [1]],
-    convId,
-    null,
-    null,
-    notebookId,
-    1,
-  ]
-
+  const innerParams = [[], question, null, [2, null, [1], [1]], convId, null, null, notebookId, 1]
   const outerParams = [null, JSON.stringify(innerParams)]
-  const fReq = JSON.stringify([[[RPC.GET_CONVERSATION_ID.length > 0 ? 'gEBPpe' : 'gEBPpe', JSON.stringify(outerParams), null, 'generic']]])
+  const fReq = JSON.stringify([[['gEBPpe', JSON.stringify(outerParams), null, 'generic']]])
 
-  // For chat, we use a simpler approach via the batchexecute endpoint
-  // since the streaming endpoint is complex
   chatReqId += 100000
 
   const urlParams = new URLSearchParams({
-    'bl': bl,
-    'hl': 'en',
-    '_reqid': String(chatReqId),
-    'rt': 'c',
-    'f.sid': auth.sessionId,
+    bl, hl: 'en', '_reqid': String(chatReqId), rt: 'c', 'f.sid': auth.sessionId,
   })
 
-  const bodyParams = new URLSearchParams({
-    'f.req': fReq,
-    'at': auth.csrfToken,
-  })
+  const bodyParams = new URLSearchParams({ 'f.req': fReq, at: auth.csrfToken })
 
   const res = await fetch(`${CHAT_URL}?${urlParams}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      'Cookie': auth.cookies,
-      'Origin': BASE_URL,
+      Cookie: auth.cookies,
+      Origin: BASE_URL,
     },
     body: bodyParams.toString(),
   })
@@ -403,84 +357,57 @@ export async function chat(
   const text = await res.text()
   const cleaned = text.replace(/^\)\]\}'/, '')
 
-  // Parse streaming response for answer
   let answer = ''
   const references: Array<{ text: string }> = []
 
-  const lines = cleaned.split('\n').filter((l) => l.trim())
-  for (const line of lines) {
-    if (!line.startsWith('[')) continue
+  for (const line of cleaned.split('\n')) {
+    if (!line.trim().startsWith('[')) continue
     try {
       const parsed = JSON.parse(line)
-      if (Array.isArray(parsed)) {
-        for (const chunk of parsed) {
-          if (Array.isArray(chunk) && chunk[0] === 'wrb.fr') {
-            const inner = typeof chunk[2] === 'string' ? JSON.parse(chunk[2]) : chunk[2]
-            if (Array.isArray(inner) && inner[0]) {
-              const data = Array.isArray(inner[0]) ? inner[0] : inner
-              if (typeof data[0] === 'string') {
-                answer = data[0]
-              }
-              // Extract references if available
-              const refs = data[4]
-              if (Array.isArray(refs)) {
-                for (const ref of refs) {
-                  if (Array.isArray(ref) && typeof ref[0] === 'string') {
-                    references.push({ text: ref[0] })
-                  }
+      if (!Array.isArray(parsed)) continue
+      for (const chunk of parsed) {
+        if (Array.isArray(chunk) && chunk[0] === 'wrb.fr') {
+          const inner = typeof chunk[2] === 'string' ? JSON.parse(chunk[2]) : chunk[2]
+          if (Array.isArray(inner) && inner[0]) {
+            const data = Array.isArray(inner[0]) ? inner[0] : inner
+            if (typeof data[0] === 'string') answer = data[0]
+            const refs = data[4]
+            if (Array.isArray(refs)) {
+              for (const ref of refs) {
+                if (Array.isArray(ref) && typeof ref[0] === 'string') {
+                  references.push({ text: ref[0] })
                 }
               }
             }
           }
         }
       }
-    } catch {
-      continue
-    }
+    } catch { continue }
   }
 
-  return { answer: answer || 'No response received', conversationId: convId, references }
+  return { answer: answer || '응답을 받지 못했습니다', conversationId: convId, references }
 }
 
-// --- Artifacts (Audio, Reports, Quiz) ---
+// --- Artifacts ---
 
 export async function generateAudio(
-  notebookId: string,
-  format: string = 'deep-dive'
+  cookies: string, notebookId: string, format: string = 'deep-dive'
 ): Promise<{ id: string; status: string }> {
-  // Audio artifact type mapping
-  const formatMap: Record<string, number> = {
-    'deep-dive': 1,
-    'brief': 2,
-    'critique': 3,
-    'debate': 4,
-  }
-  const formatType = formatMap[format] ?? 1
-
+  const formatMap: Record<string, number> = { 'deep-dive': 1, brief: 2, critique: 3, debate: 4 }
   const result = await rpcCall(
-    RPC.CREATE_ARTIFACT,
-    [notebookId, [2], [1, formatType], null, null],
+    cookies, RPC.CREATE_ARTIFACT,
+    [notebookId, [2], [1, formatMap[format] ?? 1], null, null],
     `/notebook/${notebookId}`
   )
-
-  let artifactId = ''
-  if (Array.isArray(result)) {
-    artifactId = result[0] ?? ''
-  }
-
-  return { id: artifactId, status: 'generating' }
+  return { id: Array.isArray(result) ? (result[0] ?? '') : '', status: 'generating' }
 }
 
 export async function getArtifactStatus(
-  notebookId: string,
-  artifactId: string
-): Promise<{ id: string; status: string; downloadUrl?: string }> {
+  cookies: string, notebookId: string, artifactId: string
+): Promise<{ id: string; status: string }> {
   const result = await rpcCall(
-    RPC.LIST_ARTIFACTS,
-    [notebookId, [2]],
-    `/notebook/${notebookId}`
+    cookies, RPC.LIST_ARTIFACTS, [notebookId, [2]], `/notebook/${notebookId}`
   )
-
   if (Array.isArray(result)) {
     const artifacts = result[0] ?? result
     if (Array.isArray(artifacts)) {
@@ -492,83 +419,53 @@ export async function getArtifactStatus(
       }
     }
   }
-
   return { id: artifactId, status: 'unknown' }
 }
 
 export async function exportArtifact(
-  notebookId: string,
-  artifactId: string
+  cookies: string, notebookId: string, artifactId: string
 ): Promise<{ url?: string; content?: string }> {
   const result = await rpcCall(
-    RPC.EXPORT_ARTIFACT,
-    [notebookId, artifactId, [2]],
-    `/notebook/${notebookId}`
+    cookies, RPC.EXPORT_ARTIFACT, [notebookId, artifactId, [2]], `/notebook/${notebookId}`
   )
-
   if (Array.isArray(result)) {
-    // Export result may contain a URL or content
-    const url = result[0]
-    const content = result[1]
     return {
-      url: typeof url === 'string' ? url : undefined,
-      content: typeof content === 'string' ? content : undefined,
+      url: typeof result[0] === 'string' ? result[0] : undefined,
+      content: typeof result[1] === 'string' ? result[1] : undefined,
     }
   }
-
   return {}
 }
 
 export async function generateReport(
-  notebookId: string,
-  reportType: string = 'briefing'
+  cookies: string, notebookId: string, reportType: string = 'briefing'
 ): Promise<{ id: string; content: string }> {
-  const typeMap: Record<string, number> = {
-    'briefing': 2,
-    'study_guide': 3,
-  }
-  const type = typeMap[reportType] ?? 2
-
+  const typeMap: Record<string, number> = { briefing: 2, study_guide: 3 }
   const result = await rpcCall(
-    RPC.CREATE_ARTIFACT,
-    [notebookId, [2], [type], null, null],
+    cookies, RPC.CREATE_ARTIFACT,
+    [notebookId, [2], [typeMap[reportType] ?? 2], null, null],
     `/notebook/${notebookId}`
   )
-
-  let id = ''
-  let content = ''
+  let id = '', content = ''
   if (Array.isArray(result)) {
     id = result[0] ?? ''
     content = result[1] ?? result[2] ?? ''
   }
-
   return { id, content: typeof content === 'string' ? content : JSON.stringify(content) }
 }
 
 export async function generateQuiz(
-  notebookId: string
+  cookies: string, notebookId: string
 ): Promise<{
   id: string
-  questions: Array<{
-    question: string
-    options: string[]
-    answer: string
-    explanation: string
-  }>
+  questions: Array<{ question: string; options: string[]; answer: string; explanation: string }>
 }> {
   const result = await rpcCall(
-    RPC.CREATE_ARTIFACT,
-    [notebookId, [2], [4], null, null], // 4 = quiz type
+    cookies, RPC.CREATE_ARTIFACT,
+    [notebookId, [2], [4], null, null],
     `/notebook/${notebookId}`
   )
-
-  const questions: Array<{
-    question: string
-    options: string[]
-    answer: string
-    explanation: string
-  }> = []
-
+  const questions: Array<{ question: string; options: string[]; answer: string; explanation: string }> = []
   let id = ''
   if (Array.isArray(result)) {
     id = result[0] ?? ''
@@ -577,58 +474,39 @@ export async function generateQuiz(
       for (const q of quizData) {
         if (Array.isArray(q)) {
           questions.push({
-            question: q[0] ?? '',
-            options: Array.isArray(q[1]) ? q[1] : [],
-            answer: q[2] ?? '',
-            explanation: q[3] ?? '',
+            question: q[0] ?? '', options: Array.isArray(q[1]) ? q[1] : [],
+            answer: q[2] ?? '', explanation: q[3] ?? '',
           })
         }
       }
     }
   }
-
   return { id, questions }
 }
 
 // --- High-level: Research notebook ---
 
 export async function createResearchNotebook(
-  keyword: string,
-  youtubeUrls: string[],
-  analysisText: string
-): Promise<{
-  id: string
-  title: string
-  sources: Array<{ id: string; title: string; type: string }>
-}> {
+  cookies: string, keyword: string, youtubeUrls: string[], analysisText: string
+): Promise<{ id: string; title: string; sources: Array<{ id: string; title: string; type: string }> }> {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '.')
   const title = `${keyword} 투자 분석 - ${today}`
 
-  const nb = await createNotebook(title)
+  const nb = await createNotebook(cookies, title)
   const sources: Array<{ id: string; title: string; type: string }> = []
 
-  // Add YouTube URLs
   for (const url of youtubeUrls.slice(0, 5)) {
     try {
-      const source = await addSourceUrl(nb.id, url)
+      const source = await addSourceUrl(cookies, nb.id, url)
       sources.push({ ...source, type: 'youtube' })
-    } catch {
-      // skip failed sources
-    }
+    } catch { /* skip */ }
   }
 
-  // Add analysis text
   if (analysisText.trim()) {
     try {
-      const source = await addSourceText(
-        nb.id,
-        `${keyword} AI 분석 리포트`,
-        analysisText
-      )
+      const source = await addSourceText(cookies, nb.id, `${keyword} AI 분석 리포트`, analysisText)
       sources.push({ ...source, type: 'text' })
-    } catch {
-      // skip
-    }
+    } catch { /* skip */ }
   }
 
   return { id: nb.id, title, sources }

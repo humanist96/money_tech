@@ -14,6 +14,7 @@ import {
   generateReport,
   generateQuiz,
   createResearchNotebook,
+  parseCookieInput,
 } from '@/lib/notebooklm'
 
 type RouteParams = { params: Promise<{ action: string[] }> }
@@ -26,79 +27,90 @@ function errorJson(message: string, status = 500) {
   return NextResponse.json({ error: message }, { status })
 }
 
-async function handleGet(action: string[]): Promise<NextResponse> {
+function getCookies(request: NextRequest): string {
+  // Client sends Google cookies via X-NB-Cookies header
+  const raw = request.headers.get('x-nb-cookies') || ''
+  if (!raw) throw new Error('Google 쿠키가 설정되지 않았습니다. 설정에서 쿠키를 입력해주세요.')
+  return parseCookieInput(raw)
+}
+
+async function handleGet(request: NextRequest, action: string[]): Promise<NextResponse> {
   const path = action.join('/')
 
-  // GET /auth/status
+  // GET /auth/status - check if cookies are valid
   if (path === 'auth/status') {
-    const result = await checkAuth()
+    const raw = request.headers.get('x-nb-cookies') || ''
+    if (!raw) return json({ authenticated: false, error: 'No cookies' })
+    const cookies = parseCookieInput(raw)
+    const result = await checkAuth(cookies)
     return json(result)
   }
 
+  const cookies = getCookies(request)
+
   // GET /notebooks
   if (path === 'notebooks') {
-    const notebooks = await listNotebooks()
-    return json(notebooks)
+    return json(await listNotebooks(cookies))
   }
 
   // GET /notebooks/:id
   if (action[0] === 'notebooks' && action.length === 2) {
-    const detail = await getNotebook(action[1])
-    return json(detail)
+    return json(await getNotebook(cookies, action[1]))
   }
 
   // GET /notebooks/:id/sources
   if (action[0] === 'notebooks' && action[2] === 'sources' && action.length === 3) {
-    const detail = await getNotebook(action[1])
+    const detail = await getNotebook(cookies, action[1])
     return json(detail.sources)
   }
 
   // GET /notebooks/:id/audio/:artifactId/status
   if (action[0] === 'notebooks' && action[2] === 'audio' && action[4] === 'status') {
-    const result = await getArtifactStatus(action[1], action[3])
-    return json(result)
+    return json(await getArtifactStatus(cookies, action[1], action[3]))
   }
 
   // GET /notebooks/:id/audio/:artifactId/download
   if (action[0] === 'notebooks' && action[2] === 'audio' && action[4] === 'download') {
-    const result = await exportArtifact(action[1], action[3])
-    if (result.url) {
-      return NextResponse.redirect(result.url)
-    }
+    const result = await exportArtifact(cookies, action[1], action[3])
+    if (result.url) return NextResponse.redirect(result.url)
     return errorJson('Audio not available', 404)
   }
 
   return errorJson('Not found', 404)
 }
 
-async function handlePost(action: string[], body: unknown): Promise<NextResponse> {
+async function handlePost(request: NextRequest, action: string[], body: unknown): Promise<NextResponse> {
   const path = action.join('/')
   const data = (body ?? {}) as Record<string, unknown>
+
+  // POST /auth/login - no-op, auth is via cookies from client
+  if (path === 'auth/login') {
+    return json({ success: false, message: '설정에서 Google 쿠키를 입력해주세요' })
+  }
+
+  const cookies = getCookies(request)
 
   // POST /notebooks
   if (path === 'notebooks') {
     const title = data.title as string
     if (!title) return errorJson('title is required', 400)
-    const nb = await createNotebook(title)
-    return json(nb)
+    return json(await createNotebook(cookies, title))
   }
 
   // POST /notebooks/research
   if (path === 'notebooks/research') {
     const keyword = data.keyword as string
-    const youtubeUrls = data.youtube_urls as string[]
-    const analysisText = (data.analysis_text as string) ?? ''
     if (!keyword) return errorJson('keyword is required', 400)
-    const nb = await createResearchNotebook(keyword, youtubeUrls || [], analysisText)
-    return json(nb)
+    return json(await createResearchNotebook(
+      cookies, keyword, (data.youtube_urls as string[]) || [], (data.analysis_text as string) ?? ''
+    ))
   }
 
   // POST /notebooks/:id/sources/url
   if (action[0] === 'notebooks' && action[2] === 'sources' && action[3] === 'url') {
     const url = data.url as string
     if (!url) return errorJson('url is required', 400)
-    const source = await addSourceUrl(action[1], url)
-    return json(source)
+    return json(await addSourceUrl(cookies, action[1], url))
   }
 
   // POST /notebooks/:id/sources/text
@@ -106,55 +118,39 @@ async function handlePost(action: string[], body: unknown): Promise<NextResponse
     const title = data.title as string
     const content = data.content as string
     if (!title || !content) return errorJson('title and content are required', 400)
-    const source = await addSourceText(action[1], title, content)
-    return json(source)
+    return json(await addSourceText(cookies, action[1], title, content))
   }
 
   // POST /notebooks/:id/chat
   if (action[0] === 'notebooks' && action[2] === 'chat' && action.length === 3) {
     const question = data.question as string
-    const conversationId = data.conversation_id as string | undefined
     if (!question) return errorJson('question is required', 400)
-    const result = await chat(action[1], question, conversationId)
-    return json(result)
+    return json(await chat(cookies, action[1], question, data.conversation_id as string | undefined))
   }
 
   // POST /notebooks/:id/audio
   if (action[0] === 'notebooks' && action[2] === 'audio' && action.length === 3) {
-    const format = (data.format as string) ?? 'deep-dive'
-    const result = await generateAudio(action[1], format)
-    return json(result)
+    return json(await generateAudio(cookies, action[1], (data.format as string) ?? 'deep-dive'))
   }
 
   // POST /notebooks/:id/report
   if (action[0] === 'notebooks' && action[2] === 'report') {
-    const reportType = (data.report_type as string) ?? 'briefing'
-    const result = await generateReport(action[1], reportType)
-    return json(result)
+    return json(await generateReport(cookies, action[1], (data.report_type as string) ?? 'briefing'))
   }
 
   // POST /notebooks/:id/quiz
   if (action[0] === 'notebooks' && action[2] === 'quiz') {
-    const result = await generateQuiz(action[1])
-    return json(result)
-  }
-
-  // POST /auth/login (no-op in Vercel mode, auth via env var)
-  if (path === 'auth/login') {
-    return json({
-      success: false,
-      message: 'Set NOTEBOOKLM_AUTH_JSON environment variable in Vercel dashboard',
-    })
+    return json(await generateQuiz(cookies, action[1]))
   }
 
   return errorJson('Not found', 404)
 }
 
-async function handleDelete(action: string[]): Promise<NextResponse> {
-  // DELETE /notebooks/:id
+async function handleDelete(request: NextRequest, action: string[]): Promise<NextResponse> {
+  const cookies = getCookies(request)
+
   if (action[0] === 'notebooks' && action.length === 2) {
-    const result = await deleteNotebook(action[1])
-    return json(result)
+    return json(await deleteNotebook(cookies, action[1]))
   }
 
   return errorJson('Not found', 404)
@@ -163,35 +159,28 @@ async function handleDelete(action: string[]): Promise<NextResponse> {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   const { action } = await params
   try {
-    return await handleGet(action)
+    return await handleGet(request, action)
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Unknown error'
-    return errorJson(msg)
+    return errorJson(e instanceof Error ? e.message : 'Unknown error')
   }
 }
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   const { action } = await params
   let body: unknown
+  try { body = await request.json() } catch { /* no body */ }
   try {
-    body = await request.json()
-  } catch {
-    // no body
-  }
-  try {
-    return await handlePost(action, body)
+    return await handlePost(request, action, body)
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Unknown error'
-    return errorJson(msg)
+    return errorJson(e instanceof Error ? e.message : 'Unknown error')
   }
 }
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const { action } = await params
   try {
-    return await handleDelete(action)
+    return await handleDelete(request, action)
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Unknown error'
-    return errorJson(msg)
+    return errorJson(e instanceof Error ? e.message : 'Unknown error')
   }
 }

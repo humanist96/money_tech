@@ -173,9 +173,17 @@ export default function SearchClient() {
     }
 
     try {
+      const nbCookies = localStorage.getItem('moneytech_nb_cookies') || ''
+      if (!nbCookies) {
+        window.location.href = '/notebook'
+        return
+      }
       const res = await fetch('/api/notebook/notebooks/research', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-nb-cookies': nbCookies,
+        },
         body: JSON.stringify({
           keyword,
           youtube_urls: youtubeUrls,
