@@ -306,13 +306,11 @@ function VideoRefRow({ item }: { item: ReferenceItem }) {
         rel="noopener noreferrer"
         className="flex-shrink-0 relative group"
       >
-        {item.video_thumbnail ? (
-          <img src={item.video_thumbnail} alt="" className="w-24 h-14 rounded object-cover border border-[#1a2744]" />
-        ) : (
-          <div className="w-24 h-14 rounded bg-[#1a2744] flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#5a6a88"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-          </div>
-        )}
+        <img
+          src={item.video_thumbnail || `https://i.ytimg.com/vi/${item.youtube_video_id}/mqdefault.jpg`}
+          alt=""
+          className="w-24 h-14 rounded object-cover border border-[#1a2744]"
+        />
         <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
         </div>
