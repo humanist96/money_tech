@@ -171,14 +171,18 @@ export default async function AssetDetailPage({ params }: PageProps) {
             {mentions.slice(0, 15).map((m: any, i: number) => (
               <a
                 key={i}
-                href={`https://www.youtube.com/watch?v=${m.youtube_video_id}`}
+                href={m.blog_post_url || (m.youtube_video_id ? `https://www.youtube.com/watch?v=${m.youtube_video_id}` : '#')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-start gap-3 bg-th-tertiary/40 rounded-xl p-3.5 hover:bg-th-tertiary/70 transition group"
               >
-                {m.youtube_video_id && (
+                {m.blog_post_url ? (
+                  <div className="w-28 h-16 rounded-xl shrink-0 flex items-center justify-center" style={{ background: 'color-mix(in srgb, #03c75a 10%, var(--th-bg-card))' }}>
+                    <span className="text-[10px] font-bold text-[#03c75a]">BLOG</span>
+                  </div>
+                ) : m.youtube_video_id ? (
                   <img src={`https://i.ytimg.com/vi/${m.youtube_video_id}/mqdefault.jpg`} alt="" className="w-28 h-16 rounded-xl object-cover shrink-0" />
-                )}
+                ) : null}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-th-primary font-medium line-clamp-2 group-hover:text-th-accent transition">
                     {m.video_title || m.title}

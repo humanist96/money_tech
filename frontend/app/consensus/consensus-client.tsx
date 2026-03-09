@@ -16,7 +16,8 @@ interface ReferenceItem {
   reason: string | null
   is_accurate: boolean | null
   video_title: string
-  youtube_video_id: string
+  youtube_video_id: string | null
+  blog_post_url: string | null
   published_at: string | null
   video_thumbnail: string | null
 }
@@ -294,26 +295,36 @@ function VideoRefRow({ item }: { item: ReferenceItem }) {
     hold: { label: '보유', color: '#f97316' },
   }
 
+  const refUrl = item.blog_post_url || (item.youtube_video_id ? `https://youtube.com/watch?v=${item.youtube_video_id}` : '#')
+
   return (
     <div className="flex gap-3 p-2.5 rounded-lg bg-th-secondary/40 border border-th-border/20">
       <a
-        href={`https://youtube.com/watch?v=${item.youtube_video_id}`}
+        href={refUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="flex-shrink-0 relative group"
       >
-        <img
-          src={item.video_thumbnail || `https://i.ytimg.com/vi/${item.youtube_video_id}/mqdefault.jpg`}
-          alt=""
-          className="w-24 h-14 rounded object-cover border border-th-border"
-        />
-        <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-        </div>
+        {item.blog_post_url ? (
+          <div className="w-24 h-14 rounded flex items-center justify-center border border-th-border" style={{ background: 'color-mix(in srgb, #03c75a 8%, var(--th-bg-card))' }}>
+            <span className="text-[9px] font-bold text-[#03c75a]">BLOG</span>
+          </div>
+        ) : (
+          <>
+            <img
+              src={item.video_thumbnail || `https://i.ytimg.com/vi/${item.youtube_video_id}/mqdefault.jpg`}
+              alt=""
+              className="w-24 h-14 rounded object-cover border border-th-border"
+            />
+            <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+            </div>
+          </>
+        )}
       </a>
       <div className="flex-1 min-w-0">
         <a
-          href={`https://youtube.com/watch?v=${item.youtube_video_id}`}
+          href={refUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-th-primary hover:text-th-accent transition-colors line-clamp-1"

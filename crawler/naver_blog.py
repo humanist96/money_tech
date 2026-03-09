@@ -82,6 +82,42 @@ def _parse_rss_date(date_str: str) -> Optional[str]:
     return None
 
 
+def fetch_blog_profile_image(blog_id: str) -> Optional[str]:
+    """Extract blog profile image URL from RSS feed.
+
+    The RSS <channel><image><url> contains the blogger's profile image.
+    URL is converted to HTTPS and resized to 204x204.
+    """
+    url = NAVER_RSS_URL.format(blog_id=blog_id)
+    _rate_limit()
+
+    try:
+        resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=15)
+        resp.raise_for_status()
+        root = ET.fromstring(resp.content)
+    except (requests.RequestException, ET.ParseError):
+        return None
+
+    channel = root.find("channel")
+    if channel is None:
+        return None
+
+    image_url_el = channel.find("image/url")
+    if image_url_el is not None and image_url_el.text:
+        img_url = image_url_el.text.replace(
+            "http://blogpfthumb.phinf.naver.net",
+            "https://blogpfthumb-phinf.pstatic.net",
+        )
+        # Replace size param for 204x204 avatar crop
+        if "?type=" in img_url:
+            img_url = re.sub(r"\?type=\w+", "?type=f204_204", img_url)
+        else:
+            img_url += "?type=f204_204"
+        return img_url
+
+    return None
+
+
 def fetch_rss_posts(blog_id: str, max_posts: int = 20) -> list[BlogPost]:
     """Fetch recent posts from a Naver blog RSS feed.
 

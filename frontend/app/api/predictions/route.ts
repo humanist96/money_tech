@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
         ma.price_at_mention,
         v.title AS video_title,
         v.youtube_video_id,
+        v.blog_post_url,
         v.published_at AS video_published_at,
         v.thumbnail_url AS video_thumbnail,
         v.comment_sentiment_score,
@@ -57,6 +58,7 @@ export async function GET(req: NextRequest) {
         p.is_accurate,
         v.title AS video_title,
         v.youtube_video_id,
+        v.blog_post_url,
         v.published_at,
         v.thumbnail_url AS video_thumbnail
       FROM mentioned_assets ma

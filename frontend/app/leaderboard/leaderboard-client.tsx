@@ -22,7 +22,8 @@ interface PredictionDetail {
   context_text: string | null
   price_at_mention: number | null
   video_title: string
-  youtube_video_id: string
+  youtube_video_id: string | null
+  blog_post_url: string | null
   video_published_at: string | null
   video_thumbnail: string | null
   comment_sentiment_score: number | null
@@ -278,29 +279,39 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
   }
   const tc = typeConfig[pred.prediction_type] ?? { label: pred.prediction_type, color: '#5a6a88' }
 
+  const postUrl = pred.blog_post_url || (pred.youtube_video_id ? `https://youtube.com/watch?v=${pred.youtube_video_id}` : '#')
+
   return (
     <div className="expand-row flex gap-3">
-      {/* Video Thumbnail */}
+      {/* Thumbnail */}
       <a
-        href={`https://youtube.com/watch?v=${pred.youtube_video_id}`}
+        href={postUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="flex-shrink-0 relative group"
       >
-        <img
-          src={pred.video_thumbnail || `https://i.ytimg.com/vi/${pred.youtube_video_id}/mqdefault.jpg`}
-          alt=""
-          className="w-28 h-16 rounded object-cover border border-th-border"
-        />
-        <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-        </div>
+        {pred.blog_post_url ? (
+          <div className="w-28 h-16 rounded flex items-center justify-center border border-th-border" style={{ background: 'color-mix(in srgb, #03c75a 8%, var(--th-bg-card))' }}>
+            <span className="text-[10px] font-bold text-[#03c75a]">BLOG</span>
+          </div>
+        ) : (
+          <>
+            <img
+              src={pred.video_thumbnail || `https://i.ytimg.com/vi/${pred.youtube_video_id}/mqdefault.jpg`}
+              alt=""
+              className="w-28 h-16 rounded object-cover border border-th-border"
+            />
+            <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+            </div>
+          </>
+        )}
       </a>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <a
-          href={`https://youtube.com/watch?v=${pred.youtube_video_id}`}
+          href={postUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-th-primary hover:text-th-accent transition-colors line-clamp-1"

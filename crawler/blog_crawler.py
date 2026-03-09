@@ -10,7 +10,7 @@ import psycopg2.extras
 from dotenv import load_dotenv
 
 from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
-from naver_blog import fetch_rss_posts, fetch_blog_post_content
+from naver_blog import fetch_rss_posts, fetch_blog_post_content, fetch_blog_profile_image
 from prediction_detector import detect_predictions
 
 load_dotenv()
@@ -191,6 +191,20 @@ def crawl_blogs() -> None:
 
                     channel_uuid = upsert_blogger(cur, blogger, category)
                     conn.commit()
+
+                    # Fetch and store profile image
+                    try:
+                        profile_img = fetch_blog_profile_image(blog_id)
+                        if profile_img:
+                            cur.execute(
+                                "UPDATE channels SET thumbnail_url = %s WHERE id = %s AND (thumbnail_url IS NULL OR thumbnail_url = '')",
+                                (profile_img, channel_uuid),
+                            )
+                            conn.commit()
+                            print(f"  Profile image: OK")
+                    except Exception as e:
+                        print(f"  Profile image fetch failed: {e}")
+                        conn.rollback()
 
                     # Fetch RSS posts
                     posts = fetch_rss_posts(blog_id, max_posts=15)

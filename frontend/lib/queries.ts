@@ -123,7 +123,8 @@ export async function getAssetMentions(days: number = 7): Promise<AssetMention[]
 export async function getAssetDetail(assetCode: string) {
   const sql = getDb()
   const mentions = await sql`
-    SELECT ma.*, v.title as video_title, v.youtube_video_id, v.published_at as video_published_at,
+    SELECT ma.*, v.title as video_title, v.youtube_video_id, v.blog_post_url, v.platform as video_platform,
+           v.published_at as video_published_at,
            v.view_count as video_view_count, v.thumbnail_url as video_thumbnail,
            c.name as channel_name, c.category as channel_category
     FROM mentioned_assets ma
@@ -618,6 +619,7 @@ export async function getAssetTimeline(assetCode: string, days = 30): Promise<As
       p.prediction_type,
       v.title AS video_title,
       v.youtube_video_id,
+      v.blog_post_url,
       v.published_at
     FROM mentioned_assets ma
     JOIN videos v ON ma.video_id = v.id

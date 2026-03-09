@@ -136,7 +136,7 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
                           )}
                         </div>
                         <a
-                          href={`https://www.youtube.com/watch?v=${entry.youtube_video_id}`}
+                          href={(entry as any).blog_post_url || (entry.youtube_video_id ? `https://www.youtube.com/watch?v=${entry.youtube_video_id}` : '#')}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[12px] text-[#c8d0e0] line-clamp-1 mt-0.5 group-hover:text-th-primary transition"

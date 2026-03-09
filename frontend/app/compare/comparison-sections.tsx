@@ -780,20 +780,28 @@ function TopVideos({ data, selected, colorMap }: { data: any; selected: Channel[
               <div className="w-2 h-2 rounded-full" style={{ background: color }} />
               <span className="text-xs font-semibold text-th-primary">{channel.name}</span>
             </div>
-            {videos.map((v: any, idx: number) => (
+            {videos.map((v: any, idx: number) => {
+              const vUrl = v.blog_post_url || (v.youtube_video_id ? `https://youtube.com/watch?v=${v.youtube_video_id}` : '#')
+              return (
               <a
-                key={v.youtube_video_id}
-                href={`https://youtube.com/watch?v=${v.youtube_video_id}`}
+                key={v.youtube_video_id || v.blog_post_url || idx}
+                href={vUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex gap-2.5 p-2 rounded-lg hover:bg-th-hover/50 transition group"
               >
                 <div className="relative shrink-0">
-                  <img
-                    src={`https://i.ytimg.com/vi/${v.youtube_video_id}/mqdefault.jpg`}
-                    alt=""
-                    className="w-24 h-[54px] rounded-md object-cover"
-                  />
+                  {v.blog_post_url ? (
+                    <div className="w-24 h-[54px] rounded-md flex items-center justify-center" style={{ background: 'color-mix(in srgb, #03c75a 8%, var(--th-bg-card))' }}>
+                      <span className="text-[9px] font-bold text-[#03c75a]">BLOG</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={`https://i.ytimg.com/vi/${v.youtube_video_id}/mqdefault.jpg`}
+                      alt=""
+                      className="w-24 h-[54px] rounded-md object-cover"
+                    />
+                  )}
                   <span className="absolute top-0.5 left-0.5 text-[8px] font-bold px-1 py-0.5 rounded bg-black/70 text-white">
                     #{idx + 1}
                   </span>
@@ -808,7 +816,8 @@ function TopVideos({ data, selected, colorMap }: { data: any; selected: Channel[
                   </div>
                 </div>
               </a>
-            ))}
+              )
+            })}
           </div>
         ))}
       </div>
