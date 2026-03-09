@@ -24,7 +24,7 @@ export default function SourceList({ sources }: SourceListProps) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-[#556a8a] uppercase tracking-wider">
+      <h3 className="text-xs font-semibold text-th-dim uppercase tracking-wider">
         등록된 소스 ({sources.length}개)
       </h3>
       <div className="flex flex-wrap gap-2">
@@ -32,7 +32,7 @@ export default function SourceList({ sources }: SourceListProps) {
           items.map((s, i) => (
             <span
               key={`${type}-${i}`}
-              className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-[#0a1628] border border-[#1a2744] rounded-full text-[#8899b4]"
+              className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-th-secondary border border-th-border rounded-full text-th-muted"
             >
               <span>{TYPE_ICONS[type] || '📄'}</span>
               <span className="truncate max-w-[200px]">{s.title}</span>

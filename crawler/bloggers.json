@@ -1,0 +1,55 @@
+{
+  "stock": [
+    {"name": "James Lee Advisors", "blog_id": "ionia17"},
+    {"name": "Hodolry", "blog_id": "hodolry"},
+    {"name": "피우스의 책도둑", "blog_id": "jeunkim"},
+    {"name": "재콩", "blog_id": "jakojako"},
+    {"name": "박회계사", "blog_id": "donghm"},
+    {"name": "와이민", "blog_id": "yminsong"},
+    {"name": "노모벳", "blog_id": "nomore_bet"},
+    {"name": "초대현대농업", "blog_id": "jyt4159"},
+    {"name": "주주전서", "blog_id": "jjjs0412"},
+    {"name": "경제적자유를꿈꾸며", "blog_id": "aswmanager"},
+    {"name": "도PB의 투자다이어리", "blog_id": "dopb2000"},
+    {"name": "전업투자자밥벌이", "blog_id": "babvully"},
+    {"name": "퍼스트펭귄의 투자일기", "blog_id": "harucompany"},
+    {"name": "에르", "blog_id": "rladustn0503"},
+    {"name": "아이투자", "blog_id": "itooza"}
+  ],
+  "coin": [
+    {"name": "코인마켓레이더", "blog_id": "coinradar99"},
+    {"name": "크립토닥터", "blog_id": "cryptodoctor"},
+    {"name": "비트코인갤러리", "blog_id": "btcgallery"},
+    {"name": "디파이라이프", "blog_id": "defilife22"},
+    {"name": "코인연구소", "blog_id": "coinlab2023"},
+    {"name": "블록체인이코노미", "blog_id": "blockchaineco"},
+    {"name": "트레이딩코인", "blog_id": "tradingcoin_"},
+    {"name": "암호화폐읽어주는남자", "blog_id": "cryptoman365"}
+  ],
+  "real_estate": [
+    {"name": "빠숑", "blog_id": "passionvit"},
+    {"name": "아기곰", "blog_id": "a-cute-bear"},
+    {"name": "월용이", "blog_id": "sunman30"},
+    {"name": "늘푸르게", "blog_id": "jedpark"},
+    {"name": "옥동자", "blog_id": "okdongja77"},
+    {"name": "부아C", "blog_id": "buac_blog"},
+    {"name": "호갱노노", "blog_id": "hogangnono"},
+    {"name": "제이리치", "blog_id": "jrich7979"},
+    {"name": "너바나", "blog_id": "nirvana_re"},
+    {"name": "집닥터", "blog_id": "zipdoctor"},
+    {"name": "부동산지식인", "blog_id": "realestate_k"},
+    {"name": "복부인", "blog_id": "bokbuin2020"}
+  ],
+  "economy": [
+    {"name": "메르", "blog_id": "ranto28"},
+    {"name": "오건영", "blog_id": "ohky0517"},
+    {"name": "최진기의 경제", "blog_id": "choijingi"},
+    {"name": "슈퍼리치메이커", "blog_id": "superrich_m"},
+    {"name": "경제읽어주는남자", "blog_id": "economyman"},
+    {"name": "뉴욕리치", "blog_id": "newyorkrich"},
+    {"name": "부자아빠 경제학", "blog_id": "richdad_econ"},
+    {"name": "이코노미닥터", "blog_id": "econ_doctor"},
+    {"name": "경제자유인", "blog_id": "freemaneco"},
+    {"name": "돈의심리학", "blog_id": "moneypsych"}
+  ]
+}

@@ -1,14 +1,14 @@
-name: YouTube Crawler
+name: MoneyTech Crawler
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 매 6시간
+    - cron: '0 */1 * * *'  # 매 1시간
   workflow_dispatch:  # 수동 실행
 
 jobs:
   crawl:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -23,12 +23,22 @@ jobs:
           pip install -r crawler/requirements.txt
           pip install yt-dlp --upgrade
 
-      - name: Run crawler
+      - name: Run YouTube crawler
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           cd crawler
           python main.py
+
+      - name: Run Blog crawler
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: |
+          cd crawler
+          python blog_crawler.py
 
       - name: Log completion
         if: always()

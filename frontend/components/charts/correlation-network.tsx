@@ -259,8 +259,8 @@ export function CorrelationNetwork({ data, title = "종목 상관관계 네트�
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">상관관계 데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">상관관계 데이터를 수집 중입니다.</p>
       </div>
     )
   }
@@ -270,12 +270,12 @@ export function CorrelationNetwork({ data, title = "종목 상관관계 네트�
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-          <p className="text-[11px] text-[#5a6a88] mt-0.5">같은 영상에서 함께 언급되는 종목 관계</p>
+          <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+          <p className="text-[11px] text-th-dim mt-0.5">같은 영상에서 함께 언급되는 종목 관계</p>
         </div>
-        <span className="text-[10px] text-[#3a4a6a]">{nodesRef.current.length}개 종목</span>
+        <span className="text-[10px] text-th-dim">{nodesRef.current.length}개 종목</span>
       </div>
       <div className="flex flex-col lg:flex-row">
         <div ref={containerRef} className="flex-1 relative" style={{ minHeight: 400 }}>
@@ -287,11 +287,11 @@ export function CorrelationNetwork({ data, title = "종목 상관관계 네트�
             onMouseLeave={() => setHoveredNode(null)}
           />
         </div>
-        <div className="w-full lg:w-56 p-4 border-t lg:border-t-0 lg:border-l border-[#1a2744]/50">
+        <div className="w-full lg:w-56 p-4 border-t lg:border-t-0 lg:border-l border-th-border/50">
           <h4 className="text-[10px] text-[#475569] uppercase tracking-wider font-medium mb-3">TOP 상관관계</h4>
           <div className="space-y-2">
             {topPairs.map((pair, i) => (
-              <div key={i} className="bg-[#0e1a30]/50 rounded-lg p-2.5">
+              <div key={i} className="bg-th-tertiary/50 rounded-lg p-2.5">
                 <div className="flex items-center gap-1.5 text-[11px]">
                   <Link
                     href={`/assets/${encodeURIComponent(pair.source_code)}`}
@@ -299,7 +299,7 @@ export function CorrelationNetwork({ data, title = "종목 상관관계 네트�
                   >
                     {pair.source}
                   </Link>
-                  <span className="text-[#3a4a6a]">-</span>
+                  <span className="text-th-dim">-</span>
                   <Link
                     href={`/assets/${encodeURIComponent(pair.target_code)}`}
                     className="text-[#7c6cf0] font-medium hover:underline"
@@ -308,13 +308,13 @@ export function CorrelationNetwork({ data, title = "종목 상관관계 네트�
                   </Link>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="flex-1 h-1.5 bg-[#0a1120] rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-th-card rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-[#00e8b8] to-[#7c6cf0]"
                       style={{ width: `${(pair.co_occurrence / data[0].co_occurrence) * 100}%` }}
                     />
                   </div>
-                  <span className="text-[10px] text-[#5a6a88] tabular-nums font-medium">
+                  <span className="text-[10px] text-th-dim tabular-nums font-medium">
                     {pair.co_occurrence}회
                   </span>
                 </div>

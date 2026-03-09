@@ -41,15 +41,15 @@ export function TrendLineChart({ stats, title = "업로드 빈도 추이" }: Tre
 
   return (
     <div className="glass-card-elevated rounded-2xl p-6">
-      <h3 className="font-bold text-white text-[15px] mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+      <h3 className="font-bold text-th-primary text-[15px] mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
       {chartData.length > 0 ? (
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1a2744" vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: '#5a6a88', fontSize: 11 }} axisLine={{ stroke: '#1a2744' }} tickLine={false} />
-            <YAxis tick={{ fill: '#5a6a88', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--th-border)" vertical={false} />
+            <XAxis dataKey="date" tick={{ fill: 'var(--th-text-dim)', fontSize: 11 }} axisLine={{ stroke: 'var(--th-border)' }} tickLine={false} />
+            <YAxis tick={{ fill: 'var(--th-text-dim)', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip
-              contentStyle={{ background: '#0a1120', border: '1px solid #1a2744', borderRadius: '12px', fontSize: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+              contentStyle={{ background: 'var(--th-bg-card)', border: '1px solid var(--th-border)', borderRadius: '12px', fontSize: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
               labelStyle={{ color: '#e2e8f0' }}
             />
             <Legend
@@ -71,7 +71,7 @@ export function TrendLineChart({ stats, title = "업로드 빈도 추이" }: Tre
           </LineChart>
         </ResponsiveContainer>
       ) : (
-        <p className="text-center text-[#5a6a88] text-sm py-12">데이터를 수집 중입니다...</p>
+        <p className="text-center text-th-dim text-sm py-12">데이터를 수집 중입니다...</p>
       )}
     </div>
   )

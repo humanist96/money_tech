@@ -12,11 +12,16 @@ export interface ClassificationDetails {
   reason?: string
 }
 
+export type Platform = 'youtube' | 'naver_blog'
+
 export interface Channel {
   id: string
-  youtube_channel_id: string
+  youtube_channel_id: string | null
   name: string
   category: 'stock' | 'coin' | 'real_estate' | 'economy'
+  platform: Platform
+  blog_id: string | null
+  blog_url: string | null
   subscriber_count: number | null
   total_view_count: number | null
   video_count: number | null
@@ -31,6 +36,11 @@ export interface Channel {
   updated_at: string
 }
 
+export const PLATFORM_CONFIG: Record<Platform, { label: string; icon: string; color: string; badge: string }> = {
+  youtube: { label: 'YouTube', icon: '▶', color: '#ff0000', badge: 'bg-red-500/20 text-red-400 border-red-500/30' },
+  naver_blog: { label: '블로그', icon: '✎', color: '#03c75a', badge: 'bg-green-500/20 text-green-400 border-green-500/30' },
+}
+
 export const CHANNEL_TYPE_CONFIG: Record<ChannelType, { label: string; color: string; badge: string }> = {
   predictor: { label: '예측형', color: '#f97316', badge: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
   leader: { label: '리딩방', color: '#ef4444', badge: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -42,7 +52,7 @@ export const CHANNEL_TYPE_CONFIG: Record<ChannelType, { label: string; color: st
 export interface Video {
   id: string
   channel_id: string
-  youtube_video_id: string
+  youtube_video_id: string | null
   title: string
   description: string | null
   view_count: number | null
@@ -54,6 +64,9 @@ export interface Video {
   tags: string[] | null
   subtitle_text: string | null
   summary: string | null
+  platform: Platform
+  blog_post_url: string | null
+  content_text: string | null
   created_at: string
 }
 

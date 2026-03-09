@@ -101,11 +101,11 @@ function ScoreCard({ data, selected, colorMap }: { data: any; selected: Channel[
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           종합 스코어카드
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">주요 지표별 우위 비교</p>
+        <p className="text-[10px] text-th-dim mt-0.5">주요 지표별 우위 비교</p>
       </div>
       <div className="p-4">
         {/* Channel headers */}
@@ -115,7 +115,7 @@ function ScoreCard({ data, selected, colorMap }: { data: any; selected: Channel[
               <div
                 className="w-10 h-10 rounded-full mx-auto mb-1.5 flex items-center justify-center text-sm font-bold"
                 style={{
-                  background: `color-mix(in srgb, ${COLORS[i]} 20%, #0c1324)`,
+                  background: `color-mix(in srgb, ${COLORS[i]} 20%, var(--th-bg-card-deep))`,
                   border: `2px solid ${COLORS[i]}`,
                   color: COLORS[i],
                 }}
@@ -124,7 +124,7 @@ function ScoreCard({ data, selected, colorMap }: { data: any; selected: Channel[
                   <img src={ch.thumbnail_url} alt="" className="w-full h-full rounded-full object-cover" />
                 ) : ch.name[0]}
               </div>
-              <span className="text-xs font-semibold text-white">{ch.name}</span>
+              <span className="text-xs font-semibold text-th-primary">{ch.name}</span>
             </div>
           ))}
         </div>
@@ -138,14 +138,14 @@ function ScoreCard({ data, selected, colorMap }: { data: any; selected: Channel[
 
             return (
               <div key={dim.label} className="glass-card rounded-lg p-3">
-                <div className="text-[10px] text-[#5a6a88] mb-2 uppercase tracking-wider">{dim.label}</div>
+                <div className="text-[10px] text-th-dim mb-2 uppercase tracking-wider">{dim.label}</div>
                 <div className={`grid gap-2 ${selected.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
                   {metrics.map((m, i) => {
                     const val = (m as any)[dim.key] as number
                     const isWinner = val === best && val > 0
                     return (
                       <div key={m.id} className="relative">
-                        <div className="h-6 bg-[#0a1120] rounded-full overflow-hidden">
+                        <div className="h-6 bg-th-card rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full transition-all duration-700"
                             style={{
@@ -192,7 +192,7 @@ function ScoreCard({ data, selected, colorMap }: { data: any; selected: Channel[
                 <span className="text-xl font-extrabold tabular-nums" style={{ color: COLORS[i], fontFamily: "var(--font-outfit)" }}>
                   {wins}
                 </span>
-                <span className="text-[10px] text-[#5a6a88] block">/ {scoreDimensions.length} 항목 우위</span>
+                <span className="text-[10px] text-th-dim block">/ {scoreDimensions.length} 항목 우위</span>
               </div>
             )
           })}
@@ -219,15 +219,15 @@ function BullBearProfile({ data, selected, colorMap }: { data: any; selected: Ch
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           매수/매도 성향 비교
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">채널별 예측 유형 분포</p>
+        <p className="text-[10px] text-th-dim mt-0.5">채널별 예측 유형 분포</p>
       </div>
       <div className="p-5 space-y-4">
         {!hasPredictions ? (
-          <p className="text-sm text-[#5a6a88] text-center py-4">선택한 채널에 예측 데이터가 없습니다</p>
+          <p className="text-sm text-th-dim text-center py-4">선택한 채널에 예측 데이터가 없습니다</p>
         ) : (
           predData.map((ch, i) => {
             const buyPct = ch.total > 0 ? (ch.buy / ch.total) * 100 : 0
@@ -243,17 +243,17 @@ function BullBearProfile({ data, selected, colorMap }: { data: any; selected: Ch
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ background: COLORS[i] }} />
-                    <span className="text-xs font-medium text-white">{ch.name}</span>
+                    <span className="text-xs font-medium text-th-primary">{ch.name}</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{
                       background: `color-mix(in srgb, ${labelColor} 15%, transparent)`, color: labelColor
                     }}>
                       {label}
                     </span>
                   </div>
-                  <span className="text-[10px] text-[#3a4a6a] tabular-nums">{ch.total}건</span>
+                  <span className="text-[10px] text-th-dim tabular-nums">{ch.total}건</span>
                 </div>
                 {ch.total > 0 ? (
-                  <div className="h-7 rounded-lg overflow-hidden flex bg-[#0a1120]">
+                  <div className="h-7 rounded-lg overflow-hidden flex bg-th-card">
                     {buyPct > 0 && (
                       <div className="h-full flex items-center justify-center text-[9px] font-bold text-white/80"
                         style={{ width: `${buyPct}%`, background: "#22c997" }}>
@@ -274,7 +274,7 @@ function BullBearProfile({ data, selected, colorMap }: { data: any; selected: Ch
                     )}
                   </div>
                 ) : (
-                  <div className="h-7 rounded-lg bg-[#0a1120] flex items-center justify-center text-[10px] text-[#3a4a6a]">
+                  <div className="h-7 rounded-lg bg-th-card flex items-center justify-center text-[10px] text-th-dim">
                     예측 없음
                   </div>
                 )}
@@ -282,7 +282,7 @@ function BullBearProfile({ data, selected, colorMap }: { data: any; selected: Ch
             )
           })
         )}
-        <div className="flex items-center gap-4 justify-center pt-2 text-[9px] text-[#5a6a88]">
+        <div className="flex items-center gap-4 justify-center pt-2 text-[9px] text-th-dim">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#22c997]" />매수</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#ff5757]" />매도</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#ffb84d]" />관망</span>
@@ -338,25 +338,25 @@ function SentimentFaceoff({ data, selected, colorMap, channelMap }: { data: any;
   if (faceoffs.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>감성 성향 대결</h3>
-        <p className="text-sm text-[#5a6a88] mt-2">공통으로 다루는 종목이 없습니다</p>
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>감성 성향 대결</h3>
+        <p className="text-sm text-th-dim mt-2">공통으로 다루는 종목이 없습니다</p>
       </div>
     )
   }
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           감성 성향 대결
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">같은 종목에 대한 채널별 의견 비교</p>
+        <p className="text-[10px] text-th-dim mt-0.5">같은 종목에 대한 채널별 의견 비교</p>
       </div>
       <div className="p-4 space-y-2">
         {faceoffs.slice(0, 12).map((f) => (
           <div key={f.asset} className="glass-card rounded-lg p-3">
             <div className="flex items-center gap-2 mb-2">
-              <Link href={`/assets/${encodeURIComponent(f.code || f.asset)}`} className="text-xs font-bold text-white hover:text-[#00e8b8] transition">
+              <Link href={`/assets/${encodeURIComponent(f.code || f.asset)}`} className="text-xs font-bold text-th-primary hover:text-th-accent transition">
                 {f.asset}
               </Link>
               {f.hasConflict && (
@@ -369,14 +369,14 @@ function SentimentFaceoff({ data, selected, colorMap, channelMap }: { data: any;
               {selected.map((ch, i) => {
                 const entry = f.channels.find((c) => c.id === ch.id)
                 if (!entry) return (
-                  <div key={ch.id} className="text-center text-[10px] text-[#3a4a6a] py-1">미언급</div>
+                  <div key={ch.id} className="text-center text-[10px] text-th-dim py-1">미언급</div>
                 )
                 const sentColor = SENTIMENT_COLORS[entry.sentiment] ?? "#64748b"
                 const sentLabel = entry.sentiment === "positive" ? "긍정" : entry.sentiment === "negative" ? "부정" : "중립"
                 return (
                   <div key={ch.id} className="flex items-center gap-1.5 justify-center">
                     <div className="w-1.5 h-1.5 rounded-full" style={{ background: COLORS[i] }} />
-                    <span className="text-[10px] text-[#7a8ba8] truncate">{ch.name}</span>
+                    <span className="text-[10px] text-th-muted truncate">{ch.name}</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{
                       background: `color-mix(in srgb, ${sentColor} 15%, transparent)`, color: sentColor,
                     }}>
@@ -425,37 +425,37 @@ function AssetCoverage({ data, selected, colorMap, channelMap }: { data: any; se
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           종목 커버리지 비교
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">공통 종목 vs 독점 종목</p>
+        <p className="text-[10px] text-th-dim mt-0.5">공통 종목 vs 독점 종목</p>
       </div>
       <div className="p-5 space-y-4">
         {/* Summary stats */}
         <div className={`grid gap-3 ${selected.length === 2 ? "grid-cols-3" : "grid-cols-4"}`}>
           {selected.map((ch, i) => (
             <div key={ch.id} className="glass-card rounded-lg p-3 text-center">
-              <span className="text-[10px] text-[#5a6a88]">{ch.name}</span>
+              <span className="text-[10px] text-th-dim">{ch.name}</span>
               <p className="text-lg font-extrabold tabular-nums mt-1" style={{ color: COLORS[i], fontFamily: "var(--font-outfit)" }}>
                 {coverage.byChannel.get(ch.id)?.size ?? 0}
               </p>
-              <span className="text-[9px] text-[#3a4a6a]">종목</span>
+              <span className="text-[9px] text-th-dim">종목</span>
             </div>
           ))}
           <div className="glass-card rounded-lg p-3 text-center">
-            <span className="text-[10px] text-[#5a6a88]">공통</span>
+            <span className="text-[10px] text-th-dim">공통</span>
             <p className="text-lg font-extrabold tabular-nums mt-1 text-[#ffb84d]" style={{ fontFamily: "var(--font-outfit)" }}>
               {coverage.shared.length}
             </p>
-            <span className="text-[9px] text-[#3a4a6a]">종목</span>
+            <span className="text-[9px] text-th-dim">종목</span>
           </div>
         </div>
 
         {/* Shared assets */}
         {coverage.shared.length > 0 && (
           <div>
-            <h4 className="text-[10px] text-[#5a6a88] uppercase tracking-wider mb-2">공통 종목</h4>
+            <h4 className="text-[10px] text-th-dim uppercase tracking-wider mb-2">공통 종목</h4>
             <div className="flex flex-wrap gap-1.5">
               {coverage.shared.map((asset) => (
                 <span key={asset} className="px-2 py-1 rounded-md text-[10px] font-medium bg-[#ffb84d]/10 text-[#ffb84d] border border-[#ffb84d]/20">
@@ -472,7 +472,7 @@ function AssetCoverage({ data, selected, colorMap, channelMap }: { data: any; se
           if (excl.length === 0) return null
           return (
             <div key={ch.id}>
-              <h4 className="text-[10px] text-[#5a6a88] uppercase tracking-wider mb-2">
+              <h4 className="text-[10px] text-th-dim uppercase tracking-wider mb-2">
                 {ch.name} 독점 종목
               </h4>
               <div className="flex flex-wrap gap-1.5">
@@ -486,7 +486,7 @@ function AssetCoverage({ data, selected, colorMap, channelMap }: { data: any; se
                   </span>
                 ))}
                 {excl.length > 15 && (
-                  <span className="text-[10px] text-[#3a4a6a] self-center">+{excl.length - 15}개</span>
+                  <span className="text-[10px] text-th-dim self-center">+{excl.length - 15}개</span>
                 )}
               </div>
             </div>
@@ -537,17 +537,17 @@ function EngagementRate({ data, selected, colorMap }: { data: any; selected: Cha
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           구독자 대비 영향력
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">구독자 수 대비 실제 참여도 비교</p>
+        <p className="text-[10px] text-th-dim mt-0.5">구독자 수 대비 실제 참여도 비교</p>
       </div>
       <div className="p-4 overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-[#1a2744]">
-              <th className="text-left py-2 pr-4 text-[#5a6a88] font-normal text-[10px]">지표</th>
+            <tr className="border-b border-th-border">
+              <th className="text-left py-2 pr-4 text-th-dim font-normal text-[10px]">지표</th>
               {engMetrics.map((m) => (
                 <th key={m.id} className="text-right py-2 px-2 font-semibold text-[11px]" style={{ color: m.color }}>
                   {m.name}
@@ -557,11 +557,11 @@ function EngagementRate({ data, selected, colorMap }: { data: any; selected: Cha
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.label} className="border-b border-[#1a2744]/30">
-                <td className="py-2.5 pr-4 text-[#7a8ba8] text-[11px]">{row.label}</td>
+              <tr key={row.label} className="border-b border-th-border/30">
+                <td className="py-2.5 pr-4 text-th-muted text-[11px]">{row.label}</td>
                 {engMetrics.map((m) => (
                   <td key={m.id} className="py-2.5 px-2 text-right tabular-nums" style={{
-                    color: row.highlight ? m.color : "#e2e8f0",
+                    color: row.highlight ? m.color : "var(--th-text-primary)",
                     fontWeight: row.highlight ? 700 : 400,
                     fontFamily: "var(--font-outfit)",
                     fontSize: row.highlight ? "13px" : "11px",
@@ -606,18 +606,18 @@ function MentionDensity({ data, selected, colorMap }: { data: any; selected: Cha
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           영상당 종목 밀도
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">밀도 높을수록 다양한 종목 커버, 낮을수록 깊이 분석</p>
+        <p className="text-[10px] text-th-dim mt-0.5">밀도 높을수록 다양한 종목 커버, 낮을수록 깊이 분석</p>
       </div>
       <div className="p-5 space-y-4">
         {densityData.map((d) => (
           <div key={d.id}>
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-white">{d.name}</span>
+                <span className="text-xs font-medium text-th-primary">{d.name}</span>
                 <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{
                   background: `color-mix(in srgb, ${d.color} 15%, transparent)`, color: d.color,
                 }}>
@@ -628,13 +628,13 @@ function MentionDensity({ data, selected, colorMap }: { data: any; selected: Cha
                 {d.density.toFixed(2)}
               </span>
             </div>
-            <div className="h-4 bg-[#0a1120] rounded-full overflow-hidden">
+            <div className="h-4 bg-th-card rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{ width: `${(d.density / maxDensity) * 100}%`, background: d.color }}
               />
             </div>
-            <div className="flex gap-4 mt-1 text-[9px] text-[#3a4a6a]">
+            <div className="flex gap-4 mt-1 text-[9px] text-th-dim">
               <span>총 멘션: {d.totalMentions}건</span>
               <span>영상: {d.totalVideos}개</span>
               <span>종목: {d.uniqueAssets}개</span>
@@ -691,11 +691,11 @@ function UploadPattern({ data, selected, colorMap }: { data: any; selected: Chan
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           업로드 패턴 비교
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">요일별/시간대별 영상 업로드 빈도</p>
+        <p className="text-[10px] text-th-dim mt-0.5">요일별/시간대별 영상 업로드 빈도</p>
       </div>
       <div className="p-4 space-y-6">
         {patterns.map((p) => (
@@ -703,9 +703,9 @@ function UploadPattern({ data, selected, colorMap }: { data: any; selected: Chan
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-                <span className="text-xs font-medium text-white">{p.name}</span>
+                <span className="text-xs font-medium text-th-primary">{p.name}</span>
               </div>
-              <div className="flex gap-3 text-[9px] text-[#5a6a88]">
+              <div className="flex gap-3 text-[9px] text-th-dim">
                 <span>피크: {DAY_LABELS[p.peakDay]} {p.peakHour}시</span>
                 <span>평일 {p.weekday} / 주말 {p.weekend}</span>
               </div>
@@ -714,7 +714,7 @@ function UploadPattern({ data, selected, colorMap }: { data: any; selected: Chan
             <div className="space-y-[2px]">
               {[1, 2, 3, 4, 5, 6, 0].map((day) => (
                 <div key={day} className="flex items-center gap-[2px]">
-                  <span className="text-[8px] text-[#3a4a6a] w-4 text-right shrink-0">{DAY_LABELS[day]}</span>
+                  <span className="text-[8px] text-th-dim w-4 text-right shrink-0">{DAY_LABELS[day]}</span>
                   <div className="flex gap-[1px] flex-1">
                     {Array.from({ length: 24 }, (_, h) => {
                       const val = p.grid[day][h]
@@ -725,8 +725,8 @@ function UploadPattern({ data, selected, colorMap }: { data: any; selected: Chan
                           className="flex-1 h-3 rounded-[1px]"
                           style={{
                             background: opacity > 0
-                              ? `color-mix(in srgb, ${p.color} ${Math.max(opacity * 100, 15)}%, #0a1120)`
-                              : "#0e1520",
+                              ? `color-mix(in srgb, ${p.color} ${Math.max(opacity * 100, 15)}%, var(--th-bg-card))`
+                              : "var(--th-bg-tertiary)",
                           }}
                           title={`${DAY_LABELS[day]} ${h}시: ${val}개`}
                         />
@@ -740,7 +740,7 @@ function UploadPattern({ data, selected, colorMap }: { data: any; selected: Chan
                 <span className="w-4 shrink-0" />
                 <div className="flex gap-[1px] flex-1">
                   {Array.from({ length: 24 }, (_, h) => (
-                    <div key={h} className="flex-1 text-center text-[6px] text-[#2a3a5a]">
+                    <div key={h} className="flex-1 text-center text-[6px] text-th-strong">
                       {h % 6 === 0 ? h : ""}
                     </div>
                   ))}
@@ -767,18 +767,18 @@ function TopVideos({ data, selected, colorMap }: { data: any; selected: Channel[
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           인기 영상 TOP 5
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">채널별 최고 조회수 영상 비교</p>
+        <p className="text-[10px] text-th-dim mt-0.5">채널별 최고 조회수 영상 비교</p>
       </div>
       <div className={`grid gap-4 p-4 ${selected.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
         {videosByChannel.map(({ channel, color, videos }) => (
           <div key={channel.id} className="space-y-2">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2 h-2 rounded-full" style={{ background: color }} />
-              <span className="text-xs font-semibold text-white">{channel.name}</span>
+              <span className="text-xs font-semibold text-th-primary">{channel.name}</span>
             </div>
             {videos.map((v: any, idx: number) => (
               <a
@@ -786,7 +786,7 @@ function TopVideos({ data, selected, colorMap }: { data: any; selected: Channel[
                 href={`https://youtube.com/watch?v=${v.youtube_video_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex gap-2.5 p-2 rounded-lg hover:bg-[#0e1a30]/50 transition group"
+                className="flex gap-2.5 p-2 rounded-lg hover:bg-th-hover/50 transition group"
               >
                 <div className="relative shrink-0">
                   <img
@@ -799,10 +799,10 @@ function TopVideos({ data, selected, colorMap }: { data: any; selected: Channel[
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] text-[#c8d0dc] line-clamp-2 group-hover:text-white transition leading-tight">
+                  <p className="text-[10px] text-th-muted line-clamp-2 group-hover:text-th-primary transition leading-tight">
                     {v.title}
                   </p>
-                  <div className="flex gap-2 mt-1 text-[9px] text-[#3a4a6a]">
+                  <div className="flex gap-2 mt-1 text-[9px] text-th-dim">
                     <span>{formatViewCount(v.view_count)} 조회</span>
                     {v.like_count > 0 && <span>{formatViewCount(v.like_count)} 좋아요</span>}
                   </div>
@@ -866,8 +866,8 @@ function ReactionSpeed({ data, selected, colorMap, channelMap }: { data: any; se
   if (speedData.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>종목 반응 속도</h3>
-        <p className="text-sm text-[#5a6a88] mt-2">공통 종목 데이터가 부족합니다</p>
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>종목 반응 속도</h3>
+        <p className="text-sm text-th-dim mt-2">공통 종목 데이터가 부족합니다</p>
       </div>
     )
   }
@@ -881,22 +881,22 @@ function ReactionSpeed({ data, selected, colorMap, channelMap }: { data: any; se
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           종목 반응 속도
         </h3>
-        <p className="text-[10px] text-[#5a6a88] mt-0.5">같은 종목을 어떤 채널이 먼저 다루었는지 비교</p>
+        <p className="text-[10px] text-th-dim mt-0.5">같은 종목을 어떤 채널이 먼저 다루었는지 비교</p>
       </div>
       <div className="p-4">
         {/* Speed leader summary */}
         <div className={`grid gap-3 mb-4 ${selected.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
           {selected.map((ch, i) => (
             <div key={ch.id} className="glass-card rounded-lg p-3 text-center">
-              <span className="text-[10px] text-[#5a6a88]">{ch.name}</span>
+              <span className="text-[10px] text-th-dim">{ch.name}</span>
               <p className="text-lg font-extrabold tabular-nums mt-1" style={{ color: COLORS[i], fontFamily: "var(--font-outfit)" }}>
                 {firstCounts.get(ch.id) ?? 0}
               </p>
-              <span className="text-[9px] text-[#3a4a6a]">회 선제 언급</span>
+              <span className="text-[9px] text-th-dim">회 선제 언급</span>
             </div>
           ))}
         </div>
@@ -904,7 +904,7 @@ function ReactionSpeed({ data, selected, colorMap, channelMap }: { data: any; se
         <div className="space-y-2">
           {speedData.map((s) => (
             <div key={s.asset} className="glass-card rounded-lg p-3">
-              <span className="text-[11px] font-bold text-white">{s.asset}</span>
+              <span className="text-[11px] font-bold text-th-primary">{s.asset}</span>
               <div className="mt-2 space-y-1">
                 {s.entries.map((e) => (
                   <div key={e.id} className="flex items-center gap-2">
@@ -912,8 +912,8 @@ function ReactionSpeed({ data, selected, colorMap, channelMap }: { data: any; se
                       {e.rank === 1 ? "1st" : `${e.rank}nd`}
                     </span>
                     <div className="w-1.5 h-1.5 rounded-full" style={{ background: e.color }} />
-                    <span className="text-[10px] text-[#7a8ba8] w-20 truncate">{e.name}</span>
-                    <span className="text-[9px] tabular-nums text-[#5a6a88]" style={{ fontFamily: "var(--font-outfit)" }}>
+                    <span className="text-[10px] text-th-muted w-20 truncate">{e.name}</span>
+                    <span className="text-[9px] tabular-nums text-th-dim" style={{ fontFamily: "var(--font-outfit)" }}>
                       {e.date.toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
                     </span>
                     {e.diffHours > 0 && (
@@ -968,16 +968,16 @@ function ProfileRadarOverlay({ data, selected, colorMap }: { data: any; selected
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
           유튜버 성향 비교 레이더
         </h3>
       </div>
       <div className="p-4">
         <ResponsiveContainer width="100%" height={300}>
           <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-            <PolarGrid stroke="#1a2744" />
-            <PolarAngleAxis dataKey="axis" tick={{ fill: "#7a8ba8", fontSize: 11 }} />
+            <PolarGrid stroke="var(--th-border)" />
+            <PolarAngleAxis dataKey="axis" tick={{ fill: "var(--th-text-muted)", fontSize: 11 }} />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
             {selected.map((ch, i) => (
               <Radar
@@ -990,7 +990,7 @@ function ProfileRadarOverlay({ data, selected, colorMap }: { data: any; selected
                 strokeWidth={2}
               />
             ))}
-            <Legend wrapperStyle={{ fontSize: "11px", color: "#7a8ba8" }} />
+            <Legend wrapperStyle={{ fontSize: "11px", color: "var(--th-text-muted)" }} />
           </RadarChart>
         </ResponsiveContainer>
       </div>

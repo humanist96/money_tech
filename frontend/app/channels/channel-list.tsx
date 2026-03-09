@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
-import type { Channel, ChannelType } from "@/lib/types"
-import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types"
+import type { Channel, ChannelType, Platform } from "@/lib/types"
+import { CATEGORY_LABELS, CATEGORY_COLORS, PLATFORM_CONFIG } from "@/lib/types"
 import { formatViewCount } from "@/lib/queries"
 import { ChannelTypeBadge } from "@/components/ui/channel-type-badge"
 
@@ -77,7 +77,7 @@ function ChannelCardGrid({ channel, rank }: { channel: Channel; rank: number }) 
           <div
             className="absolute inset-0"
             style={{
-              background: `linear-gradient(135deg, color-mix(in srgb, ${color} 15%, #0a1120) 0%, #0a1120 100%)`,
+              background: `linear-gradient(135deg, color-mix(in srgb, ${color} 15%, var(--th-bg-card)) 0%, var(--th-bg-card) 100%)`,
             }}
           />
           <div
@@ -96,12 +96,12 @@ function ChannelCardGrid({ channel, rank }: { channel: Channel; rank: number }) 
                 <img
                   src={channel.thumbnail_url}
                   alt={channel.name}
-                  className="w-14 h-14 rounded-[14px] object-cover bg-[#0a1120]"
+                  className="w-14 h-14 rounded-[14px] object-cover bg-th-card"
                 />
               ) : (
                 <div
                   className="w-14 h-14 rounded-[14px] flex items-center justify-center text-xl font-bold"
-                  style={{ background: `color-mix(in srgb, ${color} 18%, #0a1120)`, color }}
+                  style={{ background: `color-mix(in srgb, ${color} 18%, var(--th-bg-card))`, color }}
                 >
                   {channel.name[0]}
                 </div>
@@ -114,7 +114,7 @@ function ChannelCardGrid({ channel, rank }: { channel: Channel; rank: number }) 
         <div className="px-5 pt-10 pb-5">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="font-bold text-[15px] text-white truncate group-hover:text-[#00e8b8] transition-colors duration-200">
+              <h3 className="font-bold text-[15px] text-th-primary truncate group-hover:text-th-accent transition-colors duration-200">
                 {channel.name}
               </h3>
               <div className="flex items-center gap-2 mt-1.5">
@@ -127,53 +127,85 @@ function ChannelCardGrid({ channel, rank }: { channel: Channel; rank: number }) 
                 {channel.channel_type && channel.channel_type !== 'unknown' && (
                   <ChannelTypeBadge type={channel.channel_type as ChannelType} />
                 )}
-                <a
-                  href={`https://www.youtube.com/channel/${channel.youtube_channel_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#475569] hover:text-[#ff0000] transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                  </svg>
-                </a>
+                {(channel.platform ?? 'youtube') === 'naver_blog' ? (
+                  <>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#03c75a]/15 text-[#03c75a] border border-[#03c75a]/25">
+                      BLOG
+                    </span>
+                    <a
+                      href={channel.blog_url ?? `https://blog.naver.com/${channel.blog_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-th-dim hover:text-[#03c75a] transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                      </svg>
+                    </a>
+                  </>
+                ) : (
+                  <a
+                    href={`https://www.youtube.com/channel/${channel.youtube_channel_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-th-dim hover:text-[#ff0000] transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </a>
+                )}
               </div>
             </div>
           </div>
 
           {channel.description && (
-            <p className="text-[11px] text-[#5a6a88] mt-3 line-clamp-2 leading-[1.6]">
+            <p className="text-[11px] text-th-dim mt-3 line-clamp-2 leading-[1.6]">
               {channel.description}
             </p>
           )}
 
           {/* Stats grid */}
-          <div className="mt-4 pt-4 border-t border-[#1a2744]/50 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-[#475569] uppercase tracking-wider font-medium">구독자</span>
-              <span className="text-sm font-bold tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color }}>
-                {formatViewCount(channel.subscriber_count)}
-              </span>
-            </div>
-            <div className="stat-bar">
-              <div className="stat-bar-fill" style={{ width: `${subRatio}%`, background: color }} />
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <span className="text-[10px] text-[#475569] uppercase tracking-wider">조회수</span>
-                <p className="text-[13px] font-semibold text-[#b4c1d8] mt-0.5 tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  {formatViewCount(channel.total_view_count)}
-                </p>
-              </div>
-              <div className="w-px h-6 bg-[#1a2744]" />
-              <div className="flex-1 text-right">
-                <span className="text-[10px] text-[#475569] uppercase tracking-wider">영상</span>
-                <p className="text-[13px] font-semibold text-[#b4c1d8] mt-0.5 tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  {channel.video_count?.toLocaleString() ?? "-"}
-                </p>
-              </div>
-            </div>
+          <div className="mt-4 pt-4 border-t border-th-border/50 space-y-3">
+            {(channel.platform ?? 'youtube') === 'naver_blog' ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-th-dim uppercase tracking-wider font-medium">포스트</span>
+                  <span className="text-sm font-bold tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color }}>
+                    {channel.video_count?.toLocaleString() ?? "-"}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-th-dim uppercase tracking-wider font-medium">구독자</span>
+                  <span className="text-sm font-bold tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color }}>
+                    {formatViewCount(channel.subscriber_count)}
+                  </span>
+                </div>
+                <div className="stat-bar">
+                  <div className="stat-bar-fill" style={{ width: `${subRatio}%`, background: color }} />
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <span className="text-[10px] text-th-dim uppercase tracking-wider">조회수</span>
+                    <p className="text-[13px] font-semibold text-th-muted mt-0.5 tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
+                      {formatViewCount(channel.total_view_count)}
+                    </p>
+                  </div>
+                  <div className="w-px h-6 bg-th-tertiary" />
+                  <div className="flex-1 text-right">
+                    <span className="text-[10px] text-th-dim uppercase tracking-wider">영상</span>
+                    <p className="text-[13px] font-semibold text-th-muted mt-0.5 tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
+                      {channel.video_count?.toLocaleString() ?? "-"}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -202,11 +234,11 @@ function ChannelCardList({ channel, rank }: { channel: Channel; rank: number }) 
           style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 30%, transparent))` }}
         >
           {channel.thumbnail_url ? (
-            <img src={channel.thumbnail_url} alt="" className="w-11 h-11 rounded-[10px] object-cover bg-[#0a1120]" />
+            <img src={channel.thumbnail_url} alt="" className="w-11 h-11 rounded-[10px] object-cover bg-th-card" />
           ) : (
             <div
               className="w-11 h-11 rounded-[10px] flex items-center justify-center text-base font-bold"
-              style={{ background: `color-mix(in srgb, ${color} 15%, #0a1120)`, color }}
+              style={{ background: `color-mix(in srgb, ${color} 15%, var(--th-bg-card))`, color }}
             >
               {channel.name[0]}
             </div>
@@ -215,7 +247,7 @@ function ChannelCardList({ channel, rank }: { channel: Channel; rank: number }) 
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm text-white truncate hover:text-[#00e8b8] transition-colors">
+            <h3 className="font-semibold text-sm text-th-primary truncate hover:text-th-accent transition-colors">
               {channel.name}
             </h3>
             <span
@@ -226,7 +258,7 @@ function ChannelCardList({ channel, rank }: { channel: Channel; rank: number }) 
             </span>
           </div>
           {channel.description && (
-            <p className="text-[11px] text-[#475569] mt-0.5 line-clamp-1">{channel.description}</p>
+            <p className="text-[11px] text-th-dim mt-0.5 line-clamp-1">{channel.description}</p>
           )}
         </div>
 
@@ -235,23 +267,23 @@ function ChannelCardList({ channel, rank }: { channel: Channel; rank: number }) 
             <p className="text-[13px] font-bold tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color }}>
               {formatViewCount(channel.subscriber_count)}
             </p>
-            <p className="text-[9px] text-[#475569] uppercase tracking-wider">구독자</p>
+            <p className="text-[9px] text-th-dim uppercase tracking-wider">구독자</p>
           </div>
           <div className="text-right min-w-[72px]">
-            <p className="text-[13px] font-semibold text-[#94a3b8] tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <p className="text-[13px] font-semibold text-th-muted tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
               {formatViewCount(channel.total_view_count)}
             </p>
-            <p className="text-[9px] text-[#475569] uppercase tracking-wider">조회수</p>
+            <p className="text-[9px] text-th-dim uppercase tracking-wider">조회수</p>
           </div>
           <div className="text-right min-w-[56px]">
-            <p className="text-[13px] font-semibold text-[#94a3b8] tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <p className="text-[13px] font-semibold text-th-muted tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
               {channel.video_count?.toLocaleString() ?? "-"}
             </p>
-            <p className="text-[9px] text-[#475569] uppercase tracking-wider">영상</p>
+            <p className="text-[9px] text-th-dim uppercase tracking-wider">영상</p>
           </div>
         </div>
 
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a3a5c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--th-border-strong)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
           <path d="m9 18 6-6-6-6" />
         </svg>
       </div>
@@ -259,8 +291,15 @@ function ChannelCardList({ channel, rank }: { channel: Channel; rank: number }) 
   )
 }
 
+const PLATFORM_FILTERS = [
+  { value: "all", label: "전체", color: "var(--th-accent)" },
+  { value: "youtube", label: "YouTube", color: "#ff0000" },
+  { value: "naver_blog", label: "블로그", color: "#03c75a" },
+]
+
 export function ChannelList({ channels }: ChannelListProps) {
   const [category, setCategory] = useState("all")
+  const [platform, setPlatform] = useState("all")
   const [sortBy, setSortBy] = useState<SortKey>("subscriber_count")
   const [search, setSearch] = useState("")
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
@@ -268,6 +307,7 @@ export function ChannelList({ channels }: ChannelListProps) {
   const filtered = useMemo(() => {
     return channels
       .filter((ch) => category === "all" || ch.category === category)
+      .filter((ch) => platform === "all" || (ch.platform ?? "youtube") === platform)
       .filter((ch) => {
         if (!search.trim()) return true
         const q = search.toLowerCase()
@@ -281,7 +321,7 @@ export function ChannelList({ channels }: ChannelListProps) {
         if (sortBy === "name") return a.name.localeCompare(b.name)
         return ((b[sortBy] ?? 0) as number) - ((a[sortBy] ?? 0) as number)
       })
-  }, [channels, category, sortBy, search])
+  }, [channels, category, platform, sortBy, search])
 
   const catCounts = useMemo(() => {
     const counts: Record<string, number> = { all: channels.length }
@@ -291,11 +331,20 @@ export function ChannelList({ channels }: ChannelListProps) {
     return counts
   }, [channels])
 
+  const platformCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: channels.length }
+    for (const ch of channels) {
+      const p = ch.platform ?? "youtube"
+      counts[p] = (counts[p] ?? 0) + 1
+    }
+    return counts
+  }, [channels])
+
   return (
     <div className="space-y-6">
       {/* Search */}
       <div className="search-glow glass-card-elevated rounded-2xl px-5 py-4 flex items-center gap-3">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--th-text-dim)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
         </svg>
         <input
@@ -303,12 +352,12 @@ export function ChannelList({ channels }: ChannelListProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="채널명, 설명, 카테고리로 검색..."
-          className="flex-1 bg-transparent text-sm text-[#e2e8f0] placeholder:text-[#3a4a6a] outline-none"
+          className="flex-1 bg-transparent text-sm text-th-primary placeholder:text-th-dim outline-none"
         />
         {search && (
           <button
             onClick={() => setSearch("")}
-            className="flex items-center justify-center w-6 h-6 rounded-full bg-[#1a2744] text-[#64748b] hover:text-[#e2e8f0] hover:bg-[#2a3a5c] transition-all"
+            className="flex items-center justify-center w-6 h-6 rounded-full bg-th-tertiary text-th-dim hover:text-th-primary hover:bg-th-hover transition-all"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M18 6 6 18" /><path d="m6 6 12 12" />
@@ -316,7 +365,7 @@ export function ChannelList({ channels }: ChannelListProps) {
           </button>
         )}
         {search && (
-          <span className="text-[11px] text-[#475569] tabular-nums shrink-0">
+          <span className="text-[11px] text-th-dim tabular-nums shrink-0">
             {filtered.length}건
           </span>
         )}
@@ -324,8 +373,43 @@ export function ChannelList({ channels }: ChannelListProps) {
 
       {/* Controls row */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        {/* Category pills */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Category + Platform pills */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Platform filter */}
+          <div className="flex items-center gap-1">
+            {PLATFORM_FILTERS.map((pf) => {
+              const isActive = platform === pf.value
+              const count = platformCounts[pf.value] ?? 0
+              return (
+                <button
+                  key={pf.value}
+                  onClick={() => setPlatform(pf.value)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200"
+                  style={
+                    isActive
+                      ? {
+                          background: `color-mix(in srgb, ${pf.color} 12%, transparent)`,
+                          color: pf.color,
+                          border: `1px solid color-mix(in srgb, ${pf.color} 30%, transparent)`,
+                        }
+                      : {
+                          background: 'transparent',
+                          color: 'var(--th-text-dim)',
+                          border: '1px solid var(--th-border)',
+                        }
+                  }
+                >
+                  {pf.label}
+                  <span className="text-[10px] tabular-nums" style={{ opacity: isActive ? 0.8 : 0.5 }}>
+                    {count}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <div className="w-px h-5 bg-th-tertiary" />
+          {/* Category pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
           {CATEGORIES.map((cat) => {
             const isActive = category === cat.value
             const count = catCounts[cat.value] ?? 0
@@ -344,8 +428,8 @@ export function ChannelList({ channels }: ChannelListProps) {
                       }
                     : {
                         background: 'transparent',
-                        color: '#5a6a88',
-                        border: '1px solid #1a2744',
+                        color: 'var(--th-text-dim)',
+                        border: '1px solid var(--th-border)',
                       }
                 }
               >
@@ -360,6 +444,7 @@ export function ChannelList({ channels }: ChannelListProps) {
               </button>
             )
           })}
+          </div>
         </div>
 
         {/* Sort + View toggle */}
@@ -376,7 +461,7 @@ export function ChannelList({ channels }: ChannelListProps) {
               </button>
             ))}
           </div>
-          <div className="w-px h-5 bg-[#1a2744] mx-1" />
+          <div className="w-px h-5 bg-th-tertiary mx-1" />
           <div className="flex items-center gap-0.5">
             <button
               onClick={() => setViewMode("grid")}
@@ -411,7 +496,7 @@ export function ChannelList({ channels }: ChannelListProps) {
           ))}
         </div>
       ) : (
-        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[#1a2744]/40 stagger-in">
+        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-th-border/40 stagger-in">
           {filtered.map((channel, i) => (
             <ChannelCardList key={channel.id} channel={channel} rank={i + 1} />
           ))}
@@ -420,16 +505,16 @@ export function ChannelList({ channels }: ChannelListProps) {
 
       {filtered.length === 0 && (
         <div className="glass-card rounded-2xl py-20 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#0e1a30] flex items-center justify-center">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2a3a5c" strokeWidth="1.5">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-th-tertiary flex items-center justify-center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--th-border-strong)" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
             </svg>
           </div>
-          <p className="text-[#5a6a88] text-sm font-medium">검색 결과가 없습니다</p>
-          <p className="text-[#3a4a6a] text-xs mt-1">다른 키워드나 카테고리를 시도해보세요</p>
+          <p className="text-th-dim text-sm font-medium">검색 결과가 없습니다</p>
+          <p className="text-th-dim text-xs mt-1">다른 키워드나 카테고리를 시도해보세요</p>
           <button
-            onClick={() => { setSearch(""); setCategory("all") }}
-            className="mt-4 text-xs text-[#00e8b8] hover:text-[#00ffc8] transition font-medium"
+            onClick={() => { setSearch(""); setCategory("all"); setPlatform("all") }}
+            className="mt-4 text-xs text-th-accent hover:text-[#00ffc8] transition font-medium"
           >
             필터 초기화
           </button>

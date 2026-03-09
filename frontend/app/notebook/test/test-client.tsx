@@ -285,10 +285,10 @@ export default function TestClient() {
   if (!extensionReady) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-white">NotebookLM API 테스트</h1>
+        <h1 className="text-2xl font-bold text-th-primary">NotebookLM API 테스트</h1>
         <div className="card p-8 text-center space-y-3">
           <p className="text-red-400 text-sm">Chrome 확장 프로그램이 감지되지 않습니다.</p>
-          <p className="text-[#556a8a] text-xs">chrome://extensions에서 MoneyTech 확장 프로그램을 리로드하고 이 페이지를 새로고침하세요.</p>
+          <p className="text-th-dim text-xs">chrome://extensions에서 MoneyTech 확장 프로그램을 리로드하고 이 페이지를 새로고침하세요.</p>
         </div>
       </div>
     )
@@ -302,13 +302,13 @@ export default function TestClient() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">NotebookLM API 테스트</h1>
-          <p className="text-sm text-[#556a8a] mt-1">확장 프로그램의 각 기능을 순차적으로 테스트합니다</p>
+          <h1 className="text-2xl font-bold text-th-primary">NotebookLM API 테스트</h1>
+          <p className="text-sm text-th-dim mt-1">확장 프로그램의 각 기능을 순차적으로 테스트합니다</p>
         </div>
         <button
           onClick={runAllTests}
           disabled={running}
-          className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all disabled:opacity-40"
+          className="btn-accent px-5 py-2.5 text-sm disabled:opacity-40"
         >
           {running ? '테스트 실행 중...' : '전체 테스트 실행'}
         </button>
@@ -326,8 +326,8 @@ export default function TestClient() {
             <span className="text-sm text-red-400">{errorCount} 실패</span>
           </div>
           <div className="card px-4 py-2 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#556a8a]" />
-            <span className="text-sm text-[#556a8a]">{tests.length - totalDone} 대기</span>
+            <div className="w-2 h-2 rounded-full bg-th-dim" />
+            <span className="text-sm text-th-dim">{tests.length - totalDone} 대기</span>
           </div>
         </div>
       )}
@@ -339,20 +339,20 @@ export default function TestClient() {
             test.status === 'success' ? 'border-l-emerald-500' :
             test.status === 'error' ? 'border-l-red-500' :
             test.status === 'running' ? 'border-l-yellow-500' :
-            'border-l-[#1a2744]'
+            'border-l-th-border'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <StatusIcon status={test.status} />
-                <span className="text-sm font-medium text-white">{test.name}</span>
+                <span className="text-sm font-medium text-th-primary">{test.name}</span>
               </div>
               {test.duration !== undefined && (
-                <span className="text-[10px] text-[#556a8a]">{test.duration}ms</span>
+                <span className="text-[10px] text-th-dim">{test.duration}ms</span>
               )}
             </div>
 
             {test.result && (
-              <pre className="mt-2 p-2 bg-[#060e1a] rounded text-xs text-emerald-400 whitespace-pre-wrap break-all max-h-[200px] overflow-y-auto">
+              <pre className="mt-2 p-2 bg-th-card-deep rounded text-xs text-emerald-400 whitespace-pre-wrap break-all max-h-[200px] overflow-y-auto">
                 {test.result}
               </pre>
             )}

@@ -11,17 +11,17 @@ export function ConsensusScore({ data, title = "종목별 합의도" }: Consensu
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">종목 언급 데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">종목 언급 데이터를 수집 중입니다.</p>
       </div>
     )
   }
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <span className="text-[10px] text-[#5a6a88]">최근 7일 | 2개 이상 채널 언급</span>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <span className="text-[10px] text-th-dim">최근 7일 | 2개 이상 채널 언급</span>
       </div>
       <div className="p-4 space-y-2">
         {data.map((asset) => {
@@ -33,15 +33,15 @@ export function ConsensusScore({ data, title = "종목별 합의도" }: Consensu
           const badgeColor = dominant === "positive" ? "#22c997" : dominant === "negative" ? "#ff5757" : "#ffb84d"
 
           return (
-            <div key={asset.asset_code || asset.asset_name} className="px-3 py-3 rounded-xl hover:bg-[#0e1a30]/50 transition">
+            <div key={asset.asset_code || asset.asset_name} className="px-3 py-3 rounded-xl hover:bg-th-hover/50 transition">
               <div className="flex items-center gap-3 mb-2">
                 <a
                   href={`/assets/${encodeURIComponent(asset.asset_code || asset.asset_name)}`}
-                  className="text-sm font-semibold text-white hover:text-[#00e8b8] transition truncate"
+                  className="text-sm font-semibold text-th-primary hover:text-th-accent transition truncate"
                 >
                   {asset.asset_name}
                 </a>
-                <span className="text-[10px] text-[#5a6a88] tabular-nums shrink-0">
+                <span className="text-[10px] text-th-dim tabular-nums shrink-0">
                   {asset.channel_count}개 채널 | {asset.total_mentions}회
                 </span>
                 <span
@@ -55,7 +55,7 @@ export function ConsensusScore({ data, title = "종목별 합의도" }: Consensu
                   {asset.consensus_score}% {dominant === "positive" ? "긍정" : dominant === "negative" ? "부정" : "중립"}
                 </span>
               </div>
-              <div className="flex rounded-full overflow-hidden h-2.5 bg-[#0e1a30]">
+              <div className="flex rounded-full overflow-hidden h-2.5 bg-th-tertiary">
                 <div
                   className="h-full transition-all duration-500"
                   style={{ width: `${asset.positive_pct}%`, background: "#22c997" }}

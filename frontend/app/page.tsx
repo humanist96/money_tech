@@ -77,15 +77,15 @@ export default async function DashboardPage() {
                 <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
               대시보드
             </h1>
           </div>
-          <p className="text-[#5a6a88] text-sm">
+          <p className="text-th-dim text-sm">
             재테크 유튜브 채널 실시간 분석 현황
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-[#3a4a6a]">
+        <div className="flex items-center gap-2 text-xs text-th-dim">
           <span className="w-2 h-2 rounded-full bg-[#00e8b8] pulse-dot" />
           Live
         </div>

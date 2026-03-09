@@ -49,16 +49,16 @@ export function AssetHeatmap({ assets, title = "종목 언급 히트맵" }: Asse
   if (assets.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">데이터를 수집 중입니다.</p>
       </div>
     )
   }
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
         <div className="flex items-center gap-1">
           {[
             { value: "all", label: "전체" },
@@ -78,7 +78,7 @@ export function AssetHeatmap({ assets, title = "종목 언급 히트맵" }: Asse
       </div>
 
       <div className="p-5">
-        <div className="flex items-center gap-5 mb-4 text-[10px] text-[#5a6a88]">
+        <div className="flex items-center gap-5 mb-4 text-[10px] text-th-dim">
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-[#22c997]" /> 긍정</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-[#ff5757]" /> 부정</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-[#7c6cf0]" /> 중립</span>
@@ -101,7 +101,7 @@ export function AssetHeatmap({ assets, title = "종목 언급 히트맵" }: Asse
                 style={{
                   width: `${size}px`,
                   height: `${size * 0.7}px`,
-                  background: `color-mix(in srgb, ${color} 10%, #0a1120)`,
+                  background: `color-mix(in srgb, ${color} 10%, var(--th-bg-card))`,
                   border: `1px solid color-mix(in srgb, ${color} 25%, transparent)`,
                   boxShadow: `0 0 ${10 * sizeRatio}px color-mix(in srgb, ${color} ${Math.round(12 * sizeRatio)}%, transparent)`,
                 }}
@@ -109,14 +109,14 @@ export function AssetHeatmap({ assets, title = "종목 언급 히트맵" }: Asse
                 <span className="text-xs font-bold truncate px-1.5" style={{ color, fontSize: `${Math.max(10, 12 * Math.sqrt(sizeRatio))}px` }}>
                   {asset.asset_name}
                 </span>
-                <span className="text-[9px] text-[#5a6a88] mt-0.5 tabular-nums">
+                <span className="text-[9px] text-th-dim mt-0.5 tabular-nums">
                   {asset.mention_count}회
                 </span>
 
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 hidden group-hover:block z-20 pointer-events-none">
                   <div className="glass-card-elevated rounded-xl px-3.5 py-2.5 text-[10px] whitespace-nowrap shadow-2xl">
-                    <p className="font-bold text-white">{asset.asset_name} ({asset.asset_code})</p>
-                    <p className="text-[#5a6a88] mt-0.5">{TYPE_LABELS[asset.asset_type]}</p>
+                    <p className="font-bold text-th-primary">{asset.asset_name} ({asset.asset_code})</p>
+                    <p className="text-th-dim mt-0.5">{TYPE_LABELS[asset.asset_type]}</p>
                     <div className="flex gap-2.5 mt-1.5">
                       <span className="text-[#22c997]">긍정 {asset.positive_count}</span>
                       <span className="text-[#ff5757]">부정 {asset.negative_count}</span>

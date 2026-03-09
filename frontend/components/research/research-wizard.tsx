@@ -47,8 +47,8 @@ export default function ResearchWizard({ onStart, savedNotebooks, onOpenNotebook
       {/* Main Input */}
       <div className="card p-6 space-y-5">
         <div className="text-center space-y-1">
-          <h2 className="text-xl font-bold text-white">AI 투자 리서치</h2>
-          <p className="text-sm text-[#556a8a]">키워드를 입력하면 다양한 소스를 수집하여 NotebookLM에서 종합 분석합니다</p>
+          <h2 className="text-xl font-bold text-th-primary">AI 투자 리서치</h2>
+          <p className="text-sm text-th-dim">키워드를 입력하면 다양한 소스를 수집하여 NotebookLM에서 종합 분석합니다</p>
         </div>
 
         <div>
@@ -58,13 +58,13 @@ export default function ResearchWizard({ onStart, savedNotebooks, onOpenNotebook
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleStart()}
             placeholder="리서치 주제 (예: 삼성전자, 비트코인 전망, AI 반도체)"
-            className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-3 text-base text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors text-center"
+            className="w-full bg-th-secondary border border-th-border rounded-lg px-4 py-3 text-base text-th-primary placeholder:text-th-dim focus:outline-none focus:border-th-accent/50 transition-colors text-center"
           />
         </div>
 
         {/* Source Selection */}
         <div>
-          <p className="text-xs font-semibold text-[#556a8a] uppercase tracking-wider mb-3">수집 소스 선택</p>
+          <p className="text-xs font-semibold text-th-dim uppercase tracking-wider mb-3">수집 소스 선택</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {sourceOptions.map((opt) => (
               <button
@@ -72,13 +72,13 @@ export default function ResearchWizard({ onStart, savedNotebooks, onOpenNotebook
                 onClick={() => handleToggle(opt.key)}
                 className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all ${
                   sources[opt.key]
-                    ? 'bg-[#0a1628] border-[#00e8b8]/40 text-white'
-                    : 'bg-[#060e1a] border-[#1a2744] text-[#556a8a] opacity-60'
+                    ? 'bg-th-secondary border-th-accent/40 text-th-primary'
+                    : 'bg-th-card-deep border-th-border text-th-dim opacity-60'
                 }`}
               >
                 <span className="text-2xl">{opt.icon}</span>
                 <span className="text-xs font-medium">{opt.label}</span>
-                <span className="text-[10px] text-[#556a8a]">{opt.desc}</span>
+                <span className="text-[10px] text-th-dim">{opt.desc}</span>
               </button>
             ))}
           </div>
@@ -87,7 +87,7 @@ export default function ResearchWizard({ onStart, savedNotebooks, onOpenNotebook
         <button
           onClick={handleStart}
           disabled={!keyword.trim() || !Object.values(sources).some(Boolean)}
-          className="w-full py-3 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-bold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full py-3 btn-accent text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
         >
           리서치 노트북 생성
         </button>
@@ -96,21 +96,21 @@ export default function ResearchWizard({ onStart, savedNotebooks, onOpenNotebook
       {/* Saved Notebooks */}
       {savedNotebooks.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-[#556a8a] uppercase tracking-wider px-1">이전 리서치</h3>
+          <h3 className="text-xs font-semibold text-th-dim uppercase tracking-wider px-1">이전 리서치</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {savedNotebooks.map((nb) => (
-              <div key={nb.id} className="card p-4 hover:border-[#00e8b8]/30 transition-colors group">
+              <div key={nb.id} className="card p-4 hover:border-th-accent transition-colors group">
                 <div className="flex items-start justify-between">
                   <div className="min-w-0">
-                    <h4 className="text-sm font-medium text-white truncate">{nb.title}</h4>
-                    <p className="text-[10px] text-[#556a8a] mt-1">
+                    <h4 className="text-sm font-medium text-th-primary truncate">{nb.title}</h4>
+                    <p className="text-[10px] text-th-dim mt-1">
                       {new Date(nb.createdAt).toLocaleDateString('ko-KR')} · 소스 {nb.sourceCount}개
                     </p>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2">
                     <button
                       onClick={() => onOpenNotebook(nb.id)}
-                      className="p-1.5 rounded hover:bg-[#1a2744] text-[#556a8a] hover:text-[#00e8b8] transition-colors"
+                      className="p-1.5 rounded hover:bg-th-tertiary text-th-dim hover:text-th-accent transition-colors"
                       title="열기"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -122,7 +122,7 @@ export default function ResearchWizard({ onStart, savedNotebooks, onOpenNotebook
                       href={`${NB_BASE}/notebook/${nb.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded hover:bg-[#1a2744] text-[#556a8a] hover:text-[#00e8b8] transition-colors"
+                      className="p-1.5 rounded hover:bg-th-tertiary text-th-dim hover:text-th-accent transition-colors"
                       title="NotebookLM에서 열기"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

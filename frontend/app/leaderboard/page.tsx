@@ -29,15 +29,15 @@ export default async function LeaderboardPage() {
                   <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                 </svg>
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+              <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
                 적중률 리더보드
               </h1>
             </div>
-            <p className="text-[#5a6a88] text-sm max-w-lg">
+            <p className="text-th-dim text-sm max-w-lg">
               투자 예측을 하는 유튜버들의 예측 건수와 근거 영상을 확인하세요. 각 행을 클릭하면 원본 영상 레퍼런스를 볼 수 있습니다.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-2 text-xs text-[#3a4a6a]">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-th-dim">
             <span className="w-2 h-2 rounded-full bg-[#f97316] pulse-dot" />
             <span className="tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
               {leaderboard.length}

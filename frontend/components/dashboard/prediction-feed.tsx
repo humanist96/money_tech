@@ -29,29 +29,29 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
   if (predictions.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">예측 데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">예측 데이터를 수집 중입니다.</p>
       </div>
     )
   }
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <span className="text-[10px] text-[#5a6a88]">{predictions.length}건</span>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <span className="text-[10px] text-th-dim">{predictions.length}건</span>
       </div>
-      <div className="divide-y divide-[#1a2744]/25 max-h-[480px] overflow-y-auto">
+      <div className="divide-y divide-th-border/25 max-h-[480px] overflow-y-auto">
         {predictions.map((pred) => {
           const badge = PREDICTION_BADGES[pred.prediction_type ?? "hold"] ?? PREDICTION_BADGES.hold
           const catColor = CATEGORY_COLORS[pred.channel_category] ?? "#6b7280"
 
           return (
-            <div key={pred.id} className="px-5 py-3.5 hover:bg-[#0e1a30]/40 transition">
+            <div key={pred.id} className="px-5 py-3.5 hover:bg-th-hover/40 transition">
               <div className="flex items-start gap-3">
                 <div
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-                  style={{ background: `color-mix(in srgb, ${catColor} 15%, #0a1120)`, color: catColor }}
+                  style={{ background: `color-mix(in srgb, ${catColor} 15%, var(--th-bg-card))`, color: catColor }}
                 >
                   {pred.channel_thumbnail ? (
                     <img src={pred.channel_thumbnail} alt="" className="w-8 h-8 rounded-lg object-cover" />
@@ -61,7 +61,7 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-[#7a8ba8] font-medium">{pred.channel_name}</span>
+                    <span className="text-xs text-th-muted font-medium">{pred.channel_name}</span>
                     <span
                       className="text-[10px] font-bold px-2 py-0.5 rounded-md"
                       style={{
@@ -80,15 +80,15 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
                   </div>
                   <a
                     href={`/assets/${encodeURIComponent(pred.asset_code || pred.asset_name)}`}
-                    className="text-sm font-semibold text-white hover:text-[#00e8b8] transition mt-0.5 block truncate"
+                    className="text-sm font-semibold text-th-primary hover:text-th-accent transition mt-0.5 block truncate"
                   >
                     {pred.asset_name}
                   </a>
                   {pred.reason && (
-                    <p className="text-[11px] text-[#5a6a88] mt-1 line-clamp-2">{pred.reason}</p>
+                    <p className="text-[11px] text-th-dim mt-1 line-clamp-2">{pred.reason}</p>
                   )}
                 </div>
-                <span className="text-[10px] text-[#3a4a6a] shrink-0 tabular-nums">
+                <span className="text-[10px] text-th-dim shrink-0 tabular-nums">
                   {timeAgo(pred.predicted_at)}
                 </span>
               </div>

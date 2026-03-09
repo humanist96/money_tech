@@ -1,0 +1,573 @@
+{
+  "timestamp": "2026-03-07T10:36:24.280Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-03-07T10:18:02.484Z",
+    "activeFeatures": [
+      "frontend",
+      "channels",
+      "[id]",
+      "dashboard",
+      "charts",
+      "trends",
+      "compare",
+      "[code]",
+      "crawler",
+      "channel-profiles"
+    ],
+    "primaryFeature": "frontend",
+    "features": {
+      "frontend": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:07:30.697Z",
+          "lastUpdated": "2026-03-07T08:28:29.988Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/lib/queries.ts"
+      },
+      "channels": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:08:45.781Z",
+          "lastUpdated": "2026-03-07T06:08:57.123Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/channels/page.tsx"
+      },
+      "[id]": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:09:35.191Z",
+          "lastUpdated": "2026-03-07T08:27:22.416Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/channels/[id]/page.tsx"
+      },
+      "dashboard": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:10:23.448Z",
+          "lastUpdated": "2026-03-07T08:24:53.741Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/dashboard/hit-rate-ranking.tsx"
+      },
+      "charts": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:11:46.052Z",
+          "lastUpdated": "2026-03-07T08:27:34.603Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/charts/sentiment-trend-chart.tsx"
+      },
+      "trends": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:14:19.010Z",
+          "lastUpdated": "2026-03-07T08:25:33.881Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/trends/page.tsx"
+      },
+      "compare": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:15:47.017Z",
+          "lastUpdated": "2026-03-07T08:26:39.098Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/compare/channel-comparison.tsx"
+      },
+      "[code]": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:16:21.925Z",
+          "lastUpdated": "2026-03-07T06:16:21.925Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/assets/[code]/page.tsx"
+      },
+      "crawler": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T06:28:05.600Z",
+          "lastUpdated": "2026-03-07T10:18:02.484Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/main.py"
+      },
+      "channel-profiles": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-03-07T08:25:58.941Z",
+          "lastUpdated": "2026-03-07T08:25:58.941Z"
+        },
+        "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/api/channel-profiles/route.ts"
+      }
+    },
+    "pipeline": {
+      "currentPhase": 1,
+      "level": "Dynamic",
+      "phaseHistory": []
+    },
+    "session": {
+      "startedAt": "2026-03-07T06:05:25.008Z",
+      "onboardingCompleted": false,
+      "lastActivity": "2026-03-07T10:18:02.484Z"
+    },
+    "history": [
+      {
+        "timestamp": "2026-03-07T06:07:30.697Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:08:45.781Z",
+        "feature": "channels",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:08:57.123Z",
+        "feature": "channels",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:09:35.191Z",
+        "feature": "[id]",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:10:02.146Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:10:23.448Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:10:41.586Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:11:03.753Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:11:15.589Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:11:34.354Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:11:46.052Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:11:57.708Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:12:16.879Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:12:34.615Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:12:48.662Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:13:24.149Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:13:45.198Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:13:57.505Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:14:02.925Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:14:19.010Z",
+        "feature": "trends",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:14:43.173Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:15:47.017Z",
+        "feature": "compare",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:16:21.925Z",
+        "feature": "[code]",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:28:05.600Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:28:08.990Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:28:13.568Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:28:17.002Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:28:24.841Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:28:36.652Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T06:50:41.169Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:08:27.991Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:21:10.295Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:21:14.996Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:22:02.560Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:22:27.688Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:22:38.543Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:22:52.974Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:23:07.887Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:23:20.494Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:23:34.094Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:23:51.902Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:24:03.586Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:24:14.953Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:24:33.786Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:24:53.741Z",
+        "feature": "dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:25:19.053Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:25:33.881Z",
+        "feature": "trends",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:25:48.136Z",
+        "feature": "compare",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:25:58.941Z",
+        "feature": "channel-profiles",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:26:39.098Z",
+        "feature": "compare",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:27:22.416Z",
+        "feature": "[id]",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:27:34.603Z",
+        "feature": "charts",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:28:24.706Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:28:29.988Z",
+        "feature": "frontend",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:36:43.876Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:36:52.979Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:36:57.120Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:37:22.436Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:37:28.857Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:37:33.923Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:37:41.350Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:38:00.177Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:38:07.053Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T08:38:33.708Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T09:33:58.431Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T09:35:06.345Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T10:17:57.817Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-03-07T10:18:02.484Z",
+        "feature": "crawler",
+        "phase": "do",
+        "action": "updated"
+      }
+    ]
+  }
+}

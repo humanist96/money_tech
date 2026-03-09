@@ -18,8 +18,8 @@ export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMe
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">데이터를 수집 중입니다.</p>
       </div>
     )
   }
@@ -28,9 +28,9 @@ export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMe
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <span className="text-[10px] text-[#5a6a88]">전체 기간</span>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <span className="text-[10px] text-th-dim">전체 기간</span>
       </div>
       <div className="p-4 space-y-1">
         {data.slice(0, 10).map((asset, i) => {
@@ -47,11 +47,11 @@ export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMe
             <Link
               key={asset.asset_code || asset.asset_name}
               href={`/assets/${encodeURIComponent(asset.asset_code || asset.asset_name)}`}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#0e1a30]/50 transition group"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-th-hover/50 transition group"
             >
               <span
                 className="text-[10px] font-bold w-4 text-right tabular-nums"
-                style={{ color: i < 3 ? color : "#475569" }}
+                style={{ color: i < 3 ? color : "var(--th-text-dim)" }}
               >
                 {i + 1}
               </span>
@@ -59,7 +59,7 @@ export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMe
               <div
                 className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-bold shrink-0"
                 style={{
-                  background: `color-mix(in srgb, ${color} 15%, #0a1120)`,
+                  background: `color-mix(in srgb, ${color} 15%, var(--th-bg-card))`,
                   color,
                 }}
               >
@@ -68,16 +68,16 @@ export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMe
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-medium text-white group-hover:text-[#00e8b8] transition truncate">
+                  <span className="text-[13px] font-medium text-th-primary group-hover:text-th-accent transition truncate">
                     {asset.asset_name}
                   </span>
-                  <span className="text-[9px] text-[#3a4a6a] tabular-nums shrink-0">
+                  <span className="text-[9px] text-th-dim tabular-nums shrink-0">
                     {asset.channels?.length ?? asset.mention_count}ch
                   </span>
                 </div>
                 {/* Bar */}
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="flex-1 h-2 bg-[#0a1120] rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-th-card rounded-full overflow-hidden">
                     <div className="h-full rounded-full flex">
                       {posRatio > 0 && (
                         <div style={{ width: `${posRatio * barWidth}%`, background: "#22c997" }} />
@@ -88,7 +88,7 @@ export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMe
                       <div
                         style={{
                           width: `${(1 - posRatio - negRatio) * barWidth}%`,
-                          background: `color-mix(in srgb, ${color} 40%, #1a2744)`,
+                          background: `color-mix(in srgb, ${color} 40%, var(--th-border))`,
                         }}
                       />
                     </div>

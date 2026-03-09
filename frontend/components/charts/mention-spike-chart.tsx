@@ -15,8 +15,8 @@ export function MentionSpikeChart({ data, title = "급등 언급 종목" }: Ment
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">언급 스파이크 데이터가 없습니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">언급 스파이크 데이터가 없습니다.</p>
       </div>
     )
   }
@@ -30,8 +30,8 @@ export function MentionSpikeChart({ data, title = "급등 언급 종목" }: Ment
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
       </div>
       <div className="px-4 pt-3 flex items-center gap-1.5 flex-wrap">
         {data.map((d) => {
@@ -47,8 +47,8 @@ export function MentionSpikeChart({ data, title = "급등 언급 종목" }: Ment
                 color: '#00e8b8',
                 border: '1px solid color-mix(in srgb, #00e8b8 30%, transparent)',
               } : {
-                color: '#5a6a88',
-                border: '1px solid #1a2744',
+                color: 'var(--th-text-dim)',
+                border: '1px solid var(--th-border)',
               }}
             >
               {hasSpike && <span className="w-1.5 h-1.5 rounded-full bg-[#ff5757]" />}
@@ -60,13 +60,13 @@ export function MentionSpikeChart({ data, title = "급등 언급 종목" }: Ment
       <div className="p-4">
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1a2744" />
-            <XAxis dataKey="date" tick={{ fill: '#5a6a88', fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#5a6a88', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--th-border)" />
+            <XAxis dataKey="date" tick={{ fill: 'var(--th-text-dim)', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: 'var(--th-text-dim)', fontSize: 10 }} axisLine={false} tickLine={false} />
             <Tooltip
               contentStyle={{
-                background: '#0e1a30',
-                border: '1px solid #1a2744',
+                background: 'var(--th-bg-tertiary)',
+                border: '1px solid var(--th-border)',
                 borderRadius: '12px',
                 fontSize: '11px',
                 color: '#e2e8f0',

@@ -54,11 +54,11 @@ export default async function TrendsPage() {
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
             </svg>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+          <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
             트렌드
           </h1>
         </div>
-        <p className="text-[#5a6a88] text-sm">카테고리별 감성 트렌드 및 종목 분석</p>
+        <p className="text-th-dim text-sm">카테고리별 감성 트렌드 및 종목 분석</p>
       </div>
 
       {/* Sentiment Trend Chart */}

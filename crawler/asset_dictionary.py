@@ -1,4 +1,5 @@
 """Asset dictionary for Korean stock/coin/real estate name recognition."""
+from __future__ import annotations
 
 # Major Korean stocks (종목명 → 종목코드)
 STOCK_DICT: dict[str, str] = {
@@ -29,6 +30,33 @@ STOCK_DICT: dict[str, str] = {
     "퀄컴": "QCOM", "브로드컴": "AVGO", "ASML": "ASML",
     "TSMC": "TSM", "팔란티어": "PLTR", "코인베이스": "COIN",
     "마이크론": "MU", "슈퍼마이크로": "SMCI",
+    # 추가 한국 주식
+    "두산밥캣": "241560", "CJ ENM": "035760", "롯데케미칼": "011170",
+    "SK": "034730", "SK스퀘어": "402340", "LG": "003550",
+    "한화솔루션": "009830", "금호석유": "011780", "S-Oil": "010950",
+    "에스오일": "010950", "쌍용C&E": "003410",
+    "삼성엔지니어링": "028050", "현대글로비스": "086280",
+    "CJ대한통운": "000120", "NH투자증권": "005940", "미래에셋증권": "006800",
+    "키움증권": "039490", "한국항공우주": "047810", "한화시스템": "272210",
+    "현대로템": "064350", "한국조선해양": "009540", "HD한국조선해양": "009540",
+    "삼성중공업": "010140", "대우조선": "042660",
+    "포스코인터내셔널": "047050", "포스코퓨처엠": "003670",
+    "LG이노텍": "011070", "삼성전기": "009150", "DB하이텍": "000990",
+    "SK실트론": "SKS", "두산퓨얼셀": "336260",
+    "한화투자증권": "003530", "고려아연": "010130",
+    "영풍": "000670", "LS": "006260",
+    # 추가 미국 주식/ETF
+    "S&P500": "SPY", "에스앤피": "SPY", "나스닥": "QQQ",
+    "다우존스": "DIA", "러셀2000": "IWM",
+    "아크": "ARKK", "ARKK": "ARKK", "QQQ": "QQQ", "SPY": "SPY",
+    "SCHD": "SCHD", "VOO": "VOO",
+    "마이크로스트래티지": "MSTR", "코스트코": "COST",
+    "리비안": "RIVN", "루시드": "LCID", "니오": "NIO",
+    "ARM": "ARM", "스노우플레이크": "SNOW",
+    "데이터독": "DDOG", "크라우드스트라이크": "CRWD",
+    "줌비디오": "ZM", "디즈니": "DIS", "비자": "V",
+    "JP모건": "JPM", "골드만삭스": "GS", "워렌버핏": "BRK.B",
+    "버크셔해서웨이": "BRK.B",
 }
 
 # Major cryptocurrencies (코인명 → 심볼)
@@ -53,6 +81,14 @@ COIN_DICT: dict[str, str] = {
     "루나": "LUNA", "테라": "LUNA",
     "알트코인": "ALT", "알트": "ALT",
     "스테이블코인": "STABLE", "테더": "USDT",
+    # 추가 코인
+    "피이코인": "PI", "파이코인": "PI",
+    "월드코인": "WLD", "펫치AI": "FET", "렌더토큰": "RNDR",
+    "인젝티브": "INJ", "세이": "SEI", "셀레스티아": "TIA",
+    "주피터": "JUP", "본크": "BONK", "밈코인": "MEME",
+    "페페": "PEPE", "플레어": "FLR", "스택스": "STX",
+    "톤코인": "TON", "톤": "TON", "카스파": "KAS",
+    "이뮤터블": "IMX", "매틱": "POL", "폴리곤": "POL",
 }
 
 # Major real estate areas (지역명)
@@ -138,15 +174,41 @@ def find_assets_in_text(text: str) -> list[dict]:
 
 
 def analyze_sentiment(text: str) -> str:
-    """Analyze sentiment of text: positive, negative, or neutral."""
+    """Analyze sentiment of text using weighted keyword scoring."""
+    # Strong signals get higher weight
+    strong_positive = ["급등", "폭등", "강력 추천", "적극 매수", "대박", "상승장"]
+    strong_negative = ["급락", "폭락", "대폭 하락", "위기", "붕괴", "버블 붕괴"]
+
     pos_count = sum(1 for kw in POSITIVE_KEYWORDS if kw in text)
     neg_count = sum(1 for kw in NEGATIVE_KEYWORDS if kw in text)
+    pos_count += sum(2 for kw in strong_positive if kw in text)
+    neg_count += sum(2 for kw in strong_negative if kw in text)
+
+    # Negation handling
+    negation_patterns = ["아닌", "않", "못", "안 ", "없", "아니"]
+    negation_count = sum(1 for p in negation_patterns if p in text)
+    if negation_count >= 2:
+        pos_count, neg_count = neg_count, pos_count
 
     if pos_count > neg_count and pos_count >= 2:
         return "positive"
     elif neg_count > pos_count and neg_count >= 2:
         return "negative"
     return "neutral"
+
+
+def analyze_sentiment_for_asset(text: str, asset_name: str) -> str:
+    """Analyze sentiment in text context around a specific asset mention."""
+    idx = text.find(asset_name)
+    if idx == -1:
+        return analyze_sentiment(text)
+
+    # Extract ~100 chars around the asset mention for context-specific analysis
+    start = max(0, idx - 100)
+    end = min(len(text), idx + len(asset_name) + 100)
+    context = text[start:end]
+
+    return analyze_sentiment(context)
 
 
 def generate_simple_summary(title: str, assets: list[dict], sentiment: str) -> str:

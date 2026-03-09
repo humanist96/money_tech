@@ -28,7 +28,7 @@ function GaugeChart({ temperature, color, label }: { temperature: number; color:
         <path
           d="M 20 100 A 80 80 0 0 1 180 100"
           fill="none"
-          stroke="#1a2744"
+          stroke="var(--th-border)"
           strokeWidth="12"
           strokeLinecap="round"
         />
@@ -53,8 +53,8 @@ function GaugeChart({ temperature, color, label }: { temperature: number; color:
         <text x="100" y="85" textAnchor="middle" fill={sentimentColor} fontSize="18" fontWeight="700" fontFamily="var(--font-outfit)">
           {Math.round(clampedTemp)}
         </text>
-        <text x="20" y="115" textAnchor="middle" fill="#5a6a88" fontSize="8">공포</text>
-        <text x="180" y="115" textAnchor="middle" fill="#5a6a88" fontSize="8">탐욕</text>
+        <text x="20" y="115" textAnchor="middle" fill="var(--th-text-dim)" fontSize="8">공포</text>
+        <text x="180" y="115" textAnchor="middle" fill="var(--th-text-dim)" fontSize="8">탐욕</text>
       </svg>
       <div className="text-center mt-1">
         <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color }}>{label}</span>
@@ -68,8 +68,8 @@ export function MarketTemperatureWidget({ data }: MarketTemperatureProps) {
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>시장 온도계</h3>
-        <p className="text-sm text-[#5a6a88]">감성 데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>시장 온도계</h3>
+        <p className="text-sm text-th-dim">감성 데이터를 수집 중입니다.</p>
       </div>
     )
   }
@@ -79,11 +79,11 @@ export function MarketTemperatureWidget({ data }: MarketTemperatureProps) {
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
           시장 온도계
         </h3>
-        <span className="text-[10px] text-[#5a6a88]">최근 7일 감성 기반</span>
+        <span className="text-[10px] text-th-dim">최근 7일 감성 기반</span>
       </div>
       <div className="p-5">
         <div className="flex justify-center mb-4">

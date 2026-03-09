@@ -15,11 +15,11 @@ export default async function ComparePage() {
               <path d="M16 3h5v5" /><path d="M8 3H3v5" /><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3" /><path d="m15 9 6-6" />
             </svg>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+          <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
             채널 비교
           </h1>
         </div>
-        <p className="text-[#5a6a88] text-sm">2~3개 채널의 주요 지표를 나란히 비교합니다</p>
+        <p className="text-th-dim text-sm">2~3개 채널의 주요 지표를 나란히 비교합니다</p>
       </div>
       <ChannelComparison channels={channels} />
     </div>

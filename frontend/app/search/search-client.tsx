@@ -214,7 +214,7 @@ export default function SearchClient() {
         >
           <div className="relative flex-1">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#556a8a]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-th-dim"
               width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
             >
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
@@ -224,19 +224,19 @@ export default function SearchClient() {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="종목명, 이슈 키워드 검색 (예: 삼성전자, 비트코인, 금리)"
-              className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors"
+              className="w-full bg-th-secondary border border-th-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-th-primary placeholder:text-th-dim focus:outline-none focus:border-th-accent/50 transition-colors"
             />
           </div>
 
           {/* Sort Toggle */}
-          <div className="flex items-center gap-1 bg-[#0a1628] border border-[#1a2744] rounded-lg p-0.5">
+          <div className="flex items-center gap-1 bg-th-secondary border border-th-border rounded-lg p-0.5">
             <button
               type="button"
               onClick={() => setSortBy('relevance')}
               className={`px-3 py-2 text-xs rounded-md transition-colors ${
                 sortBy === 'relevance'
-                  ? 'bg-[#1a2744] text-[#00e8b8]'
-                  : 'text-[#556a8a] hover:text-white'
+                  ? 'bg-th-tertiary text-th-accent'
+                  : 'text-th-dim hover:text-th-primary'
               }`}
             >
               정확도
@@ -246,8 +246,8 @@ export default function SearchClient() {
               onClick={() => setSortBy('date')}
               className={`px-3 py-2 text-xs rounded-md transition-colors ${
                 sortBy === 'date'
-                  ? 'bg-[#1a2744] text-[#00e8b8]'
-                  : 'text-[#556a8a] hover:text-white'
+                  ? 'bg-th-tertiary text-th-accent'
+                  : 'text-th-dim hover:text-th-primary'
               }`}
             >
               최신순
@@ -257,7 +257,7 @@ export default function SearchClient() {
           <button
             type="submit"
             disabled={searching || !keyword.trim()}
-            className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="btn-accent px-5 py-2.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {searching ? '검색 중...' : '검색'}
           </button>
@@ -266,7 +266,7 @@ export default function SearchClient() {
         {/* Recent Searches */}
         {recentSearches.length > 0 && !results.length && (
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className="text-xs text-[#556a8a]">최근:</span>
+            <span className="text-xs text-th-dim">최근:</span>
             {recentSearches.map((term) => (
               <button
                 key={term}
@@ -274,7 +274,7 @@ export default function SearchClient() {
                   setKeyword(term)
                   handleSearch(term)
                 }}
-                className="text-xs px-2.5 py-1 bg-[#0a1628] border border-[#1a2744] rounded-full text-[#8899b4] hover:text-white hover:border-[#00e8b8]/30 transition-colors"
+                className="text-xs px-2.5 py-1 bg-th-secondary border border-th-border rounded-full text-th-muted hover:text-th-primary hover:border-th-accent/30 transition-colors"
               >
                 {term}
               </button>
@@ -294,12 +294,12 @@ export default function SearchClient() {
       {results.length > 0 && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-[#8899b4]">{results.length}개 결과</p>
+            <p className="text-sm text-th-muted">{results.length}개 결과</p>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleReport}
                 disabled={generatingReport}
-                className="px-4 py-2 bg-[#1a2744] border border-[#00e8b8]/30 text-[#00e8b8] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40"
+                className="px-4 py-2 bg-th-tertiary border border-th-accent/30 text-th-accent text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
               >
                 {generatingReport ? (
                   <span className="flex items-center gap-2">
@@ -312,7 +312,7 @@ export default function SearchClient() {
               <button
                 onClick={handleSendToNotebook}
                 disabled={sendingToNotebook}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#1a2744] border border-[#7c6cf0]/30 text-[#7c6cf0] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40"
+                className="flex items-center gap-1.5 px-4 py-2 bg-th-tertiary border border-[#7c6cf0]/30 text-[#7c6cf0] text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
               >
                 {sendingToNotebook ? (
                   <span className="flex items-center gap-2">
@@ -353,12 +353,12 @@ export default function SearchClient() {
       {/* Empty state */}
       {!searching && !results.length && !searchError && (
         <div className="card p-12 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#0a1628] flex items-center justify-center">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#556a8a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-th-secondary flex items-center justify-center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--th-text-dim)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
             </svg>
           </div>
-          <p className="text-[#556a8a] text-sm">
+          <p className="text-th-dim text-sm">
             투자 키워드를 검색하여 YouTube 영상을 AI로 분석하세요
           </p>
         </div>
@@ -392,13 +392,13 @@ function VideoCard({
           rel="noopener noreferrer"
           className="shrink-0"
         >
-          <div className="relative w-[200px] aspect-video rounded-lg overflow-hidden bg-[#0a1628]">
+          <div className="relative w-[200px] aspect-video rounded-lg overflow-hidden bg-th-secondary">
             <img
               src={result.thumbnailUrl}
               alt={result.title}
               className="w-full h-full object-cover"
             />
-            <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded">
+            <span className="absolute bottom-1 right-1 bg-black/80 text-th-primary text-[10px] px-1.5 py-0.5 rounded">
               {formatDuration(result.duration)}
             </span>
           </div>
@@ -407,15 +407,15 @@ function VideoCard({
         {/* Info */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-medium text-white line-clamp-2 leading-snug">
+            <h3 className="text-sm font-medium text-th-primary line-clamp-2 leading-snug">
               {result.title}
             </h3>
             <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-xs text-[#8899b4]">{result.channelTitle}</span>
+              <span className="text-xs text-th-muted">{result.channelTitle}</span>
               {result.isRegisteredChannel && (
                 <a
                   href={`/channels/${result.registeredChannelId}`}
-                  className="text-[10px] px-1.5 py-0.5 bg-[#00e8b8]/10 text-[#00e8b8] rounded-full border border-[#00e8b8]/20"
+                  className="text-[10px] px-1.5 py-0.5 bg-th-accent/10 text-th-accent rounded-full border border-th-accent/20"
                 >
                   등록 채널
                 </a>
@@ -424,7 +424,7 @@ function VideoCard({
           </div>
 
           <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center gap-3 text-xs text-[#556a8a]">
+            <div className="flex items-center gap-3 text-xs text-th-dim">
               <span>조회수 {formatCount(result.viewCount)}</span>
               <span>{formatDate(result.publishedAt)}</span>
             </div>
@@ -433,8 +433,8 @@ function VideoCard({
               disabled={isAnalyzing}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 analysis
-                  ? 'bg-[#00e8b8]/10 text-[#00e8b8] border border-[#00e8b8]/20'
-                  : 'bg-[#1a2744] text-[#8899b4] hover:text-white border border-[#1a2744]'
+                  ? 'bg-th-accent/10 text-th-accent border border-th-accent/20'
+                  : 'bg-th-tertiary text-th-muted hover:text-th-primary border border-th-border'
               }`}
             >
               {isAnalyzing ? (
@@ -470,14 +470,14 @@ function VideoCard({
 
 function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
   return (
-    <div className="border-t border-[#1a2744] bg-[#060e1a] p-4 space-y-4">
+    <div className="border-t border-th-border bg-th-card-deep p-4 space-y-4">
       {/* Summary */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h4 className="text-xs font-semibold text-[#8899b4] uppercase tracking-wider">요약</h4>
+          <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider">요약</h4>
           <SentimentBadge sentiment={analysis.sentiment} />
         </div>
-        <p className="text-sm text-[#c8d6e5] leading-relaxed whitespace-pre-line">
+        <p className="text-sm text-th-primary leading-relaxed whitespace-pre-line">
           {analysis.summary}
         </p>
       </div>
@@ -485,11 +485,11 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
       {/* Key Points */}
       {analysis.key_points.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-[#8899b4] uppercase tracking-wider mb-2">핵심 포인트</h4>
+          <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider mb-2">핵심 포인트</h4>
           <ul className="space-y-1">
             {analysis.key_points.map((point, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-[#c8d6e5]">
-                <span className="text-[#00e8b8] mt-0.5">-</span>
+              <li key={i} className="flex items-start gap-2 text-sm text-th-primary">
+                <span className="text-th-accent mt-0.5">-</span>
                 {point}
               </li>
             ))}
@@ -500,7 +500,7 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
       {/* Mentioned Assets */}
       {analysis.mentioned_assets.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-[#8899b4] uppercase tracking-wider mb-2">언급 종목</h4>
+          <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider mb-2">언급 종목</h4>
           <div className="flex flex-wrap gap-2">
             {analysis.mentioned_assets.map((asset, i) => (
               <span
@@ -510,7 +510,7 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                     : asset.sentiment === 'negative'
                     ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                    : 'bg-[#1a2744] text-[#8899b4] border-[#1a2744]'
+                    : 'bg-th-tertiary text-th-muted border-th-border'
                 }`}
               >
                 {asset.name}
@@ -526,12 +526,12 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
       {/* Predictions */}
       {analysis.predictions.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-[#8899b4] uppercase tracking-wider mb-2">예측</h4>
+          <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider mb-2">예측</h4>
           <div className="space-y-2">
             {analysis.predictions.map((pred, i) => (
               <div
                 key={i}
-                className="flex items-start gap-3 p-2.5 bg-[#0a1628] rounded-lg border border-[#1a2744]"
+                className="flex items-start gap-3 p-2.5 bg-th-secondary rounded-lg border border-th-border"
               >
                 <span
                   className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
@@ -545,8 +545,8 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
                   {pred.type === 'buy' ? '매수' : pred.type === 'sell' ? '매도' : '보유'}
                 </span>
                 <div>
-                  <span className="text-sm font-medium text-white">{pred.asset}</span>
-                  <p className="text-xs text-[#8899b4] mt-0.5">{pred.reason}</p>
+                  <span className="text-sm font-medium text-th-primary">{pred.asset}</span>
+                  <p className="text-xs text-th-muted mt-0.5">{pred.reason}</p>
                 </div>
               </div>
             ))}
@@ -564,33 +564,33 @@ function ReportCard({ report }: { report: SearchReport }) {
     report.sentiment_distribution.neutral
 
   return (
-    <div className="card p-5 border-[#00e8b8]/20 space-y-4">
+    <div className="card p-5 border-th-accent/20 space-y-4">
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-lg bg-[#00e8b8]/10 flex items-center justify-center">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="w-6 h-6 rounded-lg bg-th-accent/10 flex items-center justify-center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--th-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
           </svg>
         </div>
-        <h3 className="text-sm font-semibold text-[#00e8b8]">종합 분석 리포트</h3>
+        <h3 className="text-sm font-semibold text-th-accent">종합 분석 리포트</h3>
       </div>
 
       {/* Overall Summary */}
-      <p className="text-sm text-[#c8d6e5] leading-relaxed">{report.overall_summary}</p>
+      <p className="text-sm text-th-primary leading-relaxed">{report.overall_summary}</p>
 
       {/* Consensus */}
       {report.consensus && (
-        <div className="p-3 bg-[#0a1628] rounded-lg border border-[#1a2744]">
-          <h4 className="text-xs font-semibold text-[#8899b4] mb-1">공통 의견</h4>
-          <p className="text-sm text-white">{report.consensus}</p>
+        <div className="p-3 bg-th-secondary rounded-lg border border-th-border">
+          <h4 className="text-xs font-semibold text-th-muted mb-1">공통 의견</h4>
+          <p className="text-sm text-th-primary">{report.consensus}</p>
         </div>
       )}
 
       {/* Sentiment Distribution */}
       {total > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-[#8899b4] mb-2">감성 분포</h4>
-          <div className="flex h-3 rounded-full overflow-hidden bg-[#0a1628]">
+          <h4 className="text-xs font-semibold text-th-muted mb-2">감성 분포</h4>
+          <div className="flex h-3 rounded-full overflow-hidden bg-th-secondary">
             {report.sentiment_distribution.positive > 0 && (
               <div
                 className="bg-emerald-500 transition-all"
@@ -621,11 +621,11 @@ function ReportCard({ report }: { report: SearchReport }) {
       {/* Key Arguments */}
       {report.key_arguments.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-[#8899b4] mb-2">주요 근거</h4>
+          <h4 className="text-xs font-semibold text-th-muted mb-2">주요 근거</h4>
           <ul className="space-y-1">
             {report.key_arguments.map((arg, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-[#c8d6e5]">
-                <span className="text-[#00e8b8] mt-0.5">-</span>
+              <li key={i} className="flex items-start gap-2 text-sm text-th-primary">
+                <span className="text-th-accent mt-0.5">-</span>
                 {arg}
               </li>
             ))}
@@ -636,10 +636,10 @@ function ReportCard({ report }: { report: SearchReport }) {
       {/* Conflicts */}
       {report.conflicts.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-[#8899b4] mb-2">의견 충돌</h4>
+          <h4 className="text-xs font-semibold text-th-muted mb-2">의견 충돌</h4>
           <ul className="space-y-1">
             {report.conflicts.map((conflict, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-[#c8d6e5]">
+              <li key={i} className="flex items-start gap-2 text-sm text-th-primary">
                 <span className="text-red-400 mt-0.5">!</span>
                 {conflict}
               </li>

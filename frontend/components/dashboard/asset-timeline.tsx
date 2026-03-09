@@ -39,10 +39,10 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
   if (entries.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
           유튜버 타임라인
         </h3>
-        <p className="text-sm text-[#5a6a88]">최근 30일간 데이터가 없습니다.</p>
+        <p className="text-sm text-th-dim">최근 30일간 데이터가 없습니다.</p>
       </div>
     )
   }
@@ -58,25 +58,25 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
           유튜버 타임라인 — {assetName}
         </h3>
-        <p className="text-[11px] text-[#5a6a88] mt-0.5">어떤 유튜버가 언제 이 종목을 언급했는지</p>
+        <p className="text-[11px] text-th-dim mt-0.5">어떤 유튜버가 언제 이 종목을 언급했는지</p>
       </div>
       <div className="px-6 py-4 max-h-[520px] overflow-y-auto">
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-[#1a2744] via-[#1a2744] to-transparent" />
+          <div className="absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-th-border via-th-border to-transparent" />
 
           {Array.from(byDate.entries()).map(([dateKey, items]) => (
             <div key={dateKey} className="mb-5">
               {/* Date marker */}
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-[37px] h-5 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#1a2744] border-2 border-[#3a4a6a] z-10" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-th-tertiary border-2 border-th-strong z-10" />
                 </div>
-                <span className="text-[11px] font-bold text-[#5a6a88] tabular-nums">
+                <span className="text-[11px] font-bold text-th-dim tabular-nums">
                   {dateKey !== "unknown" ? formatDate(dateKey) : "-"}
                 </span>
               </div>
@@ -89,7 +89,7 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
                   const pred = entry.prediction_type ? PREDICTION_BADGES[entry.prediction_type] : null
 
                   return (
-                    <div key={i} className="flex items-start gap-3 bg-[#0e1a30]/40 rounded-xl p-3 hover:bg-[#0e1a30]/70 transition group">
+                    <div key={i} className="flex items-start gap-3 bg-th-tertiary/40 rounded-xl p-3 hover:bg-th-tertiary/70 transition group">
                       {/* Channel avatar */}
                       <div className="shrink-0">
                         {entry.channel_thumbnail ? (
@@ -97,7 +97,7 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
                         ) : (
                           <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                            style={{ background: `color-mix(in srgb, ${catColor} 15%, #0a1120)`, color: catColor }}
+                            style={{ background: `color-mix(in srgb, ${catColor} 15%, var(--th-bg-card))`, color: catColor }}
                           >
                             {entry.channel_name[0]}
                           </div>
@@ -108,7 +108,7 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
                         <div className="flex items-center gap-2 flex-wrap">
                           <Link
                             href={`/channels/${entry.channel_id}`}
-                            className="text-xs font-medium text-[#7a8ba8] hover:text-[#00e8b8] transition"
+                            className="text-xs font-medium text-th-muted hover:text-th-accent transition"
                           >
                             {entry.channel_name}
                           </Link>
@@ -139,13 +139,13 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
                           href={`https://www.youtube.com/watch?v=${entry.youtube_video_id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[12px] text-[#c8d0e0] line-clamp-1 mt-0.5 group-hover:text-white transition"
+                          className="text-[12px] text-[#c8d0e0] line-clamp-1 mt-0.5 group-hover:text-th-primary transition"
                         >
                           {entry.video_title}
                         </a>
                       </div>
 
-                      <span className="text-[10px] text-[#3a4a6a] shrink-0 tabular-nums">
+                      <span className="text-[10px] text-th-dim shrink-0 tabular-nums">
                         {entry.published_at ? timeAgo(entry.published_at) : "-"}
                       </span>
                     </div>

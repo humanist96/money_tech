@@ -29,12 +29,12 @@ export function TrendDetails({ stats }: TrendDetailsProps) {
 
   return (
     <div className="glass-card rounded-xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1e293b]/60">
-        <h3 className="font-semibold text-white" style={{ fontFamily: 'var(--font-outfit)' }}>카테고리별 상세</h3>
+      <div className="px-6 py-4 border-b border-th-border/60">
+        <h3 className="font-semibold text-th-primary" style={{ fontFamily: 'var(--font-outfit)' }}>카테고리별 상세</h3>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#1e293b]/40">
+      <div className="flex border-b border-th-border/40">
         {categoryDetails.map((cd) => (
           <button
             key={cd.category}
@@ -57,32 +57,32 @@ export function TrendDetails({ stats }: TrendDetailsProps) {
       <div className="p-6">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <h4 className="text-xs font-medium text-[#64748b] uppercase tracking-wider mb-3">활발한 채널</h4>
+            <h4 className="text-xs font-medium text-th-dim uppercase tracking-wider mb-3">활발한 채널</h4>
             {current.topChannels.length > 0 ? (
               <div className="space-y-2">
                 {current.topChannels.slice(0, 5).map((ch, i) => (
-                  <div key={i} className="flex items-center justify-between bg-[#111d35]/50 rounded-lg px-3 py-2.5">
+                  <div key={i} className="flex items-center justify-between bg-th-secondary/50 rounded-lg px-3 py-2.5">
                     <div className="flex items-center gap-2.5">
-                      <span className="text-[10px] font-bold text-[#475569] w-4">{i + 1}</span>
+                      <span className="text-[10px] font-bold text-th-dim w-4">{i + 1}</span>
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
                         style={{ background: `color-mix(in srgb, ${current.color} 15%, transparent)`, color: current.color }}
                       >
                         {ch.channel_name[0]}
                       </div>
-                      <span className="text-sm text-white font-medium">{ch.channel_name}</span>
+                      <span className="text-sm text-th-primary font-medium">{ch.channel_name}</span>
                     </div>
-                    <span className="text-xs text-[#64748b]">{ch.video_count}개 영상</span>
+                    <span className="text-xs text-th-dim">{ch.video_count}개 영상</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-[#475569]">데이터를 수집 중입니다.</p>
+              <p className="text-sm text-th-dim">데이터를 수집 중입니다.</p>
             )}
           </div>
 
           <div>
-            <h4 className="text-xs font-medium text-[#64748b] uppercase tracking-wider mb-3">주요 키워드</h4>
+            <h4 className="text-xs font-medium text-th-dim uppercase tracking-wider mb-3">주요 키워드</h4>
             {current.topKeywords.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {current.topKeywords.slice(0, 15).map((kw, i) => (
@@ -101,12 +101,12 @@ export function TrendDetails({ stats }: TrendDetailsProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-[#475569]">데이터를 수집 중입니다.</p>
+              <p className="text-sm text-th-dim">데이터를 수집 중입니다.</p>
             )}
           </div>
         </div>
 
-        <p className="text-[10px] text-[#475569] mt-6 pt-4 border-t border-[#1e293b]/30">
+        <p className="text-[10px] text-th-dim mt-6 pt-4 border-t border-th-border/30">
           최근 30일 총 <span style={{ color: current.color }}>{current.totalVideos}</span>개 영상 수집됨
         </p>
       </div>

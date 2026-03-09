@@ -24,15 +24,15 @@ export default async function ChannelsPage() {
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+              <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
                 채널 탐색
               </h1>
             </div>
-            <p className="text-[#5a6a88] text-sm max-w-md">
-              재테크 유튜브 채널을 검색하고 구독자, 조회수, 영상 수 등 다양한 지표로 비교하세요
+            <p className="text-th-dim text-sm max-w-md">
+              재테크 유튜브 채널과 네이버 블로거를 검색하고 다양한 지표로 비교하세요
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-2 text-xs text-[#3a4a6a]">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-th-dim">
             <span className="w-2 h-2 rounded-full bg-[#00e8b8] pulse-dot" />
             <span className="tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
               {channels.length}

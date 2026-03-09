@@ -38,19 +38,19 @@ export default function ProgressTracker({ progress, keyword }: ProgressTrackerPr
   return (
     <div className="card p-6 space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-white">{keyword}</h2>
-        <p className="text-sm text-[#556a8a] mt-1">리서치 생성 중...</p>
+        <h2 className="text-lg font-bold text-th-primary">{keyword}</h2>
+        <p className="text-sm text-th-dim mt-1">리서치 생성 중...</p>
       </div>
 
       {/* Progress Bar */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-[#8899b4]">{progress.currentAction}</span>
-          <span className="text-xs font-mono text-[#00e8b8]">{pct}%</span>
+          <span className="text-xs text-th-muted">{progress.currentAction}</span>
+          <span className="text-xs font-mono text-th-accent">{pct}%</span>
         </div>
-        <div className="h-2 rounded-full bg-[#0a1628] overflow-hidden">
+        <div className="h-2 rounded-full bg-th-secondary overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-[#00e8b8] to-[#00b894] transition-all duration-500"
+            className="h-full rounded-full bg-th-accent transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -70,22 +70,22 @@ export default function ProgressTracker({ progress, keyword }: ProgressTrackerPr
               key={type}
               className={`p-3 rounded-lg border transition-colors ${
                 allDone
-                  ? 'bg-[#0a1628] border-[#00e8b8]/20'
+                  ? 'bg-th-secondary border-th-accent/20'
                   : hasError
                   ? 'bg-red-500/5 border-red-500/20'
                   : isActive
-                  ? 'bg-[#0a1628] border-[#1a2744] animate-pulse'
-                  : 'bg-[#060e1a] border-[#1a2744]'
+                  ? 'bg-th-secondary border-th-border animate-pulse'
+                  : 'bg-th-card-deep border-th-border'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span>{icon}</span>
-                  <span className="text-sm font-medium text-white capitalize">
+                  <span className="text-sm font-medium text-th-primary capitalize">
                     {type === 'youtube' ? 'YouTube' : type === 'news' ? '뉴스' : type === 'db_insight' ? 'DB 분석' : 'AI 리포트'}
                   </span>
                 </div>
-                <span className="text-xs text-[#8899b4]">
+                <span className="text-xs text-th-muted">
                   {allDone ? '✅' : hasError ? '❌' : `${doneCount}/${sources.length}`}
                 </span>
               </div>
@@ -94,7 +94,7 @@ export default function ProgressTracker({ progress, keyword }: ProgressTrackerPr
               {sources.length > 1 && (
                 <div className="mt-2 space-y-1 max-h-[120px] overflow-y-auto">
                   {sources.map((s, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-[#556a8a]">
+                    <div key={i} className="flex items-center gap-2 text-xs text-th-dim">
                       <span className="shrink-0">{STATUS_ICONS[s.status] || '⏳'}</span>
                       <span className="truncate">{s.title}</span>
                     </div>
@@ -107,19 +107,19 @@ export default function ProgressTracker({ progress, keyword }: ProgressTrackerPr
 
         {/* NotebookLM injection step */}
         {progress.phase === 'injecting' && (
-          <div className="p-3 rounded-lg border bg-[#0a1628] border-[#1a2744] animate-pulse">
+          <div className="p-3 rounded-lg border bg-th-secondary border-th-border animate-pulse">
             <div className="flex items-center gap-2">
               <span>📓</span>
-              <span className="text-sm font-medium text-white">NotebookLM 소스 주입</span>
+              <span className="text-sm font-medium text-th-primary">NotebookLM 소스 주입</span>
             </div>
           </div>
         )}
 
         {progress.phase === 'waiting' && (
-          <div className="p-3 rounded-lg border bg-[#0a1628] border-[#00e8b8]/20">
+          <div className="p-3 rounded-lg border bg-th-secondary border-th-accent/20">
             <div className="flex items-center gap-2">
               <span className="animate-spin">⏳</span>
-              <span className="text-sm text-[#8899b4]">소스 처리 대기 중 (15초)...</span>
+              <span className="text-sm text-th-muted">소스 처리 대기 중 (15초)...</span>
             </div>
           </div>
         )}

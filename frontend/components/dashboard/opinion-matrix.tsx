@@ -17,8 +17,8 @@ export function OpinionMatrix({ data, title = "채널 x 종목 의견 매트릭�
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">2개 이상 채널이 언급한 종목이 없습니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">2개 이상 채널이 언급한 종목이 없습니다.</p>
       </div>
     )
   }
@@ -38,13 +38,13 @@ export function OpinionMatrix({ data, title = "채널 x 종목 의견 매트릭�
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
         <div className="flex items-center gap-3">
           {Object.entries(SENTIMENT_COLORS).map(([key, color]) => (
             <div key={key} className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded" style={{ background: color }} />
-              <span className="text-[9px] text-[#5a6a88]">{key === 'positive' ? '긍정' : key === 'negative' ? '부정' : '중립'}</span>
+              <span className="text-[9px] text-th-dim">{key === 'positive' ? '긍정' : key === 'negative' ? '부정' : '중립'}</span>
             </div>
           ))}
         </div>
@@ -53,10 +53,10 @@ export function OpinionMatrix({ data, title = "채널 x 종목 의견 매트릭�
         <table className="w-full text-xs">
           <thead>
             <tr>
-              <th className="text-left py-2 px-2 text-[#5a6a88] font-medium text-[10px] uppercase tracking-wider sticky left-0 bg-[#0a1120] z-10">채널</th>
+              <th className="text-left py-2 px-2 text-th-dim font-medium text-[10px] uppercase tracking-wider sticky left-0 bg-th-card z-10">채널</th>
               {assets.map((asset) => (
-                <th key={asset} className="py-2 px-2 text-[#7a8ba8] font-medium text-center whitespace-nowrap">
-                  <a href={`/assets/${encodeURIComponent(asset)}`} className="hover:text-[#00e8b8] transition">
+                <th key={asset} className="py-2 px-2 text-th-muted font-medium text-center whitespace-nowrap">
+                  <a href={`/assets/${encodeURIComponent(asset)}`} className="hover:text-th-accent transition">
                     {asset}
                   </a>
                 </th>
@@ -65,14 +65,14 @@ export function OpinionMatrix({ data, title = "채널 x 종목 의견 매트릭�
           </thead>
           <tbody>
             {channels.map((channel) => (
-              <tr key={channel} className="border-t border-[#1a2744]/30 hover:bg-[#0e1a30]/30 transition">
-                <td className="py-2.5 px-2 text-white font-medium whitespace-nowrap sticky left-0 bg-[#0a1120] z-10">{channel}</td>
+              <tr key={channel} className="border-t border-th-border/30 hover:bg-th-hover/30 transition">
+                <td className="py-2.5 px-2 text-th-primary font-medium whitespace-nowrap sticky left-0 bg-th-card z-10">{channel}</td>
                 {assets.map((asset) => {
                   const cell = matrix.get(channel)?.get(asset)
                   if (!cell) {
-                    return <td key={asset} className="py-2.5 px-2 text-center text-[#2a3a5c]">-</td>
+                    return <td key={asset} className="py-2.5 px-2 text-center text-th-dim">-</td>
                   }
-                  const color = SENTIMENT_COLORS[cell.sentiment] ?? "#5a6a88"
+                  const color = SENTIMENT_COLORS[cell.sentiment] ?? "var(--th-text-dim)"
                   return (
                     <td key={asset} className="py-2.5 px-2 text-center">
                       <div

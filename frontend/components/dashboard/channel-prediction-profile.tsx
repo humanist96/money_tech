@@ -29,16 +29,16 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">예측 데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">예측 데이터를 수집 중입니다.</p>
       </div>
     )
   }
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50 flex items-center justify-between">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
         <div className="flex items-center gap-3 text-[9px]">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#22c997]" />매수</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#ff5757]" />매도</span>
@@ -62,7 +62,7 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
             <Link
               key={ch.channel_id}
               href={`/channels/${ch.channel_id}`}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#0e1a30]/50 transition group"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-th-hover/50 transition group"
             >
               {/* Avatar */}
               <div
@@ -70,11 +70,11 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
                 style={{ background: `linear-gradient(135deg, ${catColor}, color-mix(in srgb, ${catColor} 30%, transparent))` }}
               >
                 {ch.channel_thumbnail ? (
-                  <img src={ch.channel_thumbnail} alt="" className="w-7 h-7 rounded-[6px] object-cover bg-[#0a1120]" />
+                  <img src={ch.channel_thumbnail} alt="" className="w-7 h-7 rounded-[6px] object-cover bg-th-card" />
                 ) : (
                   <div
                     className="w-7 h-7 rounded-[6px] flex items-center justify-center text-[10px] font-bold"
-                    style={{ background: `color-mix(in srgb, ${catColor} 15%, #0a1120)`, color: catColor }}
+                    style={{ background: `color-mix(in srgb, ${catColor} 15%, var(--th-bg-card))`, color: catColor }}
                   >
                     {ch.channel_name[0]}
                   </div>
@@ -83,7 +83,7 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
 
               {/* Name + Label */}
               <div className="w-24 shrink-0 min-w-0">
-                <span className="text-[12px] font-medium text-white group-hover:text-[#00e8b8] transition truncate block leading-tight">
+                <span className="text-[12px] font-medium text-th-primary group-hover:text-th-accent transition truncate block leading-tight">
                   {ch.channel_name}
                 </span>
                 <span className="text-[9px] font-semibold" style={{ color: dominantColor }}>
@@ -93,10 +93,10 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
 
               {/* Stacked bar */}
               <div className="flex-1">
-                <div className="h-5 rounded-md overflow-hidden flex bg-[#0a1120]">
+                <div className="h-5 rounded-md overflow-hidden flex bg-th-card">
                   {buyPct > 0 && (
                     <div
-                      className="h-full flex items-center justify-center text-[8px] font-bold text-white/80 transition-all"
+                      className="h-full flex items-center justify-center text-[8px] font-bold text-th-primary/80 transition-all"
                       style={{ width: `${buyPct}%`, background: "#22c997" }}
                     >
                       {buyPct >= 15 && `${Math.round(buyPct)}%`}
@@ -104,7 +104,7 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
                   )}
                   {sellPct > 0 && (
                     <div
-                      className="h-full flex items-center justify-center text-[8px] font-bold text-white/80 transition-all"
+                      className="h-full flex items-center justify-center text-[8px] font-bold text-th-primary/80 transition-all"
                       style={{ width: `${sellPct}%`, background: "#ff5757" }}
                     >
                       {sellPct >= 15 && `${Math.round(sellPct)}%`}
@@ -112,7 +112,7 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
                   )}
                   {holdPct > 0 && (
                     <div
-                      className="h-full flex items-center justify-center text-[8px] font-bold text-white/80 transition-all"
+                      className="h-full flex items-center justify-center text-[8px] font-bold text-th-primary/80 transition-all"
                       style={{ width: `${holdPct}%`, background: "#ffb84d" }}
                     >
                       {holdPct >= 15 && `${Math.round(holdPct)}%`}
@@ -122,7 +122,7 @@ export function ChannelPredictionProfile({ data, title = "채널별 예측 성�
               </div>
 
               {/* Total count */}
-              <span className="text-[10px] text-[#3a4a6a] tabular-nums w-8 text-right shrink-0">
+              <span className="text-[10px] text-th-dim tabular-nums w-8 text-right shrink-0">
                 {ch.total}건
               </span>
             </Link>

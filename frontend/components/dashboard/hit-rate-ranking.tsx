@@ -22,8 +22,8 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-white text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <p className="text-sm text-[#5a6a88]">예측 데이터를 수집 중입니다.</p>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+        <p className="text-sm text-th-dim">예측 데이터를 수집 중입니다.</p>
       </div>
     )
   }
@@ -32,8 +32,8 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#1a2744]/50">
-        <h3 className="font-bold text-white text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+      <div className="px-6 py-4 border-b border-th-border/50">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
       </div>
       <div className="p-4 space-y-1.5">
         {data.map((ch, i) => {
@@ -43,25 +43,25 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
           const rateColor = rate >= 60 ? '#22c997' : rate >= 40 ? '#ffb84d' : '#ff5757'
           return (
             <Link key={ch.channel_id} href={`/channels/${ch.channel_id}`}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#0e1a30]/50 transition group">
-                <span className="text-[10px] font-bold text-[#3a4a6a] w-4 tabular-nums">{i + 1}</span>
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-th-hover/50 transition group">
+                <span className="text-[10px] font-bold text-th-dim w-4 tabular-nums">{i + 1}</span>
                 <div
                   className="rounded-lg p-[1.5px] shrink-0"
                   style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 30%, transparent))` }}
                 >
                   {ch.channel_thumbnail ? (
-                    <img src={ch.channel_thumbnail} alt="" className="w-7 h-7 rounded-[6px] object-cover bg-[#0a1120]" />
+                    <img src={ch.channel_thumbnail} alt="" className="w-7 h-7 rounded-[6px] object-cover bg-th-card" />
                   ) : (
                     <div
                       className="w-7 h-7 rounded-[6px] flex items-center justify-center text-xs font-bold"
-                      style={{ background: `color-mix(in srgb, ${color} 15%, #0a1120)`, color }}
+                      style={{ background: `color-mix(in srgb, ${color} 15%, var(--th-bg-card))`, color }}
                     >
                       {ch.channel_name[0]}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-white font-medium truncate block group-hover:text-[#00e8b8] transition">
+                  <span className="text-sm text-th-primary font-medium truncate block group-hover:text-th-accent transition">
                     {ch.channel_name}
                   </span>
                   <div className="flex items-center gap-1 mt-0.5">
@@ -78,7 +78,7 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
                               ? `1px solid ${icon.color}`
                               : pred.is_accurate === false
                                 ? '1px solid #ff575730'
-                                : '1px solid #1a2744',
+                                : '1px solid var(--th-border)',
                           }}
                           title={`${pred.asset_name} - ${pred.prediction_type}${pred.is_accurate !== null ? (pred.is_accurate ? ' (적중)' : ' (빗나감)') : ''}`}
                         >
@@ -86,7 +86,7 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
                         </span>
                       )
                     })}
-                    <span className="text-[9px] text-[#3a4a6a] ml-1">{ch.total_predictions}건</span>
+                    <span className="text-[9px] text-th-dim ml-1">{ch.total_predictions}건</span>
                   </div>
                 </div>
                 <div className="w-16 stat-bar">

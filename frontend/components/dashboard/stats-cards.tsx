@@ -16,7 +16,7 @@ function StatCard({ title, value, icon, accent = "#00e8b8" }: StatCardProps) {
       />
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#475569] mb-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-th-dim mb-2.5">
             {title}
           </p>
           <p className="text-2xl font-bold stat-value tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color: accent }}>

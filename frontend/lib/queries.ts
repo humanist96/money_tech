@@ -1,16 +1,22 @@
 import { getDb } from './db'
 import type {
-  Channel, ChannelType, VideoWithChannel, DailyStat, AssetMention, MentionedAsset,
+  Channel, ChannelType, Platform, VideoWithChannel, DailyStat, AssetMention, MentionedAsset,
   MarketTemperature, ChannelAssetOpinion, AssetConsensus, SentimentTrendPoint,
   MentionSpikeData, PredictionFeedItem, ChannelActivityData, TopAssetSentiment,
   ChannelSpecialtyItem, HotKeyword, HitRateLeaderboardItem,
   AssetTimelineEntry, BuzzAlert, AssetCorrelation,
 } from './types'
 
-export async function getChannels(category?: string): Promise<Channel[]> {
+export async function getChannels(category?: string, platform?: string): Promise<Channel[]> {
   const sql = getDb()
+  if (category && platform) {
+    return await sql`SELECT * FROM channels WHERE category = ${category} AND platform = ${platform} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
+  }
   if (category) {
     return await sql`SELECT * FROM channels WHERE category = ${category} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
+  }
+  if (platform) {
+    return await sql`SELECT * FROM channels WHERE platform = ${platform} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
   }
   return await sql`SELECT * FROM channels ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
 }
@@ -403,7 +409,7 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
         THEN COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::float /
              COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END)
         ELSE NULL END AS hit_rate,
-      ROUND(AVG(p.crowd_accuracy)::numeric, 3) AS avg_crowd_accuracy,
+      COALESCE(ROUND(AVG(p.crowd_accuracy)::numeric, 3), 0) AS avg_crowd_accuracy,
       COUNT(CASE WHEN p.crowd_accuracy IS NOT NULL THEN 1 END)::int AS crowd_evaluated
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id

@@ -403,21 +403,21 @@ export default function NotebookClient() {
         <PageHeader />
         <div className="card p-8 space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-th-secondary flex items-center justify-center">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5757" strokeWidth="1.5">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-white">Chrome 확장 프로그램 필요</h3>
-            <p className="text-sm text-[#8899b4]">NotebookLM 기능을 사용하려면 MoneyTech 확장 프로그램을 설치해야 합니다.</p>
+            <h3 className="text-lg font-semibold text-th-primary">Chrome 확장 프로그램 필요</h3>
+            <p className="text-sm text-th-muted">NotebookLM 기능을 사용하려면 MoneyTech 확장 프로그램을 설치해야 합니다.</p>
           </div>
-          <div className="max-w-lg mx-auto p-5 bg-[#0a1628] rounded-lg border border-[#1a2744] space-y-4">
-            <h4 className="text-sm font-semibold text-white">설치 방법</h4>
-            <ol className="text-sm text-[#8899b4] space-y-3">
+          <div className="max-w-lg mx-auto p-5 bg-th-secondary rounded-lg border border-th-border space-y-4">
+            <h4 className="text-sm font-semibold text-th-primary">설치 방법</h4>
+            <ol className="text-sm text-th-muted space-y-3">
               {['chrome://extensions 접속', '우측 상단 개발자 모드 활성화', '"압축해제된 확장 프로그램을 로드합니다" 클릭', 'extension/ 폴더 선택', '이 페이지를 새로고침'].map((step, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded bg-[#00e8b8]/10 flex items-center justify-center text-[#00e8b8] text-xs font-bold">{i + 1}</span>
+                  <span className="flex-shrink-0 w-6 h-6 rounded bg-th-accent-soft flex items-center justify-center text-th-accent text-xs font-bold">{i + 1}</span>
                   <span>{step}</span>
                 </li>
               ))}
@@ -434,7 +434,7 @@ export default function NotebookClient() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-3">
           <Spinner size="lg" />
-          <p className="text-sm text-[#556a8a]">인증 확인 중...</p>
+          <p className="text-sm text-th-dim">인증 확인 중...</p>
         </div>
       </div>
     )
@@ -447,18 +447,18 @@ export default function NotebookClient() {
         <PageHeader />
         <div className="card p-8 space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="1.5">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-th-secondary flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--th-accent)" strokeWidth="1.5">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-white">Google 로그인 필요</h3>
-            <p className="text-sm text-[#8899b4]">NotebookLM을 사용하려면 Chrome에서 Google에 로그인되어 있어야 합니다.</p>
+            <h3 className="text-lg font-semibold text-th-primary">Google 로그인 필요</h3>
+            <p className="text-sm text-th-muted">NotebookLM을 사용하려면 Chrome에서 Google에 로그인되어 있어야 합니다.</p>
           </div>
-          <div className="max-w-lg mx-auto p-5 bg-[#0a1628] rounded-lg border border-[#1a2744] space-y-3">
-            <ol className="text-sm text-[#8899b4] space-y-2">
-              <li>1. <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">notebooklm.google.com</a>에 Google 계정으로 로그인</li>
+          <div className="max-w-lg mx-auto p-5 bg-th-secondary rounded-lg border border-th-border space-y-3">
+            <ol className="text-sm text-th-muted space-y-2">
+              <li>1. <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" className="text-th-accent underline">notebooklm.google.com</a>에 Google 계정으로 로그인</li>
               <li>2. 이 페이지를 새로고침</li>
             </ol>
             <button onClick={() => {
@@ -466,7 +466,7 @@ export default function NotebookClient() {
               extensionCall<{ authenticated: boolean }>('checkAuth')
                 .then((r) => setAuthenticated(r.authenticated))
                 .catch(() => setAuthenticated(false))
-            }} className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all">
+            }} className="btn-accent px-5 py-2.5 text-sm">
               다시 확인
             </button>
           </div>
@@ -509,15 +509,15 @@ export default function NotebookClient() {
       <div className="card p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-white">{keyword}</h2>
-            <p className="text-xs text-[#556a8a] mt-1">
+            <h2 className="text-lg font-bold text-th-primary">{keyword}</h2>
+            <p className="text-xs text-th-dim mt-1">
               {new Date().toLocaleDateString('ko-KR')} · 소스 {collectedSources.length}개
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleBack}
-              className="px-3 py-2 text-xs text-[#556a8a] hover:text-white border border-[#1a2744] rounded-lg hover:border-[#556a8a] transition-colors"
+              className="px-3 py-2 text-xs text-th-dim hover:text-th-primary border border-th-border rounded-lg hover:border-th-strong transition-colors"
             >
               새 리서치
             </button>
@@ -526,7 +526,7 @@ export default function NotebookClient() {
                 href={`${NB_BASE}/notebook/${notebookId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-xs font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all flex items-center gap-1.5"
+                className="btn-accent px-4 py-2 text-xs flex items-center gap-1.5"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -577,13 +577,13 @@ function PageHeader() {
     <div className="flex items-center justify-between">
       <div>
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold text-white tracking-tight">AI 투자 리서치</h1>
+          <h1 className="text-2xl font-bold text-th-primary tracking-tight">AI 투자 리서치</h1>
           <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#7c6cf0]/20 text-[#7c6cf0] border border-[#7c6cf0]/30 rounded">Beta</span>
         </div>
-        <p className="text-sm text-[#556a8a] mt-1">YouTube + 뉴스 + DB 분석을 NotebookLM으로 종합 분석</p>
+        <p className="text-sm text-th-dim mt-1">YouTube + 뉴스 + DB 분석을 NotebookLM으로 종합 분석</p>
       </div>
       <a href={NB_BASE} target="_blank" rel="noopener noreferrer"
-        className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1">
+        className="text-xs text-th-dim hover:text-th-accent transition-colors flex items-center gap-1">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
           <polyline points="15 3 21 3 21 9" />

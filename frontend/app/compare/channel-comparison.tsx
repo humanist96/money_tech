@@ -78,7 +78,7 @@ export function ChannelComparison({ channels }: Props) {
                   background: isActive
                     ? `color-mix(in srgb, ${color} 20%, transparent)`
                     : "transparent",
-                  border: `1px solid ${isActive ? `color-mix(in srgb, ${color} 50%, transparent)` : "#1e293b"}`,
+                  border: `1px solid ${isActive ? `color-mix(in srgb, ${color} 50%, transparent)` : "var(--th-border)"}`,
                   color: isActive ? color : "#64748b",
                 }}
               >
@@ -103,9 +103,9 @@ export function ChannelComparison({ channels }: Props) {
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-all text-left"
                 style={{
                   background: isSelected
-                    ? `color-mix(in srgb, ${color} 12%, #0c1324)`
+                    ? `color-mix(in srgb, ${color} 12%, var(--th-bg-card-deep))`
                     : "transparent",
-                  border: `1px solid ${isSelected ? `color-mix(in srgb, ${color} 40%, transparent)` : "#1a2744"}`,
+                  border: `1px solid ${isSelected ? `color-mix(in srgb, ${color} 40%, transparent)` : "var(--th-border)"}`,
                   opacity: disabled ? 0.4 : 1,
                 }}
               >
@@ -114,7 +114,7 @@ export function ChannelComparison({ channels }: Props) {
                   className="w-4 h-4 rounded shrink-0 flex items-center justify-center transition-all"
                   style={{
                     background: isSelected ? color : "transparent",
-                    border: `1.5px solid ${isSelected ? color : "#3a4a6a"}`,
+                    border: `1.5px solid ${isSelected ? color : "var(--th-text-dim)"}`,
                   }}
                 >
                   {isSelected && (
@@ -130,14 +130,14 @@ export function ChannelComparison({ channels }: Props) {
                 ) : (
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-                    style={{ background: `color-mix(in srgb, ${color} 18%, #0c1324)`, color }}
+                    style={{ background: `color-mix(in srgb, ${color} 18%, var(--th-bg-card-deep))`, color }}
                   >
                     {ch.name[0]}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <span className="text-xs font-medium text-white truncate block">{ch.name}</span>
-                  <span className="text-[10px] text-[#5a6a88]">
+                  <span className="text-xs font-medium text-th-primary truncate block">{ch.name}</span>
+                  <span className="text-[10px] text-th-dim">
                     {ch.subscriber_count ? formatViewCount(ch.subscriber_count) : "-"}
                   </span>
                 </div>
@@ -147,7 +147,7 @@ export function ChannelComparison({ channels }: Props) {
         </div>
 
         {selectedIds.length < 2 && (
-          <p className="text-[11px] text-[#5a6a88] text-center pt-2">
+          <p className="text-[11px] text-th-dim text-center pt-2">
             같은 카테고리 채널을 2~3개 선택하여 비교하세요
           </p>
         )}
@@ -168,7 +168,7 @@ export function ChannelComparison({ channels }: Props) {
       {loading && (
         <div className="glass-card rounded-xl py-12 text-center">
           <div className="w-8 h-8 border-2 border-[#00e8b8]/30 border-t-[#00e8b8] rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm text-[#5a6a88]">비교 데이터를 불러오는 중...</p>
+          <p className="text-sm text-th-dim">비교 데이터를 불러오는 중...</p>
         </div>
       )}
 
@@ -184,13 +184,13 @@ export function ChannelComparison({ channels }: Props) {
       {/* Empty state */}
       {!loading && !comparisonData && selectedIds.length < 2 && (
         <div className="glass-card rounded-xl py-16 text-center">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="1.5" className="mx-auto mb-3">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--th-text-dim)" strokeWidth="1.5" className="mx-auto mb-3">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
             <circle cx="9" cy="7" r="4" />
             <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
-          <p className="text-[#64748b] text-sm">비교할 채널을 2개 이상 선택해주세요</p>
+          <p className="text-th-dim text-sm">비교할 채널을 2개 이상 선택해주세요</p>
         </div>
       )}
     </div>

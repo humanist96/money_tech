@@ -80,9 +80,10 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
     ? Math.round(channelsWithEval.reduce((s, l) => s + l.hit_rate, 0) / channelsWithEval.length * 100)
     : null
   const channelsWithCrowd = leaderboard.filter(l => l.crowd_evaluated > 0)
-  const avgCrowd = channelsWithCrowd.length > 0
-    ? Math.round(channelsWithCrowd.reduce((s, l) => s + (l.avg_crowd_accuracy ?? 0), 0) / channelsWithCrowd.length * 100)
+  const avgCrowdRaw = channelsWithCrowd.length > 0
+    ? channelsWithCrowd.reduce((s, l) => s + (Number(l.avg_crowd_accuracy) || 0), 0) / channelsWithCrowd.length * 100
     : null
+  const avgCrowd = avgCrowdRaw != null && !isNaN(avgCrowdRaw) ? Math.round(avgCrowdRaw) : null
 
   return (
     <div className="space-y-6">
@@ -96,8 +97,8 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
       </div>
 
       {/* Info Banner - evaluation methodology */}
-      <div className="bg-[#1a2744]/50 border border-[#1a2744] rounded-lg px-4 py-3 text-xs text-[#8a9ab8] space-y-1">
-        <div className="font-semibold text-white text-sm mb-1">평가 방법론</div>
+      <div className="info-banner space-y-1">
+        <div className="font-semibold text-th-primary text-sm mb-1">평가 방법론</div>
         <div className="flex items-start gap-2">
           <span className="text-[#3b82f6] font-bold shrink-0">A. 가격 적중률</span>
           <span>영상 발행일 기준 종목 가격 → 1주/1개월/3개월 후 실제 가격과 비교. 매수+3%↑=적중, 매도+3%↓=적중, 보유±3%이내=적중</span>
@@ -106,25 +107,27 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
           <span className="text-[#e879f9] font-bold shrink-0">B. 대중 반응</span>
           <span>영상 댓글 감성분석으로 시청자 반응 측정. 매수 예측에 긍정 댓글 많으면 대중 동의도 높음 (0~100%)</span>
         </div>
-        <div className="text-[#5a6a88] mt-1">각 행을 클릭하면 예측 근거 영상, 가격 변동, 댓글 반응을 확인할 수 있습니다.</div>
+        <div className="text-th-dim mt-1">각 행을 클릭하면 예측 근거 영상, 가격 변동, 댓글 반응을 확인할 수 있습니다.</div>
+        <div className="flex items-start gap-2 mt-2 pt-2 border-t border-th-border/50">
+          <span className="text-[#f97316] font-bold shrink-0">C. PIS (Prediction Intensity Score)</span>
+          <span>채널의 예측 적극성을 0~100으로 수치화. 5가지 지표 가중합산: 예측밀도(30%) + 액션키워드강도(25%) + 종목집중도(20%) + 목표가제시율(15%) + 감성편향도(10%). 높을수록 명확한 매매 의견을 자주 제시하는 채널</span>
+        </div>
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5 bg-[#0a1628] border border-[#1a2744] rounded-lg p-1">
+        <div className="filter-group flex items-center gap-1.5">
           {(['all', ...categories] as const).map(cat => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                filterCategory === cat ? 'bg-[#1a2744] text-white' : 'text-[#5a6a88] hover:text-white'
-              }`}
+              className={`filter-btn ${filterCategory === cat ? 'active' : ''}`}
             >
               {cat === 'all' ? '전체' : CATEGORY_LABELS[cat] ?? cat}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1.5 bg-[#0a1628] border border-[#1a2744] rounded-lg p-1">
+        <div className="filter-group flex items-center gap-1.5">
           {([
             { key: 'all_predictions' as SortKey, label: '예측수순' },
             { key: 'hit_rate' as SortKey, label: '적중률순' },
@@ -133,9 +136,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
             <button
               key={opt.key}
               onClick={() => setSortBy(opt.key)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                sortBy === opt.key ? 'bg-[#1a2744] text-white' : 'text-[#5a6a88] hover:text-white'
-              }`}
+              className={`filter-btn ${sortBy === opt.key ? 'active' : ''}`}
             >
               {opt.label}
             </button>
@@ -146,7 +147,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
       {/* Table */}
       {filtered.length === 0 ? (
         <div className="card-dark p-12 text-center">
-          <p className="text-[#5a6a88] text-sm">아직 예측 데이터가 없습니다</p>
+          <p className="text-th-dim text-sm">아직 예측 데이터가 없습니다</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -154,12 +155,12 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
             <div key={item.channel_id}>
               <button
                 onClick={() => toggleExpand(item.channel_id)}
-                className="w-full card-dark hover:border-[#2a3a5a] transition-all"
+                className="w-full card-dark hover:border-th-strong transition-all"
               >
                 <div className="flex items-center gap-4 px-4 py-3">
                   {/* Rank */}
                   <span className={`text-lg font-bold tabular-nums w-8 text-center ${
-                    index < 3 ? ['text-yellow-400', 'text-gray-300', 'text-amber-600'][index] : 'text-[#5a6a88]'
+                    index < 3 ? ['text-yellow-400', 'text-gray-300', 'text-amber-600'][index] : 'text-th-dim'
                   }`} style={{ fontFamily: 'var(--font-outfit)' }}>
                     {index + 1}
                   </span>
@@ -167,16 +168,16 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                   {/* Channel */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     {item.channel_thumbnail ? (
-                      <img src={item.channel_thumbnail} alt="" className="w-9 h-9 rounded-full border border-[#1a2744] flex-shrink-0" />
+                      <img src={item.channel_thumbnail} alt="" className="w-9 h-9 rounded-full border border-th-border flex-shrink-0" />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-[#1a2744] flex items-center justify-center text-xs text-[#5a6a88] flex-shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-th-tertiary flex items-center justify-center text-xs text-th-dim flex-shrink-0">
                         {item.channel_name[0]}
                       </div>
                     )}
                     <div className="text-left min-w-0">
-                      <div className="text-sm font-medium text-white truncate">{item.channel_name}</div>
+                      <div className="text-sm font-medium text-th-primary truncate">{item.channel_name}</div>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-[#5a6a88]">{CATEGORY_LABELS[item.category] ?? item.category}</span>
+                        <span className="text-[10px] text-th-dim">{CATEGORY_LABELS[item.category] ?? item.category}</span>
                         <ChannelTypeBadge type={item.channel_type} />
                       </div>
                     </div>
@@ -185,13 +186,13 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                   {/* Stats */}
                   <div className="hidden sm:flex items-center gap-5">
                     <div className="text-right w-12">
-                      <div className="text-[10px] text-[#5a6a88]">예측</div>
-                      <div className="text-base font-bold tabular-nums text-white" style={{ fontFamily: 'var(--font-outfit)' }}>
+                      <div className="text-[10px] text-th-dim">예측</div>
+                      <div className="text-base font-bold tabular-nums text-th-primary" style={{ fontFamily: 'var(--font-outfit)' }}>
                         {item.all_predictions}
                       </div>
                     </div>
                     <div className="text-right w-12">
-                      <div className="text-[10px] text-[#5a6a88]">적중률</div>
+                      <div className="text-[10px] text-th-dim">적중률</div>
                       <div className="text-base font-bold tabular-nums" style={{
                         fontFamily: 'var(--font-outfit)',
                         color: item.total_predictions > 0
@@ -209,11 +210,11 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                           ? (item.avg_crowd_accuracy ?? 0) >= 0.6 ? '#e879f9' : '#5a6a88'
                           : '#3a4a6a'
                       }}>
-                        {item.crowd_evaluated > 0 ? `${Math.round((item.avg_crowd_accuracy ?? 0) * 100)}%` : '-'}
+                        {item.crowd_evaluated > 0 ? `${Math.round((Number(item.avg_crowd_accuracy) || 0) * 100)}%` : '-'}
                       </div>
                     </div>
                     <div className="text-right w-10">
-                      <div className="text-[10px] text-[#5a6a88]">PIS</div>
+                      <div className="text-[10px] text-th-dim">PIS</div>
                       <div className="text-sm font-bold tabular-nums" style={{
                         fontFamily: 'var(--font-outfit)',
                         color: (item.pis ?? 0) >= 30 ? '#f97316' : '#5a6a88'
@@ -225,8 +226,8 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
 
                   {/* Expand icon */}
                   <svg
-                    width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a6a88" strokeWidth="2"
-                    className={`transition-transform flex-shrink-0 ${expandedId === item.channel_id ? 'rotate-180' : ''}`}
+                    width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                    className={`transition-transform flex-shrink-0 text-th-dim ${expandedId === item.channel_id ? 'rotate-180' : ''}`}
                   >
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
@@ -235,22 +236,22 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
 
               {/* Expanded Detail Panel */}
               {expandedId === item.channel_id && (
-                <div className="mt-1 card-dark border-[#1a2744] bg-[#060e1a]">
-                  <div className="px-4 py-3 border-b border-[#1a2744]/50">
+                <div className="mt-1 expand-panel">
+                  <div className="px-4 py-3 expand-panel-header">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-semibold text-[#8a9ab8] uppercase tracking-wider">
+                      <h3 className="text-xs font-semibold text-th-muted uppercase tracking-wider">
                         예측 근거 영상 ({details[item.channel_id]?.length ?? '...'})
                       </h3>
-                      <Link href={`/channels/${item.channel_id}`} className="text-[10px] text-[#00e8b8] hover:underline">
+                      <Link href={`/channels/${item.channel_id}`} className="text-[10px] text-th-accent hover:underline">
                         채널 상세 보기 →
                       </Link>
                     </div>
                   </div>
                   <div className="p-4">
                     {loading === item.channel_id ? (
-                      <div className="text-center py-6 text-[#5a6a88] text-sm">로딩 중...</div>
+                      <div className="text-center py-6 text-th-dim text-sm">로딩 중...</div>
                     ) : (details[item.channel_id] ?? []).length === 0 ? (
-                      <div className="text-center py-6 text-[#5a6a88] text-sm">예측 상세 데이터가 없습니다</div>
+                      <div className="text-center py-6 text-th-dim text-sm">예측 상세 데이터가 없습니다</div>
                     ) : (
                       <div className="space-y-3 max-h-[400px] overflow-y-auto">
                         {(details[item.channel_id] ?? []).map((pred, i) => (
@@ -278,7 +279,7 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
   const tc = typeConfig[pred.prediction_type] ?? { label: pred.prediction_type, color: '#5a6a88' }
 
   return (
-    <div className="flex gap-3 p-3 rounded-lg bg-[#0a1628]/60 border border-[#1a2744]/30">
+    <div className="expand-row flex gap-3">
       {/* Video Thumbnail */}
       <a
         href={`https://youtube.com/watch?v=${pred.youtube_video_id}`}
@@ -289,7 +290,7 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
         <img
           src={pred.video_thumbnail || `https://i.ytimg.com/vi/${pred.youtube_video_id}/mqdefault.jpg`}
           alt=""
-          className="w-28 h-16 rounded object-cover border border-[#1a2744]"
+          className="w-28 h-16 rounded object-cover border border-th-border"
         />
         <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
@@ -302,15 +303,15 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
           href={`https://youtube.com/watch?v=${pred.youtube_video_id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-white hover:text-[#00e8b8] transition-colors line-clamp-1"
+          className="text-sm text-th-primary hover:text-th-accent transition-colors line-clamp-1"
         >
           {pred.video_title}
         </a>
         <div className="flex flex-wrap items-center gap-2 mt-1.5">
           {/* Asset */}
-          <span className="px-2 py-0.5 rounded bg-[#1a2744] text-[11px] text-white font-medium">
+          <span className="tag">
             {pred.asset_name}
-            {pred.asset_code && <span className="text-[#5a6a88] ml-1">{pred.asset_code}</span>}
+            {pred.asset_code && <span className="tag-dim">{pred.asset_code}</span>}
           </span>
           {/* Prediction Type */}
           <span className="px-2 py-0.5 rounded text-[11px] font-bold" style={{
@@ -333,17 +334,17 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
         </div>
         {/* Reason */}
         {pred.reason && (
-          <div className="mt-1 text-[11px] text-[#5a6a88] line-clamp-1">
+          <div className="mt-1 text-[11px] text-th-dim line-clamp-1">
             사유: {pred.reason}
           </div>
         )}
         {/* Price tracking + Comment sentiment */}
         <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[10px]">
-          <span className="text-[#3a4a6a]">
+          <span className="text-th-dim opacity-70">
             {pred.video_published_at ? new Date(pred.video_published_at).toLocaleDateString('ko-KR') : ''}
           </span>
           {pred.price_at_mention != null && (
-            <span className="text-[#5a6a88]">
+            <span className="text-th-dim">
               언급가: {pred.price_at_mention.toLocaleString()}원
             </span>
           )}
@@ -384,12 +385,12 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
 
 function StatCard({ label, value, sub, color }: { label: string; value: number | string; sub: string; color: string }) {
   return (
-    <div className="card-dark p-4">
-      <div className="text-[10px] uppercase tracking-wider text-[#5a6a88] mb-1">{label}</div>
-      <div className="text-2xl font-bold tabular-nums text-white" style={{ fontFamily: 'var(--font-outfit)', color }}>
+    <div className="stat-card">
+      <div className="text-[10px] uppercase tracking-wider text-th-dim mb-1">{label}</div>
+      <div className="text-2xl font-bold tabular-nums text-th-primary" style={{ fontFamily: 'var(--font-outfit)', color }}>
         {value}
       </div>
-      <div className="text-[10px] text-[#3a4a6a] mt-0.5">{sub}</div>
+      <div className="text-[10px] text-th-dim opacity-70 mt-0.5">{sub}</div>
     </div>
   )
 }

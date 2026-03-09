@@ -44,7 +44,7 @@ const ICONS: Record<string, React.ReactNode> = {
 export default function ArtifactGrid({ artifacts, notebookId, onGenerate }: ArtifactGridProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-white">NotebookLM 산출물</h3>
+      <h3 className="text-sm font-semibold text-th-primary">NotebookLM 산출물</h3>
 
       {/* Generate Buttons */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -60,20 +60,20 @@ export default function ArtifactGrid({ artifacts, notebookId, onGenerate }: Arti
               disabled={isGenerating}
               className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all text-center group ${
                 isCompleted
-                  ? 'bg-[#00e8b8]/5 border-[#00e8b8]/30 hover:border-[#00e8b8]/50'
+                  ? 'bg-th-accent/5 border-th-accent/30 hover:border-th-accent/50'
                   : isGenerating
-                  ? 'bg-[#0a1628] border-[#1a2744] opacity-70 cursor-wait'
-                  : 'bg-[#060e1a] border-[#1a2744] hover:bg-[#0a1628] hover:border-[#00e8b8]/30'
+                  ? 'bg-th-secondary border-th-border opacity-70 cursor-wait'
+                  : 'bg-th-card-deep border-th-border hover:bg-th-secondary hover:border-th-accent'
               }`}
             >
               <div className={`transition-colors ${
-                isCompleted ? 'text-[#00e8b8]' : isGenerating ? 'text-[#556a8a] animate-pulse' : 'text-[#556a8a] group-hover:text-[#00e8b8]'
+                isCompleted ? 'text-th-accent' : isGenerating ? 'text-th-dim animate-pulse' : 'text-th-dim group-hover:text-th-accent'
               }`}>
                 {isGenerating ? <Spinner /> : ICONS[config.icon]}
               </div>
               <div>
-                <p className="text-xs font-semibold text-white">{config.label}</p>
-                <p className="text-[10px] text-[#556a8a] mt-0.5">
+                <p className="text-xs font-semibold text-th-primary">{config.label}</p>
+                <p className="text-[10px] text-th-dim mt-0.5">
                   {isCompleted ? '완료' : isGenerating ? '생성 중...' : config.desc}
                 </p>
               </div>
@@ -85,16 +85,16 @@ export default function ArtifactGrid({ artifacts, notebookId, onGenerate }: Arti
       {/* Generated Artifacts List */}
       {artifacts.filter((a) => a.status !== 'idle').length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-[#556a8a] uppercase tracking-wider">생성된 산출물</h4>
+          <h4 className="text-xs font-semibold text-th-dim uppercase tracking-wider">생성된 산출물</h4>
           {artifacts.filter((a) => a.status !== 'idle').map((artifact) => (
-            <div key={artifact.type} className="flex items-center justify-between p-3 bg-[#060e1a] rounded-lg border border-[#1a2744]">
+            <div key={artifact.type} className="flex items-center justify-between p-3 bg-th-card-deep rounded-lg border border-th-border">
               <div className="flex items-center gap-3">
-                <span className={artifact.status === 'completed' ? 'text-[#00e8b8]' : artifact.status === 'error' ? 'text-red-400' : 'text-[#556a8a]'}>
+                <span className={artifact.status === 'completed' ? 'text-th-accent' : artifact.status === 'error' ? 'text-red-400' : 'text-th-dim'}>
                   {artifact.status === 'completed' ? '✅' : artifact.status === 'error' ? '❌' : '⏳'}
                 </span>
                 <div>
-                  <p className="text-sm text-white">{artifact.label}</p>
-                  <p className="text-[10px] text-[#556a8a]">
+                  <p className="text-sm text-th-primary">{artifact.label}</p>
+                  <p className="text-[10px] text-th-dim">
                     {artifact.status === 'generating' && '생성 중... (3~5분 소요)'}
                     {artifact.status === 'completed' && '생성 완료'}
                     {artifact.status === 'error' && (artifact.errorMessage || '생성 실패')}
@@ -105,7 +105,7 @@ export default function ArtifactGrid({ artifacts, notebookId, onGenerate }: Arti
                 href={`${NB_BASE}/notebook/${notebookId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#00e8b8] hover:underline flex items-center gap-1"
+                className="text-xs text-th-accent hover:underline flex items-center gap-1"
               >
                 NB에서 확인
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -120,15 +120,15 @@ export default function ArtifactGrid({ artifacts, notebookId, onGenerate }: Arti
       )}
 
       {/* Hint */}
-      <div className="flex items-center gap-2 p-3 bg-[#060e1a] rounded-lg border border-[#1a2744]">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="2">
+      <div className="flex items-center gap-2 p-3 bg-th-card-deep rounded-lg border border-th-border">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--th-accent)" strokeWidth="2">
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="16" x2="12" y2="12" />
           <line x1="12" y1="8" x2="12.01" y2="8" />
         </svg>
-        <p className="text-xs text-[#8899b4]">
+        <p className="text-xs text-th-muted">
           오디오/보고서/퀴즈는{' '}
-          <a href={`${NB_BASE}/notebook/${notebookId}`} target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">
+          <a href={`${NB_BASE}/notebook/${notebookId}`} target="_blank" rel="noopener noreferrer" className="text-th-accent underline">
             NotebookLM에서 직접 확인
           </a>
           하면 가장 좋습니다.

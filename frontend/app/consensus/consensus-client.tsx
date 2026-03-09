@@ -90,20 +90,18 @@ export function ConsensusClient({ consensus, predictorCount }: Props) {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5 bg-[#0a1628] border border-[#1a2744] rounded-lg p-1">
+        <div className="filter-group">
           {(['all', ...assetTypes] as const).map(t => (
             <button
               key={t}
               onClick={() => setFilterType(t)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                filterType === t ? 'bg-[#1a2744] text-white' : 'text-[#5a6a88] hover:text-white'
-              }`}
+              className={`filter-btn ${filterType === t ? 'active' : ''}`}
             >
               {t === 'all' ? '전체' : CATEGORY_LABELS[t] ?? t}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1.5 bg-[#0a1628] border border-[#1a2744] rounded-lg p-1">
+        <div className="filter-group">
           {([
             { key: 'channel_count' as SortKey, label: '채널수순' },
             { key: 'consensus_score' as SortKey, label: '일치도순' },
@@ -112,9 +110,7 @@ export function ConsensusClient({ consensus, predictorCount }: Props) {
             <button
               key={opt.key}
               onClick={() => setSortBy(opt.key)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                sortBy === opt.key ? 'bg-[#1a2744] text-white' : 'text-[#5a6a88] hover:text-white'
-              }`}
+              className={`filter-btn ${sortBy === opt.key ? 'active' : ''}`}
             >
               {opt.label}
             </button>
@@ -125,7 +121,7 @@ export function ConsensusClient({ consensus, predictorCount }: Props) {
       {/* Consensus Cards */}
       {filtered.length === 0 ? (
         <div className="card-dark p-12 text-center">
-          <p className="text-[#5a6a88] text-sm">아직 컨센서스 데이터가 없습니다</p>
+          <p className="text-th-dim text-sm">아직 컨센서스 데이터가 없습니다</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -174,27 +170,27 @@ function ConsensusCard({ item, expanded, onToggle }: {
   return (
     <button
       onClick={onToggle}
-      className={`w-full card-dark p-5 text-left transition-all ${expanded ? 'border-[#2a3a5a]' : 'hover:border-[#2a3a5a]'}`}
+      className={`w-full card-dark p-5 text-left transition-all ${expanded ? 'border-th-strong' : 'hover:border-th-strong'}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-base font-bold text-white">{item.asset_name}</span>
-            {item.asset_code && <span className="text-[10px] text-[#5a6a88] font-mono">{item.asset_code}</span>}
+            <span className="text-base font-bold text-th-primary">{item.asset_name}</span>
+            {item.asset_code && <span className="text-[10px] text-th-dim font-mono">{item.asset_code}</span>}
             <svg
-              width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a6a88" strokeWidth="2"
-              className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
+              width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              className={`text-th-dim transition-transform ${expanded ? 'rotate-180' : ''}`}
             >
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </div>
-          <div className="text-[10px] text-[#5a6a88] mt-0.5">
+          <div className="text-[10px] text-th-dim mt-0.5">
             {item.channel_count}개 채널 · {item.total_mentions}회 언급
           </div>
 
           {/* Sentiment Bar */}
           <div className="mt-3 max-w-md">
-            <div className="flex h-2 rounded-full overflow-hidden bg-[#1a2744]">
+            <div className="flex h-2 rounded-full overflow-hidden bg-th-tertiary">
               {item.positive_pct > 0 && <div className="h-full bg-[#22c997]" style={{ width: `${item.positive_pct}%` }} />}
               {item.neutral_pct > 0 && <div className="h-full bg-[#f97316]" style={{ width: `${item.neutral_pct}%` }} />}
               {item.negative_pct > 0 && <div className="h-full bg-[#ef4444]" style={{ width: `${item.negative_pct}%` }} />}
@@ -218,9 +214,9 @@ function ConsensusCard({ item, expanded, onToggle }: {
             {item.channels && item.channels.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {item.channels.slice(0, 4).map(ch => (
-                  <span key={ch} className="px-1.5 py-0.5 rounded bg-[#0a1628] border border-[#1a2744] text-[9px] text-[#8a9ab8]">{ch}</span>
+                  <span key={ch} className="tag text-[9px] text-th-muted">{ch}</span>
                 ))}
-                {item.channels.length > 4 && <span className="text-[9px] text-[#5a6a88]">+{item.channels.length - 4}</span>}
+                {item.channels.length > 4 && <span className="text-[9px] text-th-dim">+{item.channels.length - 4}</span>}
               </div>
             )}
           </div>
@@ -244,11 +240,11 @@ function ReferencePanel({ assetName, refs, isLoading }: {
   isLoading: boolean
 }) {
   if (isLoading) {
-    return <div className="card-dark bg-[#060e1a] p-6 mt-1 text-center text-[#5a6a88] text-sm">근거 영상 로딩 중...</div>
+    return <div className="card-dark bg-th-card-deep p-6 mt-1 text-center text-th-dim text-sm">근거 영상 로딩 중...</div>
   }
 
   if (refs.length === 0) {
-    return <div className="card-dark bg-[#060e1a] p-6 mt-1 text-center text-[#5a6a88] text-sm">상세 데이터가 없습니다</div>
+    return <div className="card-dark bg-th-card-deep p-6 mt-1 text-center text-th-dim text-sm">상세 데이터가 없습니다</div>
   }
 
   // Group by channel
@@ -260,9 +256,9 @@ function ReferencePanel({ assetName, refs, isLoading }: {
   }
 
   return (
-    <div className="card-dark bg-[#060e1a] mt-1 overflow-hidden">
-      <div className="px-4 py-3 border-b border-[#1a2744]/50">
-        <h3 className="text-xs font-semibold text-[#8a9ab8] uppercase tracking-wider">
+    <div className="card-dark bg-th-card-deep mt-1 overflow-hidden">
+      <div className="px-4 py-3 border-b border-th-border/50">
+        <h3 className="text-xs font-semibold text-th-muted uppercase tracking-wider">
           근거 영상 ({refs.length}건 / {byChannel.size}개 채널)
         </h3>
       </div>
@@ -273,9 +269,9 @@ function ReferencePanel({ assetName, refs, isLoading }: {
               {items[0].channel_thumbnail && (
                 <img src={items[0].channel_thumbnail} alt="" className="w-5 h-5 rounded-full" />
               )}
-              <span className="text-xs font-medium text-white">{channelName}</span>
+              <span className="text-xs font-medium text-th-primary">{channelName}</span>
               <ChannelTypeBadge type={items[0].channel_type as any} />
-              <span className="text-[10px] text-[#5a6a88]">{items.length}건</span>
+              <span className="text-[10px] text-th-dim">{items.length}건</span>
             </div>
             <div className="space-y-2 ml-7">
               {items.map((item, i) => (
@@ -299,7 +295,7 @@ function VideoRefRow({ item }: { item: ReferenceItem }) {
   }
 
   return (
-    <div className="flex gap-3 p-2.5 rounded-lg bg-[#0a1628]/40 border border-[#1a2744]/20">
+    <div className="flex gap-3 p-2.5 rounded-lg bg-th-secondary/40 border border-th-border/20">
       <a
         href={`https://youtube.com/watch?v=${item.youtube_video_id}`}
         target="_blank"
@@ -309,7 +305,7 @@ function VideoRefRow({ item }: { item: ReferenceItem }) {
         <img
           src={item.video_thumbnail || `https://i.ytimg.com/vi/${item.youtube_video_id}/mqdefault.jpg`}
           alt=""
-          className="w-24 h-14 rounded object-cover border border-[#1a2744]"
+          className="w-24 h-14 rounded object-cover border border-th-border"
         />
         <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
@@ -320,7 +316,7 @@ function VideoRefRow({ item }: { item: ReferenceItem }) {
           href={`https://youtube.com/watch?v=${item.youtube_video_id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-white hover:text-[#00e8b8] transition-colors line-clamp-1"
+          className="text-xs text-th-primary hover:text-th-accent transition-colors line-clamp-1"
         >
           {item.video_title}
         </a>
@@ -334,9 +330,9 @@ function VideoRefRow({ item }: { item: ReferenceItem }) {
               {predConfig[item.prediction_type].label}
             </span>
           )}
-          {item.reason && <span className="text-[9px] text-[#5a6a88] truncate max-w-[200px]">"{item.reason}"</span>}
+          {item.reason && <span className="text-[9px] text-th-dim truncate max-w-[200px]">"{item.reason}"</span>}
         </div>
-        <div className="text-[9px] text-[#3a4a6a] mt-0.5">
+        <div className="text-[9px] text-th-dim mt-0.5">
           {item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR') : ''}
         </div>
       </div>
@@ -357,8 +353,8 @@ function MiniPill({ label, count, color }: { label: string; count: number; color
 function SummaryCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div className="card-dark p-4">
-      <div className="text-[10px] uppercase tracking-wider text-[#5a6a88] mb-1">{label}</div>
-      <div className="text-2xl font-bold tabular-nums text-white" style={{ fontFamily: 'var(--font-outfit)', color }}>
+      <div className="text-[10px] uppercase tracking-wider text-th-dim mb-1">{label}</div>
+      <div className="text-2xl font-bold tabular-nums text-th-primary" style={{ fontFamily: 'var(--font-outfit)', color }}>
         {value}
       </div>
     </div>

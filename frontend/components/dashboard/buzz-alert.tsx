@@ -34,7 +34,7 @@ export function BuzzAlertBanner({ alerts }: BuzzAlertProps) {
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden border border-[#ffb84d]/20">
-      <div className="px-6 py-3 border-b border-[#1a2744]/50 flex items-center gap-3">
+      <div className="px-6 py-3 border-b border-th-border/50 flex items-center gap-3">
         <div className="flex items-center gap-2">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffb84d] opacity-50" />
@@ -44,7 +44,7 @@ export function BuzzAlertBanner({ alerts }: BuzzAlertProps) {
             Buzz Alert
           </h3>
         </div>
-        <span className="text-[10px] text-[#5a6a88]">
+        <span className="text-[10px] text-th-dim">
           다수 채널이 동시에 언급하는 종목
         </span>
       </div>
@@ -55,24 +55,24 @@ export function BuzzAlertBanner({ alerts }: BuzzAlertProps) {
             <Link
               key={alert.asset_code}
               href={`/assets/${encodeURIComponent(alert.asset_code || alert.asset_name)}`}
-              className="bg-[#0e1a30]/60 rounded-xl p-3.5 hover:bg-[#0e1a30] transition border border-[#1a2744]/30 hover:border-[#ffb84d]/30 group"
+              className="bg-th-tertiary/60 rounded-xl p-3.5 hover:bg-th-tertiary transition border border-th-border/30 hover:border-[#ffb84d]/30 group"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span
                     className="text-[9px] font-bold w-5 h-5 rounded flex items-center justify-center"
                     style={{
-                      background: `color-mix(in srgb, ${sentColor} 15%, #0a1120)`,
+                      background: `color-mix(in srgb, ${sentColor} 15%, var(--th-bg-card))`,
                       color: sentColor,
                     }}
                   >
                     {TYPE_ICONS[alert.asset_type] || "?"}
                   </span>
-                  <span className="text-sm font-bold text-white group-hover:text-[#ffb84d] transition">
+                  <span className="text-sm font-bold text-th-primary group-hover:text-[#ffb84d] transition">
                     {alert.asset_name}
                   </span>
                 </div>
-                <span className="text-[10px] text-[#3a4a6a] tabular-nums">{timeAgo(alert.latest_at)}</span>
+                <span className="text-[10px] text-th-dim tabular-nums">{timeAgo(alert.latest_at)}</span>
               </div>
 
               <div className="flex items-center gap-1.5 mb-2">
@@ -80,9 +80,9 @@ export function BuzzAlertBanner({ alerts }: BuzzAlertProps) {
                   {Array.from({ length: Math.min(alert.channel_count, 4) }).map((_, i) => (
                     <div
                       key={i}
-                      className="w-4 h-4 rounded-full border border-[#0a1120] flex items-center justify-center text-[7px] font-bold"
+                      className="w-4 h-4 rounded-full border border-th-card flex items-center justify-center text-[7px] font-bold"
                       style={{
-                        background: `color-mix(in srgb, ${sentColor} 20%, #1a2744)`,
+                        background: `color-mix(in srgb, ${sentColor} 20%, var(--th-border))`,
                         color: sentColor,
                       }}
                     >
@@ -90,13 +90,13 @@ export function BuzzAlertBanner({ alerts }: BuzzAlertProps) {
                     </div>
                   ))}
                 </div>
-                <span className="text-[10px] text-[#5a6a88]">
+                <span className="text-[10px] text-th-dim">
                   {alert.channel_count}개 채널
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#3a4a6a]">{alert.mention_count}회 언급</span>
+                <span className="text-[10px] text-th-dim">{alert.mention_count}회 언급</span>
                 <span
                   className="text-[9px] font-semibold px-1.5 py-0.5 rounded-md"
                   style={{
@@ -108,8 +108,8 @@ export function BuzzAlertBanner({ alerts }: BuzzAlertProps) {
                 </span>
               </div>
 
-              <div className="mt-2 pt-2 border-t border-[#1a2744]/30">
-                <p className="text-[9px] text-[#3a4a6a] line-clamp-1">
+              <div className="mt-2 pt-2 border-t border-th-border/30">
+                <p className="text-[9px] text-th-dim line-clamp-1">
                   {alert.channels.join(", ")}
                 </p>
               </div>

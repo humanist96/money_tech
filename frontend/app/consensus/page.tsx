@@ -28,15 +28,15 @@ export default async function ConsensusPage() {
                   <path d="M2 12h20" />
                 </svg>
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+              <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
                 종목 컨센서스
               </h1>
             </div>
-            <p className="text-[#5a6a88] text-sm max-w-lg">
+            <p className="text-th-dim text-sm max-w-lg">
               예측형/리딩방 채널들의 종목별 의견 일치도. 여러 유튜버가 동일 종목을 언급할 때 매수/매도/보유 의견 분포를 보여줍니다.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-2 text-xs text-[#3a4a6a]">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-th-dim">
             <span className="w-2 h-2 rounded-full bg-[#22c997] pulse-dot" />
             <span className="tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
               {consensus.length}
