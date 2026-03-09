@@ -1,24 +1,36 @@
-import { getChannels, getRecentVideosWithAssets, getDailyStats, getTotalVideoCount, getAssetMentions } from "@/lib/queries"
+import {
+  getChannels, getRecentVideosWithAssets, getDailyStats, getTotalVideoCount,
+  getAssetConsensus, getAssetMentions,
+  getRecentPredictions, getTopAssetSentiments,
+  getBuzzAlerts, getChannelPredictionProfiles,
+} from "@/lib/queries"
 import type { Channel, DailyStat } from "@/lib/types"
 import { CATEGORY_LABELS } from "@/lib/types"
 import { StatsCards } from "@/components/dashboard/stats-cards"
-import { ChannelRanking } from "@/components/dashboard/channel-ranking"
 import { VideoFeed } from "@/components/dashboard/video-feed"
-import { KeywordCloud } from "@/components/dashboard/keyword-cloud"
-import { CategoryBarChart } from "@/components/charts/category-bar-chart"
-import { TrendLineChart } from "@/components/charts/trend-line-chart"
-import { AssetHeatmap } from "@/components/charts/asset-heatmap"
+import { TopMentionsChart } from "@/components/dashboard/top-mentions-chart"
+import { ChannelPredictionProfile } from "@/components/dashboard/channel-prediction-profile"
+import { ConsensusScore } from "@/components/dashboard/consensus-score"
+import { PredictionFeed } from "@/components/dashboard/prediction-feed"
+import { AssetSentimentGrid } from "@/components/dashboard/asset-sentiment-grid"
+import { BuzzAlertBanner } from "@/components/dashboard/buzz-alert"
+import { ChannelTicker } from "@/components/dashboard/asset-ticker"
 
 export const dynamic = "force-dynamic"
 
 async function getDashboardData() {
   try {
-    const [channels, videos, stats, totalVideos, assetMentions] = await Promise.all([
+    const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles] = await Promise.all([
       getChannels(),
       getRecentVideosWithAssets(15),
       getDailyStats(30),
       getTotalVideoCount(),
-      getAssetMentions(7),
+      getAssetConsensus(30),
+      getAssetMentions(30),
+      getRecentPredictions(20),
+      getTopAssetSentiments(10, 30),
+      getBuzzAlerts(48),
+      getChannelPredictionProfiles(),
     ])
 
     const today = new Date().toISOString().split("T")[0]
@@ -33,50 +45,59 @@ async function getDashboardData() {
     const topCatEntry = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]
     const topCategory = topCatEntry ? CATEGORY_LABELS[topCatEntry[0]] ?? topCatEntry[0] : "-"
 
-    const categoryData = Object.entries(catCounts).map(([category, count]) => ({ category, count }))
-
-    const keywordMap = new Map<string, number>()
-    for (const stat of last7) {
-      if (stat.top_keywords) {
-        for (const kw of stat.top_keywords) {
-          keywordMap.set(kw.keyword, (keywordMap.get(kw.keyword) ?? 0) + kw.count)
-        }
-      }
+    return {
+      channels, videos, totalVideos, todayVideos, topCategory,
+      consensus, assetMentions, predictions, assetSentiments,
+      buzzAlerts, predictionProfiles,
     }
-    const topKeywords = Array.from(keywordMap.entries())
-      .map(([keyword, count]) => ({ keyword, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 40)
-
-    return { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords, assetMentions }
   } catch {
     return {
-      channels: [] as Channel[], videos: [] as any[], stats: [] as DailyStat[],
-      totalVideos: 0, todayVideos: 0, topCategory: "-", categoryData: [], topKeywords: [], assetMentions: [],
+      channels: [] as Channel[], videos: [] as any[],
+      totalVideos: 0, todayVideos: 0, topCategory: "-",
+      consensus: [], assetMentions: [], predictions: [],
+      assetSentiments: [], buzzAlerts: [], predictionProfiles: [],
     }
   }
 }
 
 export default async function DashboardPage() {
-  const { channels, videos, stats, totalVideos, todayVideos, topCategory, categoryData, topKeywords, assetMentions } =
-    await getDashboardData()
+  const {
+    channels, videos, totalVideos, todayVideos, topCategory,
+    consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles,
+  } = await getDashboardData()
 
   return (
     <div className="space-y-8">
       {/* Hero */}
-      <div className="relative">
-        <h1 className="text-4xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
-          대시보드
-        </h1>
-        <p className="text-[#64748b] mt-1.5 text-sm">
-          재테크 유튜브 채널 실시간 분석 현황
-        </p>
-        <div className="absolute top-1 right-0 flex items-center gap-2 text-xs text-[#475569]">
-          <span className="w-2 h-2 rounded-full bg-[#00d4aa] pulse-dot" />
+      <div className="relative flex items-end justify-between">
+        <div>
+          <div className="flex items-center gap-3 mb-1.5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00e8b8]/20 to-[#00e8b8]/5 border border-[#00e8b8]/20 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+              대시보드
+            </h1>
+          </div>
+          <p className="text-[#5a6a88] text-sm">
+            재테크 유튜브 채널 실시간 분석 현황
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-[#3a4a6a]">
+          <span className="w-2 h-2 rounded-full bg-[#00e8b8] pulse-dot" />
           Live
         </div>
       </div>
 
+      {/* Channel Ticker */}
+      <ChannelTicker channels={channels.slice(0, 10)} />
+
+      {/* Buzz Alert */}
+      <BuzzAlertBanner alerts={buzzAlerts} />
+
+      {/* KPI Cards */}
       <StatsCards
         totalChannels={channels.length}
         totalVideos={totalVideos}
@@ -84,22 +105,23 @@ export default async function DashboardPage() {
         topCategory={topCategory}
       />
 
+      {/* Row: Top Mentions + Channel Prediction Profile */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <CategoryBarChart data={categoryData} />
-        <TrendLineChart stats={stats} />
+        <TopMentionsChart data={assetMentions} />
+        <ChannelPredictionProfile data={predictionProfiles} />
       </div>
 
-      <AssetHeatmap assets={assetMentions} />
+      {/* Consensus Score */}
+      <ConsensusScore data={consensus} />
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-3">
-          <VideoFeed videos={videos} />
-        </div>
-        <div className="lg:col-span-2 space-y-6">
-          <KeywordCloud keywords={topKeywords} />
-          <ChannelRanking channels={channels.slice(0, 8)} title="TOP 채널" />
-        </div>
-      </div>
+      {/* Prediction Feed */}
+      <PredictionFeed predictions={predictions} />
+
+      {/* Asset Sentiment Grid */}
+      <AssetSentimentGrid data={assetSentiments} />
+
+      {/* Video Feed */}
+      <VideoFeed videos={videos} />
     </div>
   )
 }

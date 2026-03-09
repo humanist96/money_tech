@@ -402,7 +402,9 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
       CASE WHEN COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END) > 0
         THEN COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::float /
              COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END)
-        ELSE NULL END AS hit_rate
+        ELSE NULL END AS hit_rate,
+      ROUND(AVG(p.crowd_accuracy)::numeric, 3) AS avg_crowd_accuracy,
+      COUNT(CASE WHEN p.crowd_accuracy IS NOT NULL THEN 1 END)::int AS crowd_evaluated
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
     GROUP BY c.id, c.name, c.thumbnail_url, c.category, c.channel_type, c.prediction_intensity_score

@@ -17,6 +17,9 @@ export async function GET(req: NextRequest) {
         p.predicted_at,
         p.is_accurate,
         p.target_price,
+        p.crowd_accuracy,
+        p.actual_price_after_1w,
+        p.actual_price_after_1m,
         COALESCE(ma.asset_name, '(미지정)') AS asset_name,
         ma.asset_code,
         ma.sentiment,
@@ -25,7 +28,11 @@ export async function GET(req: NextRequest) {
         v.title AS video_title,
         v.youtube_video_id,
         v.published_at AS video_published_at,
-        v.thumbnail_url AS video_thumbnail
+        v.thumbnail_url AS video_thumbnail,
+        v.comment_sentiment_score,
+        v.comment_positive_count,
+        v.comment_negative_count,
+        v.comment_total_count
       FROM predictions p
       JOIN videos v ON p.video_id = v.id
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id

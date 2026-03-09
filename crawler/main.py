@@ -1,4 +1,5 @@
 """MoneyTech YouTube Crawler - Collects channel and video metadata."""
+from __future__ import annotations
 
 import json
 import os
@@ -10,11 +11,17 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
-from asset_dictionary import find_assets_in_text, analyze_sentiment, generate_simple_summary
+from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
+from channel_classifier import update_stale_classifications
+from comment_analyzer import analyze_video_comments, update_crowd_accuracy
+from prediction_detector import detect_predictions
+from prediction_evaluator import evaluate_predictions, update_channel_hit_rates
+from price_collector import collect_prices_for_predictions, record_daily_prices
 from youtube import (
     get_channel_info,
     get_channel_videos,
     get_video_details,
+    get_video_details_batch,
     get_video_subtitle,
     rate_limit_wait,
 )
@@ -71,10 +78,11 @@ def upsert_video(cur, video: dict, channel_uuid: str) -> bool:
     )
     existing = cur.fetchone()
 
-    published_at = None
-    upload_date = video.get("upload_date")
-    if upload_date and len(upload_date) == 8:
-        published_at = f"{upload_date[:4]}-{upload_date[4:6]}-{upload_date[6:8]}T00:00:00Z"
+    published_at = video.get("published_at")
+    if not published_at:
+        upload_date = video.get("upload_date")
+        if upload_date and len(upload_date) == 8:
+            published_at = f"{upload_date[:4]}-{upload_date[4:6]}-{upload_date[6:8]}T00:00:00Z"
 
     tags = video.get("tags") or []
     if isinstance(tags, str):
@@ -159,7 +167,7 @@ def compute_daily_stats(cur, date_str: str) -> None:
 
         cur.execute(
             """SELECT channel_id, title, tags, view_count FROM videos
-            WHERE channel_id = ANY(%s)
+            WHERE channel_id = ANY(%s::uuid[])
             AND published_at >= %s AND published_at < %s::date + 1""",
             (
                 list(channel_ids.keys()),
@@ -196,16 +204,16 @@ def compute_daily_stats(cur, date_str: str) -> None:
         keyword_counts = Counter(all_keywords).most_common(30)
         top_keywords = [{"keyword": kw, "count": cnt} for kw, cnt in keyword_counts]
 
-        # Compute sentiment distribution from mentioned_assets
         sentiment_distribution = {"positive": 0, "negative": 0, "neutral": 0}
         try:
             cur.execute(
-                """SELECT v.sentiment, COUNT(*) FROM videos v
+                """SELECT ma.sentiment, COUNT(*) FROM mentioned_assets ma
+                JOIN videos v ON ma.video_id = v.id
                 JOIN channels c ON v.channel_id = c.id
                 WHERE c.category = %s
                 AND v.published_at >= %s AND v.published_at < %s::date + 1
-                AND v.sentiment IS NOT NULL
-                GROUP BY v.sentiment""",
+                AND ma.sentiment IS NOT NULL
+                GROUP BY ma.sentiment""",
                 (category, f"{date_str}T00:00:00Z", date_str),
             )
             for sentiment_val, cnt in cur.fetchall():
@@ -235,8 +243,105 @@ def compute_daily_stats(cur, date_str: str) -> None:
     print(f"  Daily stats computed for {date_str}")
 
 
+def process_video_nlp(cur, conn, video_id: str, video: dict, channel_uuid: str, published_at: str | None, skip_subtitle: bool = False) -> None:
+    """Run NLP analysis on a single video."""
+    try:
+        subtitle_text = None
+        if not skip_subtitle:
+            # Check if subtitle already exists
+            cur.execute("SELECT subtitle_text FROM videos WHERE youtube_video_id = %s", (video_id,))
+            row = cur.fetchone()
+            existing_sub = row[0] if row else None
+
+            if not existing_sub:
+                try:
+                    subtitle_text = get_video_subtitle(video_id)
+                    if subtitle_text:
+                        cur.execute(
+                            "UPDATE videos SET subtitle_text = %s WHERE youtube_video_id = %s",
+                            (subtitle_text, video_id),
+                        )
+                        conn.commit()
+                except Exception:
+                    pass
+            else:
+                subtitle_text = existing_sub
+
+        title = video.get("title", "")
+        description = video.get("description", "") or ""
+        combined_text = f"{title} {description} {subtitle_text or ''}"
+
+        found_assets = find_assets_in_text(combined_text)
+        sentiment = analyze_sentiment(combined_text)
+
+        if found_assets:
+            cur.execute(
+                "SELECT id FROM videos WHERE youtube_video_id = %s",
+                (video_id,),
+            )
+            vid_row = cur.fetchone()
+            if vid_row:
+                vid_uuid = str(vid_row[0])
+                for asset in found_assets:
+                    asset_sentiment = analyze_sentiment_for_asset(combined_text, asset["asset_name"])
+                    cur.execute(
+                        """INSERT INTO mentioned_assets
+                        (video_id, asset_type, asset_name, asset_code, sentiment)
+                        VALUES (%s, %s, %s, %s, %s)
+                        ON CONFLICT (video_id, asset_name) DO UPDATE SET
+                            sentiment = EXCLUDED.sentiment""",
+                        (
+                            vid_uuid,
+                            asset["asset_type"],
+                            asset["asset_name"],
+                            asset["asset_code"],
+                            asset_sentiment,
+                        ),
+                    )
+
+                # Detect and store predictions
+                preds = detect_predictions(combined_text, found_assets)
+                for pred in preds:
+                    cur.execute(
+                        "SELECT id FROM mentioned_assets WHERE video_id = %s AND asset_name = %s",
+                        (vid_uuid, pred["asset_name"]),
+                    )
+                    ma_row = cur.fetchone()
+                    if ma_row:
+                        cur.execute(
+                            """INSERT INTO predictions
+                            (video_id, channel_id, mentioned_asset_id, prediction_type, reason, predicted_at)
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                            ON CONFLICT DO NOTHING""",
+                            (
+                                vid_uuid,
+                                channel_uuid,
+                                str(ma_row[0]),
+                                pred["prediction_type"],
+                                pred.get("reason", ""),
+                                published_at,
+                            ),
+                        )
+                if preds:
+                    print(f"    Detected {len(preds)} predictions")
+
+            conn.commit()
+            print(f"    Found {len(found_assets)} assets mentioned")
+
+        summary = generate_simple_summary(title, found_assets, sentiment)
+        cur.execute(
+            """UPDATE videos SET summary = %s, sentiment = %s
+            WHERE youtube_video_id = %s""",
+            (summary, sentiment, video_id),
+        )
+        conn.commit()
+    except Exception as e:
+        print(f"    Warning: NLP analysis failed: {e}")
+        conn.rollback()
+
+
 def crawl() -> None:
-    """Main crawling function."""
+    """Main crawling function - uses YouTube Data API v3 with batch requests."""
     channels_config = load_channels()
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -254,22 +359,25 @@ def crawl() -> None:
 
                     channel_uuid = upsert_channel(cur, ch, category)
                     conn.commit()
-                    print(f"  Channel UUID: {channel_uuid}")
 
-                    # Fetch and update channel metadata
+                    # Fetch and update channel metadata (1 API call)
                     try:
                         ch_info = get_channel_info(ch["channel_id"])
                         if ch_info:
                             cur.execute(
                                 """UPDATE channels SET
-                                    subscriber_count = %s,
-                                    description = %s,
-                                    thumbnail_url = %s
+                                    subscriber_count = COALESCE(%s, subscriber_count),
+                                    description = COALESCE(%s, description),
+                                    thumbnail_url = COALESCE(%s, thumbnail_url),
+                                    video_count = COALESCE(%s, video_count),
+                                    total_view_count = COALESCE(%s, total_view_count)
                                 WHERE id = %s""",
                                 (
                                     ch_info.get("subscriber_count"),
-                                    (ch_info.get("description") or "")[:2000],
+                                    (ch_info.get("description") or "")[:2000] or None,
                                     ch_info.get("thumbnail_url"),
+                                    ch_info.get("video_count"),
+                                    ch_info.get("total_view_count"),
                                     channel_uuid,
                                 ),
                             )
@@ -279,100 +387,93 @@ def crawl() -> None:
                         print(f"  Warning: could not update channel info: {e}")
                         conn.rollback()
 
-                    videos = get_channel_videos(ch["channel_id"], max_items=20)
+                    # Fetch video list (1-2 API calls via playlist)
+                    videos = get_channel_videos(ch["channel_id"], max_items=30)
                     print(f"  Found {len(videos)} videos")
 
+                    if not videos:
+                        continue
+
+                    # Batch fetch video details (1 API call per 50 videos)
+                    video_ids = [v.get("id") for v in videos if v.get("id")]
+                    details_map = {}
+                    if video_ids:
+                        details_list = get_video_details_batch(video_ids)
+                        details_map = {d["id"]: d for d in details_list}
+                        print(f"  Fetched details for {len(details_map)} videos (batch)")
+
                     for video in videos:
-                        video_id = video.get("id") or video.get("url", "").split("v=")[-1]
+                        video_id = video.get("id")
                         if not video_id:
                             continue
 
-                        details = get_video_details(video_id)
-                        if details:
-                            is_new = upsert_video(cur, details, channel_uuid)
-                        else:
-                            is_new = upsert_video(cur, video, channel_uuid)
-
+                        details = details_map.get(video_id)
+                        source = details if details else video
+                        is_new = upsert_video(cur, source, channel_uuid)
                         conn.commit()
 
                         if is_new:
                             total_new += 1
-                            print(f"    NEW: {video.get('title', '')[:50]}")
+                            print(f"    NEW: {source.get('title', '')[:60]}")
                         else:
                             total_updated += 1
 
-                        # Fetch subtitle and run NLP analysis
-                        try:
-                            subtitle_text = get_video_subtitle(video_id)
-                            if subtitle_text:
-                                cur.execute(
-                                    "UPDATE videos SET subtitle_text = %s WHERE youtube_video_id = %s",
-                                    (subtitle_text, video_id),
-                                )
-                                conn.commit()
-                                print(f"    Subtitle collected ({len(subtitle_text)} chars)")
+                        # Determine published_at for predictions
+                        published_at = video.get("published_at")
+                        if not published_at and details:
+                            ud = details.get("upload_date", "")
+                            if len(ud) == 8:
+                                published_at = f"{ud[:4]}-{ud[4:6]}-{ud[6:8]}T00:00:00Z"
 
-                            title = (details or video).get("title", "")
-                            description = (details or video).get("description", "") or ""
-                            combined_text = f"{title} {description} {subtitle_text or ''}"
+                        # NLP analysis (skip subtitles in fast mode)
+                        skip_sub = os.environ.get("SKIP_SUBTITLE", "").lower() in ("1", "true", "yes")
+                        process_video_nlp(cur, conn, video_id, source, channel_uuid, published_at, skip_subtitle=skip_sub)
+                        rate_limit_wait(0.1)
 
-                            found_assets = find_assets_in_text(combined_text)
-                            sentiment = analyze_sentiment(combined_text)
-
-                            if found_assets:
-                                cur.execute(
-                                    "SELECT id FROM videos WHERE youtube_video_id = %s",
-                                    (video_id,),
-                                )
-                                vid_row = cur.fetchone()
-                                if vid_row:
-                                    vid_uuid = str(vid_row[0])
-                                    for asset in found_assets:
-                                        cur.execute(
-                                            """INSERT INTO mentioned_assets
-                                            (video_id, asset_type, asset_name, asset_code, sentiment)
-                                            VALUES (%s, %s, %s, %s, %s)
-                                            ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                                                sentiment = EXCLUDED.sentiment""",
-                                            (
-                                                vid_uuid,
-                                                asset["asset_type"],
-                                                asset["asset_name"],
-                                                asset["asset_code"],
-                                                sentiment,
-                                            ),
-                                        )
-                                conn.commit()
-                                print(f"    Found {len(found_assets)} assets mentioned")
-
-                            summary = generate_simple_summary(title, found_assets, sentiment)
-                            cur.execute(
-                                """UPDATE videos SET summary = %s, sentiment = %s
-                                WHERE youtube_video_id = %s""",
-                                (summary, sentiment, video_id),
-                            )
-                            conn.commit()
-                        except Exception as e:
-                            print(f"    Warning: NLP analysis failed: {e}")
-                            conn.rollback()
-
-                        rate_limit_wait(2.0)
-
-                    # Update channel stats
+                    # Update channel video/view counts from DB
                     cur.execute(
                         """UPDATE channels SET
-                            video_count = (SELECT count(*) FROM videos WHERE channel_id = %s),
-                            total_view_count = (SELECT coalesce(sum(view_count), 0) FROM videos WHERE channel_id = %s)
+                            video_count = COALESCE((SELECT count(*) FROM videos WHERE channel_id = %s), video_count),
+                            total_view_count = COALESCE((SELECT coalesce(sum(view_count), 0) FROM videos WHERE channel_id = %s), total_view_count)
                         WHERE id = %s""",
                         (channel_uuid, channel_uuid, channel_uuid),
                     )
                     conn.commit()
-
-                    rate_limit_wait(3.0)
+                    rate_limit_wait(0.2)
 
             print(f"\n=== Computing daily stats for {today} ===")
             compute_daily_stats(cur, today)
             conn.commit()
+
+        # Price collection and prediction evaluation
+        print("\n=== Collecting asset prices ===")
+        try:
+            collect_prices_for_predictions(conn)
+            record_daily_prices(conn)
+        except Exception as e:
+            print(f"  Warning: price collection failed: {e}")
+
+        print("\n=== Evaluating predictions ===")
+        try:
+            evaluate_predictions(conn)
+            update_channel_hit_rates(conn)
+        except Exception as e:
+            print(f"  Warning: prediction evaluation failed: {e}")
+
+        print("\n=== Analyzing comments for prediction videos ===")
+        try:
+            comment_results = analyze_video_comments(conn, max_videos=30)
+            print(f"  Comment analysis: {comment_results}")
+            update_crowd_accuracy(conn)
+        except Exception as e:
+            print(f"  Warning: comment analysis failed: {e}")
+
+        print("\n=== Updating channel classifications ===")
+        try:
+            updated = update_stale_classifications(conn, days=30, stale_days=7)
+            print(f"  Re-classified {updated} channels")
+        except Exception as e:
+            print(f"  Warning: channel classification failed: {e}")
 
     finally:
         conn.close()

@@ -40,21 +40,21 @@ export function TrendLineChart({ stats, title = "업로드 빈도 추이" }: Tre
   const categories = ["stock", "coin", "real_estate", "economy"]
 
   return (
-    <div className="glass-card rounded-xl p-6">
-      <h3 className="font-semibold text-white mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
+    <div className="glass-card-elevated rounded-2xl p-6">
+      <h3 className="font-bold text-white text-[15px] mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
       {chartData.length > 0 ? (
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
-            <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1a2744" vertical={false} />
+            <XAxis dataKey="date" tick={{ fill: '#5a6a88', fontSize: 11 }} axisLine={{ stroke: '#1a2744' }} tickLine={false} />
+            <YAxis tick={{ fill: '#5a6a88', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip
-              contentStyle={{ background: '#0c1324', border: '1px solid #1e293b', borderRadius: '8px', fontSize: '12px' }}
+              contentStyle={{ background: '#0a1120', border: '1px solid #1a2744', borderRadius: '12px', fontSize: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
               labelStyle={{ color: '#e2e8f0' }}
             />
             <Legend
               wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
-              formatter={(value) => <span style={{ color: '#94a3b8' }}>{value}</span>}
+              formatter={(value) => <span style={{ color: '#7a8ba8' }}>{value}</span>}
             />
             {categories.map((cat) => (
               <Line
@@ -71,7 +71,7 @@ export function TrendLineChart({ stats, title = "업로드 빈도 추이" }: Tre
           </LineChart>
         </ResponsiveContainer>
       ) : (
-        <p className="text-center text-[#64748b] text-sm py-12">데이터를 수집 중입니다...</p>
+        <p className="text-center text-[#5a6a88] text-sm py-12">데이터를 수집 중입니다...</p>
       )}
     </div>
   )

@@ -248,6 +248,8 @@ export interface HitRateLeaderboardItem {
   total_predictions: number
   all_predictions: number
   accurate_count: number
+  avg_crowd_accuracy: number | null
+  crowd_evaluated: number
   recent_predictions: Array<{
     prediction_type: string
     is_accurate: boolean | null

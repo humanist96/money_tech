@@ -1,15 +1,24 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { useSearchParams } from 'next/navigation'
+import type { NotebookChatMessage } from '@/lib/types'
 import type {
-  NotebookItem,
-  NotebookDetail,
-  NotebookChatMessage,
-} from '@/lib/types'
+  ResearchConfig,
+  ResearchProgress,
+  ResearchSource,
+  ArtifactItem,
+  SavedNotebook,
+  NewsItem,
+  DbInsight,
+} from '@/lib/research-types'
+import { ARTIFACT_CONFIGS, SAVED_NOTEBOOKS_KEY } from '@/lib/research-types'
+import ResearchWizard from '@/components/research/research-wizard'
+import ProgressTracker from '@/components/research/progress-tracker'
+import ChatPanel from '@/components/research/chat-panel'
+import ArtifactGrid from '@/components/research/artifact-card'
+import SourceList from '@/components/research/source-list'
 
 // --- Extension bridge ---
-
 let requestId = 0
 const pendingRequests = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>()
 
@@ -19,7 +28,7 @@ function extensionCall<T = unknown>(action: string, data?: Record<string, unknow
     const timeout = setTimeout(() => {
       pendingRequests.delete(id)
       reject(new Error('확장 프로그램 응답 시간 초과'))
-    }, 60000)
+    }, 120000)
 
     pendingRequests.set(id, {
       resolve: (v) => { clearTimeout(timeout); pendingRequests.delete(id); resolve(v as T) },
@@ -44,58 +53,48 @@ if (typeof window !== 'undefined') {
 
 const NB_BASE = 'https://notebooklm.google.com'
 
-export default function NotebookClient() {
-  const searchParams = useSearchParams()
-  const initialId = searchParams.get('id')
+type Stage = 'wizard' | 'progress' | 'result'
 
+export default function NotebookClient() {
   const [extensionReady, setExtensionReady] = useState(false)
   const [authenticated, setAuthenticated] = useState<boolean | null>(null)
-  const [notebooks, setNotebooks] = useState<NotebookItem[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [detail, setDetail] = useState<NotebookDetail | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [stage, setStage] = useState<Stage>('wizard')
   const [error, setError] = useState('')
 
-  // Create notebook
-  const [newTitle, setNewTitle] = useState('')
-  const [creating, setCreating] = useState(false)
+  // Research state
+  const [keyword, setKeyword] = useState('')
+  const [notebookId, setNotebookId] = useState<string | null>(null)
+  const [progress, setProgress] = useState<ResearchProgress>({
+    phase: 'idle',
+    notebookId: null,
+    totalSteps: 0,
+    completedSteps: 0,
+    currentAction: '',
+    sources: [],
+  })
+  const [collectedSources, setCollectedSources] = useState<ResearchSource[]>([])
 
-  // Add source
-  const [sourceUrl, setSourceUrl] = useState('')
-  const [sourceText, setSourceText] = useState('')
-  const [sourceTitle, setSourceTitle] = useState('')
-  const [addingSource, setAddingSource] = useState(false)
-  const [sourceTab, setSourceTab] = useState<'url' | 'text'>('url')
-
-  // Chat
+  // Result stage state
   const [chatMessages, setChatMessages] = useState<NotebookChatMessage[]>([])
-  const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
-  const chatEndRef = useRef<HTMLDivElement>(null)
+  const [artifacts, setArtifacts] = useState<ArtifactItem[]>(
+    ARTIFACT_CONFIGS.map((c) => ({ id: '', type: c.type, label: c.label, status: 'idle' }))
+  )
+  const [savedNotebooks, setSavedNotebooks] = useState<SavedNotebook[]>([])
 
-  // Export cookies for Python testing
-  const handleExportCookies = useCallback(async () => {
+  // Polling ref
+  const pollingRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Load saved notebooks
+  useEffect(() => {
     try {
-      const data = await extensionCall<{ cookies: unknown[]; origins: unknown[] }>('exportCookies')
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'storage_state.json'
-      a.click()
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      setError(`쿠키 내보내기 실패: ${e instanceof Error ? e.message : String(e)}`)
-    }
+      const saved = localStorage.getItem(SAVED_NOTEBOOKS_KEY)
+      if (saved) setSavedNotebooks(JSON.parse(saved))
+    } catch { /* ignore */ }
   }, [])
 
-  // Feature states
-  const [featureLoading, setFeatureLoading] = useState<string | null>(null)
-  const [featureResult, setFeatureResult] = useState<string | null>(null)
-  const [featureError, setFeatureError] = useState<string | null>(null)
-
-  // Listen for extension ready signal
+  // Extension ready check
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.source !== window) return
@@ -106,7 +105,7 @@ export default function NotebookClient() {
     return () => window.removeEventListener('message', handleMessage)
   }, [])
 
-  // Check auth
+  // Auth check
   useEffect(() => {
     if (!extensionReady) return
     extensionCall<{ authenticated: boolean }>('checkAuth')
@@ -114,109 +113,245 @@ export default function NotebookClient() {
       .catch(() => setAuthenticated(false))
   }, [extensionReady])
 
-  // Load notebooks
-  const loadNotebooks = useCallback(async () => {
-    try {
-      const data = await extensionCall<{ notebooks: NotebookItem[]; _debug?: string }>('listNotebooks')
-      if (data && typeof data === 'object' && 'notebooks' in data) {
-        setNotebooks(Array.isArray(data.notebooks) ? data.notebooks : [])
-      } else if (Array.isArray(data)) {
-        setNotebooks(data as unknown as NotebookItem[])
-      }
-    } catch (e) {
-      setError(`목록 로드 실패: ${e instanceof Error ? e.message : String(e)}`)
-    }
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => { if (pollingRef.current) clearInterval(pollingRef.current) }
   }, [])
 
-  useEffect(() => {
-    if (authenticated) loadNotebooks()
-  }, [authenticated, loadNotebooks])
-
-  // Load notebook detail
-  const loadDetail = useCallback(async (id: string) => {
-    setSelectedId(id)
-    setLoading(true)
+  // --- Research Flow ---
+  const startResearch = useCallback(async (config: ResearchConfig) => {
+    setKeyword(config.keyword)
+    setStage('progress')
     setError('')
-    setFeatureResult(null)
-    setFeatureError(null)
     setChatMessages([])
     setConversationId(null)
+    setArtifacts(ARTIFACT_CONFIGS.map((c) => ({ id: '', type: c.type, label: c.label, status: 'idle' })))
+
+    const allSources: ResearchSource[] = []
+    let totalSteps = 1 // notebook creation
+    if (config.sources.youtube) totalSteps += config.youtubeCount + config.youtubeCount // collect + inject
+    if (config.sources.news) totalSteps += config.newsCount + config.newsCount
+    if (config.sources.dbInsight) totalSteps += 2 // collect + inject
+    if (config.sources.aiReport) totalSteps += 2
+    totalSteps += 1 // waiting step
+
+    let completed = 0
+    const updateProgress = (action: string, phase: ResearchProgress['phase'] = 'collecting') => {
+      setProgress({
+        phase,
+        notebookId: null,
+        totalSteps,
+        completedSteps: completed,
+        currentAction: action,
+        sources: [...allSources],
+      })
+    }
+
     try {
-      const data = await extensionCall<NotebookDetail>('getNotebook', { notebookId: id })
-      setDetail(data)
+      // Step 1: Create notebook
+      updateProgress('노트북 생성 중...')
+      const nb = await extensionCall<{ id: string }>('createNotebook', { title: `${config.keyword} - ${new Date().toLocaleDateString('ko-KR')}` })
+      const nbId = nb.id
+      setNotebookId(nbId)
+      completed++
+      updateProgress('노트북 생성 완료')
+
+      // Step 2: Collect data in parallel
+      updateProgress('데이터 수집 중...')
+
+      const collectPromises: Promise<void>[] = []
+
+      // YouTube
+      let youtubeUrls: string[] = []
+      if (config.sources.youtube) {
+        collectPromises.push(
+          fetch(`/api/search/youtube?keyword=${encodeURIComponent(config.keyword)}&maxResults=${config.youtubeCount}`)
+            .then((r) => r.json())
+            .then((data) => {
+              const results = data.results || []
+              youtubeUrls = results.map((r: { videoId: string }) => `https://www.youtube.com/watch?v=${r.videoId}`)
+              for (const r of results) {
+                allSources.push({ type: 'youtube', title: r.title, url: `https://www.youtube.com/watch?v=${r.videoId}`, status: 'done' })
+                completed++
+              }
+              updateProgress(`YouTube ${results.length}개 수집 완료`)
+            })
+            .catch(() => { /* YouTube collection failed silently */ })
+        )
+      }
+
+      // News
+      let newsItems: NewsItem[] = []
+      if (config.sources.news) {
+        collectPromises.push(
+          fetch(`/api/research/news?keyword=${encodeURIComponent(config.keyword)}&maxResults=${config.newsCount}`)
+            .then((r) => r.json())
+            .then((data) => {
+              newsItems = data.items || []
+              for (const item of newsItems) {
+                allSources.push({ type: 'news', title: item.title, url: item.link, status: 'done' })
+                completed++
+              }
+              updateProgress(`뉴스 ${newsItems.length}개 수집 완료`)
+            })
+            .catch(() => { /* News collection failed silently */ })
+        )
+      }
+
+      // DB Insights
+      let dbInsight: DbInsight | null = null
+      if (config.sources.dbInsight) {
+        collectPromises.push(
+          fetch(`/api/research/db-insights?keyword=${encodeURIComponent(config.keyword)}`)
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.summary) {
+                dbInsight = data
+                allSources.push({ type: 'db_insight', title: `${config.keyword} DB 분석`, content: data.summary, status: 'done' })
+                completed++
+              }
+              updateProgress('DB 분석 완료')
+            })
+            .catch(() => { completed++; updateProgress('DB 분석 건너뜀') })
+        )
+      }
+
+      // AI Report (uses existing search/report API)
+      let reportText = ''
+      if (config.sources.aiReport && config.sources.youtube) {
+        // Wait for YouTube to finish first, then generate report
+        collectPromises.push(
+          (async () => {
+            // Wait a bit for YouTube results
+            await new Promise((r) => setTimeout(r, 3000))
+            if (youtubeUrls.length === 0) { completed++; return }
+
+            try {
+              const videoIds = youtubeUrls.map((u) => new URL(u).searchParams.get('v')).filter(Boolean)
+              const res = await fetch('/api/search/report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ videoIds: videoIds.slice(0, 5) }),
+              })
+              const data = await res.json()
+              if (data.report) {
+                reportText = `[AI 종합 분석]\n${data.report.overall_summary}\n\n공통 의견: ${data.report.consensus}\n\n주요 근거:\n${(data.report.key_arguments || []).map((a: string) => `- ${a}`).join('\n')}`
+                allSources.push({ type: 'ai_report', title: `${config.keyword} AI 종합 리포트`, content: reportText, status: 'done' })
+                completed++
+              }
+              updateProgress('AI 리포트 생성 완료')
+            } catch {
+              completed++
+              updateProgress('AI 리포트 건너뜀')
+            }
+          })()
+        )
+      }
+
+      await Promise.all(collectPromises)
+      updateProgress('NotebookLM에 소스 주입 중...', 'injecting')
+
+      // Step 3: Inject sources into NotebookLM
+      // YouTube URLs
+      for (const url of youtubeUrls) {
+        try {
+          await extensionCall('addSourceUrl', { notebookId: nbId, url })
+          completed++
+          updateProgress(`소스 주입 중... (${completed}/${totalSteps})`, 'injecting')
+        } catch {
+          // Some URLs may fail, continue
+        }
+      }
+
+      // News URLs
+      for (const item of newsItems) {
+        try {
+          await extensionCall('addSourceUrl', { notebookId: nbId, url: item.link })
+          completed++
+          updateProgress(`소스 주입 중... (${completed}/${totalSteps})`, 'injecting')
+        } catch {
+          // Continue on error
+        }
+      }
+
+      // DB Insight text
+      if (dbInsight && (dbInsight as DbInsight).summary) {
+        try {
+          await extensionCall('addSourceText', {
+            notebookId: nbId,
+            title: `${config.keyword} MoneyTech DB 분석`,
+            content: (dbInsight as DbInsight).summary,
+          })
+          completed++
+          updateProgress('DB 분석 텍스트 주입 완료', 'injecting')
+        } catch { /* ignore */ }
+      }
+
+      // AI Report text
+      if (reportText) {
+        try {
+          await extensionCall('addSourceText', {
+            notebookId: nbId,
+            title: `${config.keyword} AI 종합 리포트`,
+            content: reportText,
+          })
+          completed++
+          updateProgress('AI 리포트 텍스트 주입 완료', 'injecting')
+        } catch { /* ignore */ }
+      }
+
+      // Step 4: Wait for source processing
+      updateProgress('소스 처리 대기 중...', 'waiting')
+      await new Promise((r) => setTimeout(r, 15000))
+      completed = totalSteps
+
+      // Save to local storage
+      const savedNb: SavedNotebook = {
+        id: nbId,
+        title: `${config.keyword} - ${new Date().toLocaleDateString('ko-KR')}`,
+        keyword: config.keyword,
+        sourceCount: allSources.length,
+        createdAt: new Date().toISOString(),
+      }
+      setSavedNotebooks((prev) => {
+        const updated = [savedNb, ...prev.filter((n) => n.id !== nbId)].slice(0, 20)
+        localStorage.setItem(SAVED_NOTEBOOKS_KEY, JSON.stringify(updated))
+        return updated
+      })
+
+      setCollectedSources(allSources)
+      setProgress({ ...progress, phase: 'ready', completedSteps: totalSteps, totalSteps, currentAction: '완료', sources: allSources, notebookId: nbId })
+      setStage('result')
+
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load notebook')
-    } finally {
-      setLoading(false)
+      setError(e instanceof Error ? e.message : 'Research failed')
+      setStage('wizard')
     }
   }, [])
 
-  useEffect(() => {
-    if (authenticated && initialId) loadDetail(initialId)
-  }, [authenticated, initialId, loadDetail])
-
-  // Create notebook
-  const handleCreate = useCallback(async () => {
-    if (!newTitle.trim()) return
-    setCreating(true)
-    setError('')
-    try {
-      const data = await extensionCall<{ id: string; title: string }>('createNotebook', { title: newTitle })
-      setNewTitle('')
-      await loadNotebooks()
-      loadDetail(data.id)
-    } catch (e) {
-      setError(`노트북 생성 실패: ${e instanceof Error ? e.message : String(e)}`)
-    } finally { setCreating(false) }
-  }, [newTitle, loadNotebooks, loadDetail])
-
-  // Delete notebook
-  const handleDelete = useCallback(async (id: string) => {
-    if (!confirm('이 노트북을 삭제하시겠습니까?')) return
-    try {
-      await extensionCall('deleteNotebook', { notebookId: id })
-      if (selectedId === id) { setSelectedId(null); setDetail(null) }
-      await loadNotebooks()
-    } catch (e) {
-      setError(`삭제 실패: ${e instanceof Error ? e.message : String(e)}`)
+  // Open existing notebook
+  const openNotebook = useCallback(async (id: string) => {
+    const saved = savedNotebooks.find((n) => n.id === id)
+    if (saved) {
+      setKeyword(saved.keyword || saved.title)
+      setNotebookId(id)
+      setCollectedSources([])
+      setChatMessages([])
+      setConversationId(null)
+      setArtifacts(ARTIFACT_CONFIGS.map((c) => ({ id: '', type: c.type, label: c.label, status: 'idle' })))
+      setStage('result')
     }
-  }, [selectedId, loadNotebooks])
+  }, [savedNotebooks])
 
-  // Add source
-  const handleAddSource = useCallback(async () => {
-    if (!selectedId) return
-    setAddingSource(true)
-    setError('')
-    try {
-      if (sourceTab === 'url' && sourceUrl.trim()) {
-        await extensionCall('addSourceUrl', { notebookId: selectedId, url: sourceUrl.trim() })
-        setSourceUrl('')
-      } else if (sourceTab === 'text' && sourceText.trim()) {
-        await extensionCall('addSourceText', {
-          notebookId: selectedId,
-          title: sourceTitle.trim() || '텍스트 소스',
-          content: sourceText.trim(),
-        })
-        setSourceText('')
-        setSourceTitle('')
-      }
-      await loadDetail(selectedId)
-    } catch (e) {
-      setError(`소스 추가 실패: ${e instanceof Error ? e.message : String(e)}`)
-    } finally { setAddingSource(false) }
-  }, [selectedId, sourceTab, sourceUrl, sourceText, sourceTitle, loadDetail])
-
-  // Chat
-  const handleChat = useCallback(async () => {
-    if (!chatInput.trim() || !selectedId) return
-    const question = chatInput
-    setChatInput('')
+  // --- Chat ---
+  const handleChat = useCallback(async (question: string) => {
+    if (!notebookId) return
     setChatMessages((prev) => [...prev, { role: 'user', content: question }])
     setChatLoading(true)
 
     try {
       const data = await extensionCall<{ answer: string; conversationId: string; references: Array<{ text: string }> }>(
-        'chat', { notebookId: selectedId, question, conversationId }
+        'chat', { notebookId, question, conversationId }
       )
       setChatMessages((prev) => [
         ...prev,
@@ -227,31 +362,39 @@ export default function NotebookClient() {
       const msg = e instanceof Error ? e.message : String(e)
       setChatMessages((prev) => [...prev, { role: 'assistant', content: `오류: ${msg}` }])
     } finally { setChatLoading(false) }
-  }, [chatInput, selectedId, conversationId])
+  }, [notebookId, conversationId])
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chatMessages])
+  // --- Artifact generation ---
+  const handleGenerateArtifact = useCallback(async (type: ArtifactItem['type']) => {
+    if (!notebookId) return
+    const config = ARTIFACT_CONFIGS.find((c) => c.type === type)
+    if (!config) return
 
-  // Generic feature trigger (audio, report, quiz)
-  const handleFeature = useCallback(async (action: string, label: string, extraData?: Record<string, unknown>) => {
-    if (!selectedId) return
-    setFeatureLoading(action)
-    setFeatureResult(null)
-    setFeatureError(null)
+    setArtifacts((prev) => prev.map((a) => a.type === type ? { ...a, status: 'generating' as const } : a))
 
     try {
-      const data = await extensionCall<Record<string, unknown>>(action, { notebookId: selectedId, ...extraData })
-      const resultStr = JSON.stringify(data, null, 2)
-      if (data.id) {
-        setFeatureResult(`${label} 생성 요청 완료 (ID: ${String(data.id).slice(0, 12)}...)\n상태: ${data.status || 'processing'}\n\n전체 응답:\n${resultStr}`)
-      } else {
-        setFeatureResult(`${label} 응답:\n${resultStr}`)
-      }
+      await extensionCall(config.action, { notebookId, ...config.extraData })
+      setArtifacts((prev) => prev.map((a) =>
+        a.type === type ? { ...a, status: 'completed' as const } : a
+      ))
     } catch (e) {
-      setFeatureError(`${label} 오류: ${e instanceof Error ? e.message : String(e)}`)
-    } finally { setFeatureLoading(null) }
-  }, [selectedId])
+      setArtifacts((prev) => prev.map((a) =>
+        a.type === type ? { ...a, status: 'error' as const, errorMessage: e instanceof Error ? e.message : String(e) } : a
+      ))
+    }
+  }, [notebookId])
+
+  // --- Back to wizard ---
+  const handleBack = useCallback(() => {
+    setStage('wizard')
+    setNotebookId(null)
+    setKeyword('')
+    setChatMessages([])
+    setConversationId(null)
+    setCollectedSources([])
+    setArtifacts(ARTIFACT_CONFIGS.map((c) => ({ id: '', type: c.type, label: c.label, status: 'idle' })))
+    setError('')
+  }, [])
 
   // --- Extension not installed ---
   if (!extensionReady) {
@@ -260,7 +403,12 @@ export default function NotebookClient() {
         <PageHeader />
         <div className="card p-8 space-y-6">
           <div className="text-center space-y-2">
-            <IconBox icon="warning" color="#ff5757" />
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5757" strokeWidth="1.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
             <h3 className="text-lg font-semibold text-white">Chrome 확장 프로그램 필요</h3>
             <p className="text-sm text-[#8899b4]">NotebookLM 기능을 사용하려면 MoneyTech 확장 프로그램을 설치해야 합니다.</p>
           </div>
@@ -274,10 +422,6 @@ export default function NotebookClient() {
                 </li>
               ))}
             </ol>
-            <a href="https://github.com/humanist96/money_tech/tree/main/extension" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 btn-primary">
-              확장 프로그램 다운로드
-            </a>
           </div>
         </div>
       </div>
@@ -286,7 +430,14 @@ export default function NotebookClient() {
 
   // --- Auth checking ---
   if (authenticated === null) {
-    return <div className="flex items-center justify-center min-h-[400px]"><Spinner size="lg" /></div>
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-3">
+          <Spinner size="lg" />
+          <p className="text-sm text-[#556a8a]">인증 확인 중...</p>
+        </div>
+      </div>
+    )
   }
 
   // --- Not authenticated ---
@@ -296,7 +447,12 @@ export default function NotebookClient() {
         <PageHeader />
         <div className="card p-8 space-y-6">
           <div className="text-center space-y-2">
-            <IconBox icon="book" color="#00e8b8" />
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="1.5">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
             <h3 className="text-lg font-semibold text-white">Google 로그인 필요</h3>
             <p className="text-sm text-[#8899b4]">NotebookLM을 사용하려면 Chrome에서 Google에 로그인되어 있어야 합니다.</p>
           </div>
@@ -310,357 +466,132 @@ export default function NotebookClient() {
               extensionCall<{ authenticated: boolean }>('checkAuth')
                 .then((r) => setAuthenticated(r.authenticated))
                 .catch(() => setAuthenticated(false))
-            }} className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all">다시 확인</button>
+            }} className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all">
+              다시 확인
+            </button>
           </div>
         </div>
       </div>
     )
   }
 
-  // --- Main UI ---
+  // --- Stage 1: Wizard ---
+  if (stage === 'wizard') {
+    return (
+      <div className="space-y-6">
+        <PageHeader />
+        {error && <div className="card p-4 border-red-500/30 bg-red-500/5 text-red-400 text-sm">{error}</div>}
+        <ResearchWizard
+          onStart={startResearch}
+          savedNotebooks={savedNotebooks}
+          onOpenNotebook={openNotebook}
+        />
+      </div>
+    )
+  }
+
+  // --- Stage 2: Progress ---
+  if (stage === 'progress') {
+    return (
+      <div className="space-y-6">
+        <PageHeader />
+        <ProgressTracker progress={progress} keyword={keyword} />
+      </div>
+    )
+  }
+
+  // --- Stage 3: Result ---
   return (
     <div className="space-y-6">
-      <PageHeader onExportCookies={handleExportCookies} />
+      <PageHeader />
 
-      {/* Create Notebook */}
+      {/* Result Header */}
       <div className="card p-4">
-        <form onSubmit={(e) => { e.preventDefault(); handleCreate() }} className="flex gap-3">
-          <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="새 리서치 노트북 제목 (예: 삼성전자 투자 분석)"
-            className="bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors flex-1" />
-          <button type="submit" disabled={creating || !newTitle.trim()} className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all disabled:opacity-40">
-            {creating ? '생성 중...' : '+ 노트북 생성'}
-          </button>
-        </form>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white">{keyword}</h2>
+            <p className="text-xs text-[#556a8a] mt-1">
+              {new Date().toLocaleDateString('ko-KR')} · 소스 {collectedSources.length}개
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleBack}
+              className="px-3 py-2 text-xs text-[#556a8a] hover:text-white border border-[#1a2744] rounded-lg hover:border-[#556a8a] transition-colors"
+            >
+              새 리서치
+            </button>
+            {notebookId && (
+              <a
+                href={`${NB_BASE}/notebook/${notebookId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-xs font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all flex items-center gap-1.5"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                NotebookLM
+              </a>
+            )}
+          </div>
+        </div>
       </div>
 
       {error && <div className="card p-4 border-red-500/30 bg-red-500/5 text-red-400 text-sm">{error}</div>}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
-        {/* Notebook List */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-semibold text-[#556a8a] uppercase tracking-wider">노트북 목록 ({notebooks.length})</h3>
-            <button onClick={loadNotebooks} className="text-[10px] text-[#556a8a] hover:text-[#00e8b8] transition-colors">새로고침</button>
-          </div>
-          {notebooks.length === 0 && <p className="text-sm text-[#556a8a] px-1 py-4">노트북이 없습니다. 위에서 새로 생성하세요.</p>}
-          {notebooks.map((nb) => (
-            <div key={nb.id} className={`group relative rounded-lg border transition-colors ${
-              selectedId === nb.id
-                ? 'bg-[#0a1628] border-[#00e8b8]/30'
-                : 'bg-[#060e1a] border-[#1a2744] hover:border-[#1a2744]/80'
-            }`}>
-              <button onClick={() => loadDetail(nb.id)}
-                className="w-full text-left p-3 pr-10">
-                <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedId === nb.id ? '#00e8b8' : 'currentColor'} strokeWidth="2">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                  </svg>
-                  <span className={`text-sm font-medium truncate ${selectedId === nb.id ? 'text-white' : 'text-[#8899b4]'}`}>{nb.title}</span>
-                </div>
-              </button>
-              {/* Actions */}
-              <div className="absolute right-1 top-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <a href={`${NB_BASE}/notebook/${nb.id}`} target="_blank" rel="noopener noreferrer"
-                  title="NotebookLM에서 열기"
-                  className="p-1.5 rounded hover:bg-[#1a2744] text-[#556a8a] hover:text-[#00e8b8] transition-colors">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-                <button onClick={() => handleDelete(nb.id)} title="삭제"
-                  className="p-1.5 rounded hover:bg-red-500/10 text-[#556a8a] hover:text-red-400 transition-colors">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* Q&A Chat */}
+      <ChatPanel
+        messages={chatMessages}
+        loading={chatLoading}
+        onSend={handleChat}
+      />
+
+      {/* Artifact Generation */}
+      {notebookId && (
+        <div className="card p-4">
+          <ArtifactGrid
+            artifacts={artifacts}
+            notebookId={notebookId}
+            onGenerate={handleGenerateArtifact}
+          />
         </div>
+      )}
 
-        {/* Detail Panel */}
-        <div className="min-h-[500px]">
-          {loading && <div className="flex items-center justify-center h-full"><Spinner size="lg" /></div>}
-
-          {!loading && !detail && (
-            <div className="card p-12 text-center h-full flex flex-col items-center justify-center gap-3">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#556a8a" strokeWidth="1.5">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-              </svg>
-              <p className="text-[#556a8a] text-sm">노트북을 선택하거나 새로 생성하세요</p>
-            </div>
-          )}
-
-          {!loading && detail && (
-            <div className="space-y-4">
-              {/* Header with actions */}
-              <div className="card p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold text-white">{detail.title}</h2>
-                    <p className="text-xs text-[#556a8a] mt-1">소스 {detail.sources?.length || 0}개</p>
-                  </div>
-                  <a href={`${NB_BASE}/notebook/${selectedId}`} target="_blank" rel="noopener noreferrer"
-                    className="px-5 py-2.5 bg-gradient-to-r from-[#00e8b8] to-[#00b894] text-[#040810] text-sm font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(0,232,184,0.3)] transition-all text-xs flex items-center gap-1.5">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                    NotebookLM에서 열기
-                  </a>
-                </div>
-
-                {/* Sources list */}
-                {detail.sources && detail.sources.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {detail.sources.map((s) => (
-                      <span key={s.id} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-[#0a1628] border border-[#1a2744] rounded-full text-[#8899b4]">
-                        <SourceIcon type={s.type} />
-                        <span className="truncate max-w-[200px]">{s.title}</span>
-                        {s.status === 'processing' && <span className="text-yellow-400">(처리중)</span>}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Add Source */}
-              <div className="card p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-white">소스 추가</h3>
-                <div className="flex gap-2">
-                  <button onClick={() => setSourceTab('url')}
-                    className={`px-3 py-1.5 text-xs rounded-md transition-colors ${sourceTab === 'url' ? 'bg-[#1a2744] text-[#00e8b8]' : 'text-[#556a8a] hover:text-white'}`}>
-                    URL / YouTube
-                  </button>
-                  <button onClick={() => setSourceTab('text')}
-                    className={`px-3 py-1.5 text-xs rounded-md transition-colors ${sourceTab === 'text' ? 'bg-[#1a2744] text-[#00e8b8]' : 'text-[#556a8a] hover:text-white'}`}>
-                    텍스트
-                  </button>
-                </div>
-                {sourceTab === 'url' ? (
-                  <div className="flex gap-2">
-                    <input type="text" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)}
-                      placeholder="https://youtu.be/... 또는 웹 URL"
-                      className="bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors flex-1" />
-                    <button onClick={handleAddSource} disabled={addingSource || !sourceUrl.trim()}
-                      className="px-4 py-2.5 bg-[#1a2744] border border-[#00e8b8]/30 text-[#00e8b8] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40">
-                      {addingSource ? <Spinner /> : '추가'}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <input type="text" value={sourceTitle} onChange={(e) => setSourceTitle(e.target.value)}
-                      placeholder="소스 제목" className="bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors w-full" />
-                    <textarea value={sourceText} onChange={(e) => setSourceText(e.target.value)}
-                      placeholder="분석 내용, 리포트, 메모 등..."
-                      rows={4} className="bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors w-full resize-none" />
-                    <button onClick={handleAddSource} disabled={addingSource || !sourceText.trim()}
-                      className="px-4 py-2.5 bg-[#1a2744] border border-[#00e8b8]/30 text-[#00e8b8] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40">
-                      {addingSource ? <Spinner /> : '텍스트 소스 추가'}
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Feature Buttons Grid */}
-              <div className="card p-4 space-y-4">
-                <h3 className="text-sm font-semibold text-white">NotebookLM 기능</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <FeatureButton
-                    icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>}
-                    label="오디오 브리핑"
-                    desc="AI 팟캐스트 생성"
-                    loading={featureLoading === 'generateAudio'}
-                    onClick={() => handleFeature('generateAudio', '오디오 브리핑', { format: 'deep-dive' })}
-                  />
-                  <FeatureButton
-                    icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>}
-                    label="브리핑 문서"
-                    desc="핵심 인사이트 정리"
-                    loading={featureLoading === 'generateReport'}
-                    onClick={() => handleFeature('generateReport', '브리핑 문서', { reportType: 'briefing' })}
-                  />
-                  <FeatureButton
-                    icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>}
-                    label="스터디 가이드"
-                    desc="학습 자료 생성"
-                    loading={featureLoading === 'generateStudyGuide'}
-                    onClick={() => handleFeature('generateReport', '스터디 가이드', { reportType: 'study_guide' })}
-                  />
-                  <FeatureButton
-                    icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>}
-                    label="퀴즈"
-                    desc="투자 지식 테스트"
-                    loading={featureLoading === 'generateQuiz'}
-                    onClick={() => handleFeature('generateQuiz', '퀴즈')}
-                  />
-                </div>
-
-                {/* Feature result/error display */}
-                {featureError && (
-                  <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
-                    <p className="text-sm text-red-400">{featureError}</p>
-                    <p className="text-xs text-[#556a8a] mt-2">
-                      NotebookLM에서 직접 실행해보세요:{' '}
-                      <a href={`${NB_BASE}/notebook/${selectedId}`} target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">
-                        노트북 열기
-                      </a>
-                    </p>
-                  </div>
-                )}
-                {featureResult && (
-                  <div className="p-3 bg-[#0a1628] border border-[#1a2744] rounded-lg">
-                    <pre className="text-xs text-[#c8d6e5] whitespace-pre-wrap break-all max-h-[300px] overflow-y-auto">{featureResult}</pre>
-                  </div>
-                )}
-
-                {/* NotebookLM direct link hint */}
-                <div className="flex items-center gap-2 p-3 bg-[#060e1a] rounded-lg border border-[#1a2744]">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e8b8" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                  <p className="text-xs text-[#8899b4]">
-                    오디오/보고서/퀴즈는{' '}
-                    <a href={`${NB_BASE}/notebook/${selectedId}`} target="_blank" rel="noopener noreferrer" className="text-[#00e8b8] underline">
-                      NotebookLM에서 직접 실행
-                    </a>
-                    하면 더 안정적입니다.
-                  </p>
-                </div>
-              </div>
-
-              {/* Q&A Chat */}
-              <div className="card p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-white">Q&A 소스 기반 질의응답</h3>
-                  <a href={`${NB_BASE}/notebook/${selectedId}`} target="_blank" rel="noopener noreferrer"
-                    className="text-[10px] text-[#556a8a] hover:text-[#00e8b8] transition-colors">NotebookLM에서 Q&A</a>
-                </div>
-
-                <div className="h-[350px] overflow-y-auto space-y-3 pr-2 bg-[#060e1a] rounded-lg p-3">
-                  {chatMessages.length === 0 && (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center space-y-2">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556a8a" strokeWidth="1.5" className="mx-auto">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                        <p className="text-sm text-[#556a8a]">소스 기반으로 질문하세요</p>
-                        <p className="text-[10px] text-[#334]">예: &quot;이 영상의 핵심 내용은?&quot;, &quot;투자 전략을 요약해줘&quot;</p>
-                      </div>
-                    </div>
-                  )}
-                  {chatMessages.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                        msg.role === 'user'
-                          ? 'bg-[#00e8b8]/10 text-[#00e8b8] border border-[#00e8b8]/20'
-                          : 'bg-[#0a1628] text-[#c8d6e5] border border-[#1a2744]'
-                      }`}>
-                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                  {chatLoading && (
-                    <div className="flex justify-start">
-                      <div className="p-3 rounded-lg bg-[#0a1628] border border-[#1a2744] flex items-center gap-2">
-                        <Spinner /> <span className="text-xs text-[#556a8a]">응답 생성 중...</span>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={chatEndRef} />
-                </div>
-
-                <form onSubmit={(e) => { e.preventDefault(); handleChat() }} className="flex gap-2">
-                  <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="질문을 입력하세요..."
-                    className="bg-[#0a1628] border border-[#1a2744] rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-[#556a8a] focus:outline-none focus:border-[#00e8b8]/50 transition-colors flex-1" />
-                  <button type="submit" disabled={chatLoading || !chatInput.trim()} className="px-4 py-2.5 bg-[#1a2744] border border-[#00e8b8]/30 text-[#00e8b8] text-sm font-medium rounded-lg hover:bg-[#1a2744]/80 transition-colors disabled:opacity-40">
-                    {chatLoading ? <Spinner /> : '전송'}
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
+      {/* Source List */}
+      {collectedSources.length > 0 && (
+        <div className="card p-4">
+          <SourceList sources={collectedSources} />
         </div>
-      </div>
+      )}
     </div>
   )
 }
 
 // --- Sub-components ---
 
-function PageHeader({ onExportCookies }: { onExportCookies?: () => void }) {
+function PageHeader() {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">NotebookLM 리서치</h1>
-        <p className="text-sm text-[#556a8a] mt-1">노트북 관리, 소스 추가, AI 분석</p>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-white tracking-tight">AI 투자 리서치</h1>
+          <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#7c6cf0]/20 text-[#7c6cf0] border border-[#7c6cf0]/30 rounded">Beta</span>
+        </div>
+        <p className="text-sm text-[#556a8a] mt-1">YouTube + 뉴스 + DB 분석을 NotebookLM으로 종합 분석</p>
       </div>
-      <div className="flex items-center gap-3">
-        {onExportCookies && (
-          <button onClick={onExportCookies}
-            className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1"
-            title="Python 테스트용 쿠키 내보내기">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            쿠키 내보내기
-          </button>
-        )}
-        <a href={NB_BASE} target="_blank" rel="noopener noreferrer"
-          className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          NotebookLM 홈
-        </a>
-      </div>
-    </div>
-  )
-}
-
-function FeatureButton({ icon, label, desc, loading, onClick }: {
-  icon: React.ReactNode; label: string; desc: string; loading: boolean; onClick: () => void
-}) {
-  return (
-    <button onClick={onClick} disabled={loading}
-      className="flex flex-col items-center gap-2 p-4 rounded-lg border border-[#1a2744] bg-[#060e1a] hover:bg-[#0a1628] hover:border-[#00e8b8]/30 transition-all text-center disabled:opacity-50 group">
-      <div className="text-[#556a8a] group-hover:text-[#00e8b8] transition-colors">
-        {loading ? <Spinner /> : icon}
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-white">{label}</p>
-        <p className="text-[10px] text-[#556a8a] mt-0.5">{desc}</p>
-      </div>
-    </button>
-  )
-}
-
-function IconBox({ icon, color }: { icon: 'warning' | 'book'; color: string }) {
-  return (
-    <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0a1628] flex items-center justify-center">
-      {icon === 'warning' ? (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+      <a href={NB_BASE} target="_blank" rel="noopener noreferrer"
+        className="text-xs text-[#556a8a] hover:text-[#00e8b8] transition-colors flex items-center gap-1">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
         </svg>
-      ) : (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-        </svg>
-      )}
+        NotebookLM
+      </a>
     </div>
-  )
-}
-
-function SourceIcon({ type }: { type: string }) {
-  if (type === 'youtube') return (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth="2">
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
-      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#ff4444"/>
-    </svg>
-  )
-  if (type === 'url') return (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-    </svg>
-  )
-  return (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-    </svg>
   )
 }
 

@@ -1,7 +1,13 @@
-import { getDailyStats } from "@/lib/queries"
+import {
+  getDailyStats, getSentimentTrend, getMentionSpike,
+  getChannelAssetMatrix, getChannelActivity, getAssetCorrelations,
+} from "@/lib/queries"
 import type { DailyStat } from "@/lib/types"
-import { KeywordCloud } from "@/components/dashboard/keyword-cloud"
-import { TrendLineChart } from "@/components/charts/trend-line-chart"
+import { SentimentTrendChart } from "@/components/charts/sentiment-trend-chart"
+import { MentionSpikeChart } from "@/components/charts/mention-spike-chart"
+import { OpinionMatrix } from "@/components/dashboard/opinion-matrix"
+import { ActivityHeatmap } from "@/components/charts/activity-heatmap"
+import { CorrelationNetwork } from "@/components/charts/correlation-network"
 import { CategoryBarChart } from "@/components/charts/category-bar-chart"
 import { TrendDetails } from "./trend-details"
 
@@ -9,22 +15,17 @@ export const dynamic = "force-dynamic"
 
 async function getTrendData() {
   try {
-    const stats = await getDailyStats(30)
+    const [stats, sentimentTrend, mentionSpikes, opinionMatrix, channelActivity, correlations] = await Promise.all([
+      getDailyStats(30),
+      getSentimentTrend(30),
+      getMentionSpike(30),
+      getChannelAssetMatrix(30),
+      getChannelActivity(30),
+      getAssetCorrelations(30, 2),
+    ])
+
     const sevenDaysAgo = new Date(Date.now() - 7 * 86400000)
     const recentStats = stats.filter((s) => new Date(s.date) >= sevenDaysAgo)
-
-    const keywordMap = new Map<string, number>()
-    for (const stat of recentStats) {
-      if (stat.top_keywords) {
-        for (const kw of stat.top_keywords) {
-          keywordMap.set(kw.keyword, (keywordMap.get(kw.keyword) ?? 0) + kw.count)
-        }
-      }
-    }
-    const topKeywords = Array.from(keywordMap.entries())
-      .map(([keyword, count]) => ({ keyword, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 50)
 
     const catCounts: Record<string, number> = {}
     for (const s of recentStats) {
@@ -32,31 +33,53 @@ async function getTrendData() {
     }
     const categoryData = Object.entries(catCounts).map(([category, count]) => ({ category, count }))
 
-    return { stats, topKeywords, categoryData }
+    return { stats, sentimentTrend, mentionSpikes, opinionMatrix, channelActivity, correlations, categoryData }
   } catch {
-    return { stats: [] as DailyStat[], topKeywords: [], categoryData: [] }
+    return {
+      stats: [] as DailyStat[], sentimentTrend: [], mentionSpikes: [],
+      opinionMatrix: [], channelActivity: [], correlations: [], categoryData: [],
+    }
   }
 }
 
 export default async function TrendsPage() {
-  const { stats, topKeywords, categoryData } = await getTrendData()
+  const { stats, sentimentTrend, mentionSpikes, opinionMatrix, channelActivity, correlations, categoryData } = await getTrendData()
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
-          트렌드
-        </h1>
-        <p className="text-[#64748b] mt-1.5 text-sm">재테크 유튜브 키워드 및 업로드 트렌드</p>
+      <div className="relative">
+        <div className="flex items-center gap-3 mb-1.5">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7c6cf0]/20 to-[#7c6cf0]/5 border border-[#7c6cf0]/20 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c6cf0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
+            트렌드
+          </h1>
+        </div>
+        <p className="text-[#5a6a88] text-sm">카테고리별 감성 트렌드 및 종목 분석</p>
       </div>
 
-      <KeywordCloud keywords={topKeywords} title="최근 7일 인기 키워드" />
+      {/* Sentiment Trend Chart */}
+      <SentimentTrendChart data={sentimentTrend} />
 
+      {/* Row: Category Bar + Mention Spikes */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <TrendLineChart stats={stats} title="30일 업로드 추이" />
         <CategoryBarChart data={categoryData} title="최근 7일 카테고리별 영상" />
+        <MentionSpikeChart data={mentionSpikes} />
       </div>
 
+      {/* Correlation Network */}
+      <CorrelationNetwork data={correlations} />
+
+      {/* Opinion Matrix */}
+      <OpinionMatrix data={opinionMatrix} />
+
+      {/* Activity Heatmap */}
+      <ActivityHeatmap data={channelActivity} />
+
+      {/* Category Details */}
       <TrendDetails stats={stats} />
     </div>
   )

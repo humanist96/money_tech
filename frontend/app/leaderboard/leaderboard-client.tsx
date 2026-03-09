@@ -13,6 +13,9 @@ interface PredictionDetail {
   predicted_at: string | null
   is_accurate: boolean | null
   target_price: number | null
+  crowd_accuracy: number | null
+  actual_price_after_1w: number | null
+  actual_price_after_1m: number | null
   asset_name: string
   asset_code: string | null
   sentiment: string | null
@@ -22,6 +25,10 @@ interface PredictionDetail {
   youtube_video_id: string
   video_published_at: string | null
   video_thumbnail: string | null
+  comment_sentiment_score: number | null
+  comment_positive_count: number | null
+  comment_negative_count: number | null
+  comment_total_count: number | null
 }
 
 interface Props {
@@ -72,24 +79,35 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   const avgHitRate = channelsWithEval.length > 0
     ? Math.round(channelsWithEval.reduce((s, l) => s + l.hit_rate, 0) / channelsWithEval.length * 100)
     : null
+  const channelsWithCrowd = leaderboard.filter(l => l.crowd_evaluated > 0)
+  const avgCrowd = channelsWithCrowd.length > 0
+    ? Math.round(channelsWithCrowd.reduce((s, l) => s + (l.avg_crowd_accuracy ?? 0), 0) / channelsWithCrowd.length * 100)
+    : null
 
   return (
     <div className="space-y-6">
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         <StatCard label="예측 채널" value={leaderboard.length} sub="예측 데이터 보유" color="#f97316" />
         <StatCard label="총 예측" value={totalPredictions} sub="건 감지됨" color="#22c997" />
-        <StatCard label="평가 완료" value={leaderboard.reduce((s, l) => s + l.total_predictions, 0)} sub="건 적중 검증" color="#7c6cf0" />
-        <StatCard label="평균 적중률" value={avgHitRate != null ? `${avgHitRate}%` : '미평가'} sub={channelsWithEval.length > 0 ? `${channelsWithEval.length}개 채널 기준` : '가격 데이터 수집 중'} color="#3b82f6" />
+        <StatCard label="가격 검증" value={leaderboard.reduce((s, l) => s + l.total_predictions, 0)} sub="건 적중 평가" color="#7c6cf0" />
+        <StatCard label="적중률" value={avgHitRate != null ? `${avgHitRate}%` : '수집중'} sub={channelsWithEval.length > 0 ? `${channelsWithEval.length}개 채널` : '1주~3개월 후 평가'} color="#3b82f6" />
+        <StatCard label="대중 반응" value={avgCrowd != null ? `${avgCrowd}%` : '수집중'} sub={channelsWithCrowd.length > 0 ? `${channelsWithCrowd.length}개 채널` : '댓글 분석 예정'} color="#e879f9" />
       </div>
 
-      {/* Info Banner */}
-      {leaderboard.reduce((s, l) => s + l.total_predictions, 0) === 0 && (
-        <div className="bg-[#f97316]/10 border border-[#f97316]/20 rounded-lg px-4 py-3 text-sm text-[#f97316]">
-          아직 적중률 평가가 완료된 예측이 없습니다. 예측 후 1주~3개월 경과 시 실제 가격과 비교하여 자동 평가됩니다.
-          현재는 <strong>예측 건수</strong> 기준으로 정렬됩니다. 각 행을 클릭하면 근거 영상을 확인할 수 있습니다.
+      {/* Info Banner - evaluation methodology */}
+      <div className="bg-[#1a2744]/50 border border-[#1a2744] rounded-lg px-4 py-3 text-xs text-[#8a9ab8] space-y-1">
+        <div className="font-semibold text-white text-sm mb-1">평가 방법론</div>
+        <div className="flex items-start gap-2">
+          <span className="text-[#3b82f6] font-bold shrink-0">A. 가격 적중률</span>
+          <span>영상 발행일 기준 종목 가격 → 1주/1개월/3개월 후 실제 가격과 비교. 매수+3%↑=적중, 매도+3%↓=적중, 보유±3%이내=적중</span>
         </div>
-      )}
+        <div className="flex items-start gap-2">
+          <span className="text-[#e879f9] font-bold shrink-0">B. 대중 반응</span>
+          <span>영상 댓글 감성분석으로 시청자 반응 측정. 매수 예측에 긍정 댓글 많으면 대중 동의도 높음 (0~100%)</span>
+        </div>
+        <div className="text-[#5a6a88] mt-1">각 행을 클릭하면 예측 근거 영상, 가격 변동, 댓글 반응을 확인할 수 있습니다.</div>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
@@ -165,15 +183,15 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                   </div>
 
                   {/* Stats */}
-                  <div className="hidden sm:flex items-center gap-6">
-                    <div className="text-right">
-                      <div className="text-xs text-[#5a6a88]">예측</div>
+                  <div className="hidden sm:flex items-center gap-5">
+                    <div className="text-right w-12">
+                      <div className="text-[10px] text-[#5a6a88]">예측</div>
                       <div className="text-base font-bold tabular-nums text-white" style={{ fontFamily: 'var(--font-outfit)' }}>
                         {item.all_predictions}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs text-[#5a6a88]">적중</div>
+                    <div className="text-right w-12">
+                      <div className="text-[10px] text-[#5a6a88]">적중률</div>
                       <div className="text-base font-bold tabular-nums" style={{
                         fontFamily: 'var(--font-outfit)',
                         color: item.total_predictions > 0
@@ -183,9 +201,20 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                         {item.total_predictions > 0 ? `${Math.round(item.hit_rate * 100)}%` : '-'}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs text-[#5a6a88]">PIS</div>
+                    <div className="text-right w-12">
+                      <div className="text-[10px] text-[#e879f9]">대중</div>
                       <div className="text-base font-bold tabular-nums" style={{
+                        fontFamily: 'var(--font-outfit)',
+                        color: item.crowd_evaluated > 0
+                          ? (item.avg_crowd_accuracy ?? 0) >= 0.6 ? '#e879f9' : '#5a6a88'
+                          : '#3a4a6a'
+                      }}>
+                        {item.crowd_evaluated > 0 ? `${Math.round((item.avg_crowd_accuracy ?? 0) * 100)}%` : '-'}
+                      </div>
+                    </div>
+                    <div className="text-right w-10">
+                      <div className="text-[10px] text-[#5a6a88]">PIS</div>
+                      <div className="text-sm font-bold tabular-nums" style={{
                         fontFamily: 'var(--font-outfit)',
                         color: (item.pis ?? 0) >= 30 ? '#f97316' : '#5a6a88'
                       }}>
@@ -310,10 +339,45 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
             사유: {pred.reason}
           </div>
         )}
-        {/* Date */}
-        <div className="mt-1 text-[10px] text-[#3a4a6a]">
-          {pred.video_published_at ? new Date(pred.video_published_at).toLocaleDateString('ko-KR') : ''}
-          {pred.price_at_mention ? ` · 언급 시 가격: ${pred.price_at_mention.toLocaleString()}원` : ''}
+        {/* Price tracking + Comment sentiment */}
+        <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[10px]">
+          <span className="text-[#3a4a6a]">
+            {pred.video_published_at ? new Date(pred.video_published_at).toLocaleDateString('ko-KR') : ''}
+          </span>
+          {pred.price_at_mention != null && (
+            <span className="text-[#5a6a88]">
+              언급가: {pred.price_at_mention.toLocaleString()}원
+            </span>
+          )}
+          {pred.actual_price_after_1w != null && pred.price_at_mention != null && pred.price_at_mention > 0 && (
+            <span style={{
+              color: ((pred.actual_price_after_1w - pred.price_at_mention) / pred.price_at_mention) > 0 ? '#22c997' : '#ef4444'
+            }}>
+              1주후: {((pred.actual_price_after_1w - pred.price_at_mention) / pred.price_at_mention * 100).toFixed(1)}%
+            </span>
+          )}
+          {pred.actual_price_after_1m != null && pred.price_at_mention != null && pred.price_at_mention > 0 && (
+            <span style={{
+              color: ((pred.actual_price_after_1m - pred.price_at_mention) / pred.price_at_mention) > 0 ? '#22c997' : '#ef4444'
+            }}>
+              1개월후: {((pred.actual_price_after_1m - pred.price_at_mention) / pred.price_at_mention * 100).toFixed(1)}%
+            </span>
+          )}
+          {pred.comment_total_count != null && pred.comment_total_count > 0 && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#e879f9]/10 text-[#e879f9]">
+              댓글 {pred.comment_total_count}건
+              {pred.comment_sentiment_score != null && (
+                <span className="font-bold">
+                  ({pred.comment_sentiment_score > 0 ? '+' : ''}{(pred.comment_sentiment_score * 100).toFixed(0)}%)
+                </span>
+              )}
+            </span>
+          )}
+          {pred.crowd_accuracy != null && (
+            <span className="text-[#e879f9] font-medium">
+              대중동의: {Math.round(pred.crowd_accuracy * 100)}%
+            </span>
+          )}
         </div>
       </div>
     </div>

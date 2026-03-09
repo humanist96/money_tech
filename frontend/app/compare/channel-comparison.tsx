@@ -1,190 +1,188 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import type { Channel } from "@/lib/types"
 import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types"
 import { formatViewCount } from "@/lib/queries"
+import { ComparisonSections } from "./comparison-sections"
 
 interface Props {
   channels: Channel[]
 }
 
-export function ChannelComparison({ channels }: Props) {
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [search, setSearch] = useState("")
+type CategoryKey = "stock" | "coin" | "real_estate" | "economy"
 
-  const selected = useMemo(
-    () => channels.filter((ch) => selectedIds.includes(ch.id)),
-    [channels, selectedIds]
+const CATEGORIES: { key: CategoryKey; label: string }[] = [
+  { key: "stock", label: "주식" },
+  { key: "coin", label: "코인" },
+  { key: "real_estate", label: "부동산" },
+  { key: "economy", label: "경제" },
+]
+
+export function ChannelComparison({ channels }: Props) {
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("stock")
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [comparisonData, setComparisonData] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+
+  const categoryChannels = useMemo(
+    () => channels.filter((ch) => ch.category === activeCategory),
+    [channels, activeCategory]
   )
 
-  const searchResults = useMemo(() => {
-    if (!search.trim()) return []
-    const q = search.toLowerCase()
-    return channels
-      .filter((ch) => ch.name.toLowerCase().includes(q) && !selectedIds.includes(ch.id))
-      .slice(0, 5)
-  }, [channels, search, selectedIds])
+  // Reset selection when category changes
+  useEffect(() => {
+    setSelectedIds([])
+    setComparisonData(null)
+  }, [activeCategory])
 
-  const addChannel = (id: string) => {
-    if (selectedIds.length < 3 && !selectedIds.includes(id)) {
+  // Fetch comparison data when 2+ channels selected
+  useEffect(() => {
+    if (selectedIds.length < 2) {
+      setComparisonData(null)
+      return
+    }
+    setLoading(true)
+    fetch(`/api/compare?ids=${selectedIds.join(",")}`)
+      .then((res) => res.json())
+      .then((data) => setComparisonData(data))
+      .catch(() => setComparisonData(null))
+      .finally(() => setLoading(false))
+  }, [selectedIds])
+
+  const toggleChannel = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((i) => i !== id))
+    } else if (selectedIds.length < 3) {
       setSelectedIds([...selectedIds, id])
-      setSearch("")
     }
   }
 
-  const removeChannel = (id: string) => {
-    setSelectedIds(selectedIds.filter((i) => i !== id))
-  }
-
-  // Calculate max values for relative bars
-  const maxSubs = Math.max(...selected.map((c) => c.subscriber_count ?? 0), 1)
-  const maxViews = Math.max(...selected.map((c) => c.total_view_count ?? 0), 1)
-  const maxVideos = Math.max(...selected.map((c) => c.video_count ?? 0), 1)
+  const selected = channels.filter((ch) => selectedIds.includes(ch.id))
 
   return (
     <div className="space-y-6">
-      {/* Channel selector */}
-      <div className="glass-card rounded-xl p-5">
-        <div className="flex items-center gap-3 flex-wrap mb-4">
-          <span className="text-xs text-[#64748b]">비교할 채널 선택 (최대 3개):</span>
-          {selected.map((ch) => {
-            const color = CATEGORY_COLORS[ch.category] ?? "#6b7280"
+      {/* #1 Category Tabs */}
+      <div className="glass-card rounded-xl p-5 space-y-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          {CATEGORIES.map((cat) => {
+            const isActive = cat.key === activeCategory
+            const color = CATEGORY_COLORS[cat.key]
+            const count = channels.filter((ch) => ch.category === cat.key).length
             return (
-              <div
-                key={ch.id}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className="px-4 py-2 rounded-lg text-xs font-semibold transition-all"
                 style={{
-                  background: `color-mix(in srgb, ${color} 15%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${color} 40%, transparent)`,
-                  color,
+                  background: isActive
+                    ? `color-mix(in srgb, ${color} 20%, transparent)`
+                    : "transparent",
+                  border: `1px solid ${isActive ? `color-mix(in srgb, ${color} 50%, transparent)` : "#1e293b"}`,
+                  color: isActive ? color : "#64748b",
                 }}
               >
-                {ch.name}
-                <button onClick={() => removeChannel(ch.id)} className="hover:opacity-70">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                  </svg>
-                </button>
-              </div>
+                {cat.label}
+                <span className="ml-1.5 text-[10px] opacity-60">{count}</span>
+              </button>
             )
           })}
         </div>
 
-        {selectedIds.length < 3 && (
-          <div className="relative">
-            <div className="search-glow glass-card rounded-lg px-4 py-2.5 flex items-center gap-3">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-              </svg>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="채널명으로 검색..."
-                className="flex-1 bg-transparent text-sm text-[#e2e8f0] placeholder:text-[#475569] outline-none"
-              />
-            </div>
-            {searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 glass-card rounded-lg border border-[#1e293b] shadow-xl z-10 overflow-hidden">
-                {searchResults.map((ch) => (
-                  <button
-                    key={ch.id}
-                    onClick={() => addChannel(ch.id)}
-                    className="w-full px-4 py-2.5 text-left text-sm text-[#e2e8f0] hover:bg-[#1e293b]/50 flex items-center gap-3 transition"
+        {/* Channel checkbox list */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {categoryChannels.map((ch) => {
+            const isSelected = selectedIds.includes(ch.id)
+            const color = CATEGORY_COLORS[ch.category]
+            const disabled = !isSelected && selectedIds.length >= 3
+            return (
+              <button
+                key={ch.id}
+                onClick={() => !disabled && toggleChannel(ch.id)}
+                disabled={disabled}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-all text-left"
+                style={{
+                  background: isSelected
+                    ? `color-mix(in srgb, ${color} 12%, #0c1324)`
+                    : "transparent",
+                  border: `1px solid ${isSelected ? `color-mix(in srgb, ${color} 40%, transparent)` : "#1a2744"}`,
+                  opacity: disabled ? 0.4 : 1,
+                }}
+              >
+                {/* Checkbox */}
+                <div
+                  className="w-4 h-4 rounded shrink-0 flex items-center justify-center transition-all"
+                  style={{
+                    background: isSelected ? color : "transparent",
+                    border: `1.5px solid ${isSelected ? color : "#3a4a6a"}`,
+                  }}
+                >
+                  {isSelected && (
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  )}
+                </div>
+
+                {/* Channel info */}
+                {ch.thumbnail_url ? (
+                  <img src={ch.thumbnail_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                    style={{ background: `color-mix(in srgb, ${color} 18%, #0c1324)`, color }}
                   >
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                      style={{
-                        background: `color-mix(in srgb, ${CATEGORY_COLORS[ch.category]} 18%, #0c1324)`,
-                        color: CATEGORY_COLORS[ch.category],
-                      }}
-                    >
-                      {ch.name[0]}
-                    </div>
-                    <span>{ch.name}</span>
-                    <span className="ml-auto text-[10px] text-[#64748b]">{CATEGORY_LABELS[ch.category]}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+                    {ch.name[0]}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <span className="text-xs font-medium text-white truncate block">{ch.name}</span>
+                  <span className="text-[10px] text-[#5a6a88]">
+                    {ch.subscriber_count ? formatViewCount(ch.subscriber_count) : "-"}
+                  </span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        {selectedIds.length < 2 && (
+          <p className="text-[11px] text-[#5a6a88] text-center pt-2">
+            같은 카테고리 채널을 2~3개 선택하여 비교하세요
+          </p>
+        )}
+
+        {/* Cross-category warning */}
+        {selected.length >= 2 && new Set(selected.map((s) => s.category)).size > 1 && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#ffb84d]/10 border border-[#ffb84d]/20">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffb84d" strokeWidth="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" /><path d="M12 17h.01" />
+            </svg>
+            <span className="text-[11px] text-[#ffb84d]">서로 다른 카테고리 채널을 비교하고 있습니다</span>
           </div>
         )}
       </div>
 
-      {/* Comparison area */}
-      {selected.length >= 2 ? (
-        <div className="space-y-6">
-          {/* Side by side cards */}
-          <div className={`grid gap-4 ${selected.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-            {selected.map((ch) => {
-              const color = CATEGORY_COLORS[ch.category] ?? "#6b7280"
-              return (
-                <div key={ch.id} className="glass-card rounded-xl p-5 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color }} />
-                  <div className="flex items-center gap-3 mb-4">
-                    {ch.thumbnail_url ? (
-                      <img src={ch.thumbnail_url} alt="" className="w-12 h-12 rounded-full object-cover" />
-                    ) : (
-                      <div
-                        className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
-                        style={{ background: `color-mix(in srgb, ${color} 18%, #0c1324)`, color }}
-                      >
-                        {ch.name[0]}
-                      </div>
-                    )}
-                    <div>
-                      <h3 className="font-bold text-white text-sm">{ch.name}</h3>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{
-                        background: `color-mix(in srgb, ${color} 15%, transparent)`, color
-                      }}>
-                        {CATEGORY_LABELS[ch.category]}
-                      </span>
-                    </div>
-                  </div>
-                  {ch.description && (
-                    <p className="text-[11px] text-[#475569] line-clamp-2 mb-4">{ch.description}</p>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Metric bars */}
-          {[
-            { label: "구독자 수", key: "subscriber_count" as const, max: maxSubs, color: "#00d4aa" },
-            { label: "총 조회수", key: "total_view_count" as const, max: maxViews, color: "#6366f1" },
-            { label: "영상 수", key: "video_count" as const, max: maxVideos, color: "#f59e0b" },
-          ].map((metric) => (
-            <div key={metric.label} className="glass-card rounded-xl p-5">
-              <h4 className="text-xs text-[#64748b] uppercase tracking-wider mb-4">{metric.label}</h4>
-              <div className="space-y-3">
-                {selected.map((ch) => {
-                  const val = (ch[metric.key] ?? 0) as number
-                  const ratio = val / metric.max
-                  return (
-                    <div key={ch.id} className="flex items-center gap-3">
-                      <span className="text-xs text-[#94a3b8] w-24 truncate">{ch.name}</span>
-                      <div className="flex-1 h-6 bg-[#0f1a2e] rounded-full overflow-hidden relative">
-                        <div
-                          className="h-full rounded-full transition-all duration-700"
-                          style={{
-                            width: `${ratio * 100}%`,
-                            background: `linear-gradient(90deg, color-mix(in srgb, ${metric.color} 60%, transparent), ${metric.color})`,
-                          }}
-                        />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white tabular-nums" style={{ fontFamily: 'var(--font-outfit)' }}>
-                          {formatViewCount(val)}
-                        </span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
+      {/* Loading */}
+      {loading && (
+        <div className="glass-card rounded-xl py-12 text-center">
+          <div className="w-8 h-8 border-2 border-[#00e8b8]/30 border-t-[#00e8b8] rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-[#5a6a88]">비교 데이터를 불러오는 중...</p>
         </div>
-      ) : (
+      )}
+
+      {/* Comparison results */}
+      {!loading && comparisonData && selected.length >= 2 && (
+        <ComparisonSections
+          data={comparisonData}
+          selected={selected}
+          category={activeCategory}
+        />
+      )}
+
+      {/* Empty state */}
+      {!loading && !comparisonData && selectedIds.length < 2 && (
         <div className="glass-card rounded-xl py-16 text-center">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="1.5" className="mx-auto mb-3">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -192,7 +190,7 @@ export function ChannelComparison({ channels }: Props) {
             <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
-          <p className="text-[#64748b] text-sm">비교할 채널을 2개 이상 선택해주세요.</p>
+          <p className="text-[#64748b] text-sm">비교할 채널을 2개 이상 선택해주세요</p>
         </div>
       )}
     </div>
