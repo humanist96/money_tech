@@ -1,18 +1,29 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import type { SearchResult, VideoAnalysis, SearchReport } from '@/lib/types'
+import type { SearchResult, VideoAnalysis, SearchReport, BlogSearchResult } from '@/lib/types'
 
 const RECENT_SEARCHES_KEY = 'moneytech_recent_searches'
 const MAX_RECENT = 10
 
+type SearchTab = 'youtube' | 'blog'
+
 export default function SearchClient() {
   const [keyword, setKeyword] = useState('')
   const [sortBy, setSortBy] = useState<'relevance' | 'date'>('relevance')
+  const [activeTab, setActiveTab] = useState<SearchTab>('youtube')
+  const [recentSearches, setRecentSearches] = useState<string[]>([])
+
+  // YouTube state
   const [results, setResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState('')
-  const [recentSearches, setRecentSearches] = useState<string[]>([])
+
+  // Blog state
+  const [blogResults, setBlogResults] = useState<BlogSearchResult[]>([])
+  const [blogSearching, setBlogSearching] = useState(false)
+  const [blogError, setBlogError] = useState('')
+  const [blogTotal, setBlogTotal] = useState(0)
 
   // Analysis state
   const [analyses, setAnalyses] = useState<Record<string, VideoAnalysis>>({})
@@ -25,6 +36,9 @@ export default function SearchClient() {
 
   // NotebookLM state
   const [sendingToNotebook, setSendingToNotebook] = useState(false)
+
+  // Track if search was performed
+  const [hasSearched, setHasSearched] = useState(false)
 
   useEffect(() => {
     try {
@@ -41,10 +55,7 @@ export default function SearchClient() {
     })
   }, [])
 
-  const handleSearch = useCallback(async (searchKeyword?: string) => {
-    const term = searchKeyword || keyword
-    if (!term.trim()) return
-
+  const searchYouTube = useCallback(async (term: string) => {
     setSearching(true)
     setSearchError('')
     setResults([])
@@ -63,13 +74,52 @@ export default function SearchClient() {
       }
 
       setResults(data.results)
-      saveRecentSearch(term)
     } catch {
       setSearchError('Network error')
     } finally {
       setSearching(false)
     }
-  }, [keyword, sortBy, saveRecentSearch])
+  }, [sortBy])
+
+  const searchBlog = useCallback(async (term: string) => {
+    setBlogSearching(true)
+    setBlogError('')
+    setBlogResults([])
+    setBlogTotal(0)
+
+    try {
+      const naverSort = sortBy === 'date' ? 'date' : 'sim'
+      const params = new URLSearchParams({ keyword: term, sortBy: naverSort })
+      const res = await fetch(`/api/search/blog?${params}`)
+      const data = await res.json()
+
+      if (!res.ok) {
+        setBlogError(data.error || 'Blog search failed')
+        return
+      }
+
+      setBlogResults(data.results)
+      setBlogTotal(data.total ?? 0)
+    } catch {
+      setBlogError('Network error')
+    } finally {
+      setBlogSearching(false)
+    }
+  }, [sortBy])
+
+  const handleSearch = useCallback(async (searchKeyword?: string) => {
+    const term = searchKeyword || keyword
+    if (!term.trim()) return
+
+    setHasSearched(true)
+    saveRecentSearch(term)
+
+    // Search both in parallel
+    await Promise.all([
+      searchYouTube(term),
+      searchBlog(term),
+    ])
+  }, [keyword, saveRecentSearch, searchYouTube, searchBlog])
 
   const handleAnalyze = useCallback(async (videoId: string) => {
     if (analyses[videoId]) {
@@ -113,7 +163,6 @@ export default function SearchClient() {
 
     setGeneratingReport(true)
 
-    // First analyze any unanalyzed videos
     const unanalyzed = top5.filter((r) => !analyses[r.videoId])
     await Promise.all(
       unanalyzed.map(async (r) => {
@@ -131,7 +180,6 @@ export default function SearchClient() {
       })
     )
 
-    // Generate report
     try {
       const res = await fetch('/api/search/report', {
         method: 'POST',
@@ -156,7 +204,6 @@ export default function SearchClient() {
     const top5 = results.slice(0, 5)
     const youtubeUrls = top5.map((r) => `https://www.youtube.com/watch?v=${r.videoId}`)
 
-    // Build analysis text from report + individual analyses
     let analysisText = ''
     if (report) {
       analysisText += `[종합 분석]\n${report.overall_summary}\n\n공통 의견: ${report.consensus}\n\n`
@@ -200,6 +247,8 @@ export default function SearchClient() {
       setSendingToNotebook(false)
     }
   }, [results, keyword, report, analyses])
+
+  const isSearching = searching || blogSearching
 
   return (
     <div className="space-y-6">
@@ -256,15 +305,15 @@ export default function SearchClient() {
 
           <button
             type="submit"
-            disabled={searching || !keyword.trim()}
+            disabled={isSearching || !keyword.trim()}
             className="btn-accent px-5 py-2.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {searching ? '검색 중...' : '검색'}
+            {isSearching ? '검색 중...' : '검색'}
           </button>
         </form>
 
         {/* Recent Searches */}
-        {recentSearches.length > 0 && !results.length && (
+        {recentSearches.length > 0 && !hasSearched && (
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="text-xs text-th-dim">최근:</span>
             {recentSearches.map((term) => (
@@ -283,75 +332,137 @@ export default function SearchClient() {
         )}
       </div>
 
-      {/* Error */}
-      {searchError && (
-        <div className="card p-4 border-red-500/30 text-red-400 text-sm">
-          {searchError}
+      {/* Tab Navigation */}
+      {hasSearched && (
+        <div className="flex items-center gap-1 border-b border-th-border">
+          <TabButton
+            active={activeTab === 'youtube'}
+            onClick={() => setActiveTab('youtube')}
+            loading={searching}
+            count={results.length}
+            icon={<span className="text-red-400">▶</span>}
+            label="YouTube"
+          />
+          <TabButton
+            active={activeTab === 'blog'}
+            onClick={() => setActiveTab('blog')}
+            loading={blogSearching}
+            count={blogResults.length}
+            icon={<span className="text-[#03c75a]">✎</span>}
+            label="네이버 블로그"
+          />
         </div>
       )}
 
-      {/* Results */}
-      {results.length > 0 && (
+      {/* YouTube Tab */}
+      {hasSearched && activeTab === 'youtube' && (
         <>
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-th-muted">{results.length}개 결과</p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleReport}
-                disabled={generatingReport}
-                className="px-4 py-2 bg-th-tertiary border border-th-accent/30 text-th-accent text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
-              >
-                {generatingReport ? (
-                  <span className="flex items-center gap-2">
-                    <Spinner /> 종합 분석 중...
-                  </span>
-                ) : (
-                  'Top 5 종합 분석'
-                )}
-              </button>
-              <button
-                onClick={handleSendToNotebook}
-                disabled={sendingToNotebook}
-                className="flex items-center gap-1.5 px-4 py-2 bg-th-tertiary border border-[#7c6cf0]/30 text-[#7c6cf0] text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
-              >
-                {sendingToNotebook ? (
-                  <span className="flex items-center gap-2">
-                    <Spinner /> 전송 중...
-                  </span>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                    </svg>
-                    NotebookLM 리서치
-                  </>
-                )}
-              </button>
+          {searchError && (
+            <div className="card p-4 border-red-500/30 text-red-400 text-sm">
+              {searchError}
             </div>
-          </div>
+          )}
 
-          {/* Report */}
-          {report && <ReportCard report={report} />}
+          {results.length > 0 && (
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-th-muted">{results.length}개 결과</p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleReport}
+                    disabled={generatingReport}
+                    className="px-4 py-2 bg-th-tertiary border border-th-accent/30 text-th-accent text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
+                  >
+                    {generatingReport ? (
+                      <span className="flex items-center gap-2">
+                        <Spinner /> 종합 분석 중...
+                      </span>
+                    ) : (
+                      'Top 5 종합 분석'
+                    )}
+                  </button>
+                  <button
+                    onClick={handleSendToNotebook}
+                    disabled={sendingToNotebook}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-th-tertiary border border-[#7c6cf0]/30 text-[#7c6cf0] text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
+                  >
+                    {sendingToNotebook ? (
+                      <span className="flex items-center gap-2">
+                        <Spinner /> 전송 중...
+                      </span>
+                    ) : (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                        NotebookLM 리서치
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
 
-          {/* Video Cards */}
-          <div className="space-y-3">
-            {results.map((result) => (
-              <VideoCard
-                key={result.videoId}
-                result={result}
-                analysis={analyses[result.videoId]}
-                isAnalyzing={analyzingIds.has(result.videoId)}
-                isExpanded={expandedIds.has(result.videoId)}
-                onAnalyze={() => handleAnalyze(result.videoId)}
-              />
-            ))}
-          </div>
+              {report && <ReportCard report={report} />}
+
+              <div className="space-y-3">
+                {results.map((result) => (
+                  <VideoCard
+                    key={result.videoId}
+                    result={result}
+                    analysis={analyses[result.videoId]}
+                    isAnalyzing={analyzingIds.has(result.videoId)}
+                    isExpanded={expandedIds.has(result.videoId)}
+                    onAnalyze={() => handleAnalyze(result.videoId)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {!searching && results.length === 0 && !searchError && (
+            <div className="card p-12 text-center">
+              <p className="text-th-dim text-sm">YouTube 검색 결과가 없습니다</p>
+            </div>
+          )}
         </>
       )}
 
-      {/* Empty state */}
-      {!searching && !results.length && !searchError && (
+      {/* Blog Tab */}
+      {hasSearched && activeTab === 'blog' && (
+        <>
+          {blogError && (
+            <div className="card p-4 border-red-500/30 text-red-400 text-sm">
+              {blogError}
+            </div>
+          )}
+
+          {blogResults.length > 0 && (
+            <>
+              <p className="text-sm text-th-muted">
+                {blogResults.length}개 결과
+                {blogTotal > blogResults.length && (
+                  <span className="text-th-dim"> (전체 {blogTotal.toLocaleString()}건)</span>
+                )}
+              </p>
+              <div className="space-y-3">
+                {blogResults.map((item, i) => (
+                  <BlogCard key={`${item.link}-${i}`} item={item} />
+                ))}
+              </div>
+            </>
+          )}
+
+          {!blogSearching && blogResults.length === 0 && !blogError && (
+            <div className="card p-12 text-center">
+              <p className="text-th-dim text-sm">블로그 검색 결과가 없습니다</p>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Initial Empty State */}
+      {!hasSearched && (
         <div className="card p-12 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-th-secondary flex items-center justify-center">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--th-text-dim)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -359,7 +470,7 @@ export default function SearchClient() {
             </svg>
           </div>
           <p className="text-th-dim text-sm">
-            투자 키워드를 검색하여 YouTube 영상을 AI로 분석하세요
+            투자 키워드를 검색하여 YouTube 영상과 네이버 블로그를 AI로 분석하세요
           </p>
         </div>
       )}
@@ -368,6 +479,69 @@ export default function SearchClient() {
 }
 
 // --- Sub-components ---
+
+function TabButton({ active, onClick, loading, count, icon, label }: {
+  active: boolean
+  onClick: () => void
+  loading: boolean
+  count: number
+  icon: React.ReactNode
+  label: string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+        active
+          ? 'border-th-accent text-th-accent'
+          : 'border-transparent text-th-dim hover:text-th-muted'
+      }`}
+    >
+      {icon}
+      {label}
+      {loading ? (
+        <Spinner />
+      ) : (
+        <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+          active ? 'bg-th-accent/10 text-th-accent' : 'bg-th-secondary text-th-dim'
+        }`}>
+          {count}
+        </span>
+      )}
+    </button>
+  )
+}
+
+function BlogCard({ item }: { item: BlogSearchResult }) {
+  return (
+    <a
+      href={item.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="card block p-4 hover:border-[#03c75a]/30 transition-colors"
+    >
+      <div className="flex gap-4">
+        {/* Blog Icon */}
+        <div className="shrink-0 w-12 h-12 rounded-lg flex items-center justify-center border border-[#03c75a]/20" style={{ background: 'color-mix(in srgb, #03c75a 8%, var(--th-bg-card))' }}>
+          <span className="text-lg font-bold text-[#03c75a]">B</span>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-medium text-th-primary line-clamp-1 leading-snug">
+            {item.title}
+          </h3>
+          <p className="text-xs text-th-dim mt-1 line-clamp-2 leading-relaxed">
+            {item.description}
+          </p>
+          <div className="flex items-center gap-3 mt-2 text-xs text-th-dim">
+            <span className="text-[#03c75a] font-medium">{item.bloggerName}</span>
+            <span>{item.postDate}</span>
+          </div>
+        </div>
+      </div>
+    </a>
+  )
+}
 
 function VideoCard({
   result,
@@ -385,7 +559,6 @@ function VideoCard({
   return (
     <div className="card overflow-hidden">
       <div className="flex gap-4 p-4">
-        {/* Thumbnail */}
         <a
           href={`https://www.youtube.com/watch?v=${result.videoId}`}
           target="_blank"
@@ -404,7 +577,6 @@ function VideoCard({
           </div>
         </a>
 
-        {/* Info */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-medium text-th-primary line-clamp-2 leading-snug">
@@ -462,7 +634,6 @@ function VideoCard({
         </div>
       </div>
 
-      {/* Analysis Accordion */}
       {isExpanded && analysis && <AnalysisPanel analysis={analysis} />}
     </div>
   )
@@ -471,7 +642,6 @@ function VideoCard({
 function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
   return (
     <div className="border-t border-th-border bg-th-card-deep p-4 space-y-4">
-      {/* Summary */}
       <div>
         <div className="flex items-center gap-2 mb-2">
           <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider">요약</h4>
@@ -482,7 +652,6 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
         </p>
       </div>
 
-      {/* Key Points */}
       {analysis.key_points.length > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider mb-2">핵심 포인트</h4>
@@ -497,7 +666,6 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
         </div>
       )}
 
-      {/* Mentioned Assets */}
       {analysis.mentioned_assets.length > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider mb-2">언급 종목</h4>
@@ -523,7 +691,6 @@ function AnalysisPanel({ analysis }: { analysis: VideoAnalysis }) {
         </div>
       )}
 
-      {/* Predictions */}
       {analysis.predictions.length > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-th-muted uppercase tracking-wider mb-2">예측</h4>
@@ -575,10 +742,8 @@ function ReportCard({ report }: { report: SearchReport }) {
         <h3 className="text-sm font-semibold text-th-accent">종합 분석 리포트</h3>
       </div>
 
-      {/* Overall Summary */}
       <p className="text-sm text-th-primary leading-relaxed">{report.overall_summary}</p>
 
-      {/* Consensus */}
       {report.consensus && (
         <div className="p-3 bg-th-secondary rounded-lg border border-th-border">
           <h4 className="text-xs font-semibold text-th-muted mb-1">공통 의견</h4>
@@ -586,7 +751,6 @@ function ReportCard({ report }: { report: SearchReport }) {
         </div>
       )}
 
-      {/* Sentiment Distribution */}
       {total > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-th-muted mb-2">감성 분포</h4>
@@ -618,7 +782,6 @@ function ReportCard({ report }: { report: SearchReport }) {
         </div>
       )}
 
-      {/* Key Arguments */}
       {report.key_arguments.length > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-th-muted mb-2">주요 근거</h4>
@@ -633,7 +796,6 @@ function ReportCard({ report }: { report: SearchReport }) {
         </div>
       )}
 
-      {/* Conflicts */}
       {report.conflicts.length > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-th-muted mb-2">의견 충돌</h4>

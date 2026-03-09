@@ -344,6 +344,15 @@ export interface AnalysisPrediction {
   reason: string
 }
 
+export interface BlogSearchResult {
+  title: string
+  link: string
+  description: string
+  bloggerName: string
+  bloggerLink: string
+  postDate: string
+}
+
 export interface SearchReport {
   overall_summary: string
   consensus: string
