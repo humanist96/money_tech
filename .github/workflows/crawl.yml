@@ -2,13 +2,13 @@ name: MoneyTech Crawler
 
 on:
   schedule:
-    - cron: '0 */1 * * *'  # 매 1시간
+    - cron: '0 */6 * * *'  # 매 6시간 (0, 6, 12, 18시 UTC)
   workflow_dispatch:  # 수동 실행
 
 jobs:
   crawl:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +22,7 @@ jobs:
         run: |
           pip install -r crawler/requirements.txt
           pip install yt-dlp --upgrade
+          pip install beautifulsoup4
 
       - name: Run YouTube crawler
         env:
@@ -39,6 +40,13 @@ jobs:
         run: |
           cd crawler
           python blog_crawler.py
+
+      - name: Collect prices & evaluate predictions
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd crawler
+          python evaluate.py
 
       - name: Log completion
         if: always()

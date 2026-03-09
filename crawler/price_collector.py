@@ -1,11 +1,10 @@
 """Collect stock and coin prices for prediction evaluation."""
 from __future__ import annotations
 
-import os
-from datetime import datetime, timedelta
+import time
+from datetime import datetime
 
 import requests
-import psycopg2
 
 # CoinGecko symbol mapping
 COINGECKO_IDS = {
@@ -29,23 +28,64 @@ COINGECKO_IDS = {
     "PI": "pi-network",
 }
 
+# Reverse mapping: coingecko_id -> symbol
+_ID_TO_SYMBOL = {v: k for k, v in COINGECKO_IDS.items()}
+
+# Cache for batch-fetched coin prices
+_coin_price_cache: dict[str, float | None] = {}
+_cache_time: float = 0
+
+
+def get_coin_prices_batch(symbols: list[str]) -> dict[str, float | None]:
+    """Fetch multiple coin prices in a single API call."""
+    global _coin_price_cache, _cache_time
+
+    # Use cache if less than 60 seconds old
+    if time.time() - _cache_time < 60 and _coin_price_cache:
+        return {s: _coin_price_cache.get(s) for s in symbols}
+
+    coin_ids = []
+    for s in set(symbols):
+        cid = COINGECKO_IDS.get(s)
+        if cid:
+            coin_ids.append(cid)
+
+    if not coin_ids:
+        return {s: None for s in symbols}
+
+    result: dict[str, float | None] = {}
+
+    # CoinGecko allows up to ~250 ids per request
+    for i in range(0, len(coin_ids), 50):
+        batch = coin_ids[i:i + 50]
+        try:
+            url = f"https://api.coingecko.com/api/v3/simple/price?ids={','.join(batch)}&vs_currencies=krw"
+            r = requests.get(url, timeout=15)
+            r.raise_for_status()
+            data = r.json()
+            for cid, prices in data.items():
+                sym = _ID_TO_SYMBOL.get(cid)
+                if sym and "krw" in prices:
+                    result[sym] = prices["krw"]
+        except Exception as e:
+            print(f"  Warning: CoinGecko batch fetch failed: {e}")
+
+        if i + 50 < len(coin_ids):
+            time.sleep(2)  # Rate limit between batches
+
+    _coin_price_cache = result
+    _cache_time = time.time()
+
+    return {s: result.get(s) for s in symbols}
+
 
 def get_coin_price(symbol: str) -> float | None:
-    """Fetch current coin price in KRW from CoinGecko API."""
-    coin_id = COINGECKO_IDS.get(symbol)
-    if not coin_id:
-        return None
-    try:
-        url = f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=krw"
-        r = requests.get(url, timeout=10)
-        r.raise_for_status()
-        return r.json().get(coin_id, {}).get("krw")
-    except Exception as e:
-        print(f"  Warning: CoinGecko price fetch failed for {symbol}: {e}")
-        return None
+    """Fetch current coin price in KRW from CoinGecko API (uses batch cache)."""
+    prices = get_coin_prices_batch([symbol])
+    return prices.get(symbol)
 
 
-def get_stock_price(code: str, date_str: str = None) -> float | None:
+def get_stock_price(code: str, date_str: str | None = None) -> float | None:
     """Fetch Korean stock closing price. Uses pykrx if available, else returns None."""
     try:
         from pykrx import stock
@@ -70,19 +110,23 @@ def collect_prices_for_predictions(conn) -> int:
     updated = 0
     with conn.cursor() as cur:
         cur.execute("""
-            SELECT p.id, ma.asset_code, ma.asset_type
+            SELECT DISTINCT ma.asset_code, ma.asset_type
             FROM predictions p
             JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
             WHERE p.prediction_type IS NOT NULL
             AND ma.price_at_mention IS NULL
             AND ma.asset_code IS NOT NULL
         """)
-        rows = cur.fetchall()
+        needed = cur.fetchall()
 
-        for pred_id, asset_code, asset_type in rows:
+        # Batch fetch all coin prices at once
+        coin_symbols = [code for code, atype in needed if atype == "coin"]
+        coin_prices = get_coin_prices_batch(coin_symbols) if coin_symbols else {}
+
+        for asset_code, asset_type in needed:
             price = None
             if asset_type == "coin":
-                price = get_coin_price(asset_code)
+                price = coin_prices.get(asset_code)
             elif asset_type == "stock":
                 price = get_stock_price(asset_code)
 
@@ -94,7 +138,7 @@ def collect_prices_for_predictions(conn) -> int:
                 updated += 1
 
         conn.commit()
-    print(f"  Collected prices for {updated} predictions")
+    print(f"  Collected prices for {updated} assets")
     return updated
 
 
@@ -104,7 +148,6 @@ def record_daily_prices(conn) -> int:
     today = datetime.now().strftime("%Y-%m-%d")
 
     with conn.cursor() as cur:
-        # Get unique asset codes mentioned in last 30 days
         cur.execute("""
             SELECT DISTINCT ma.asset_code, ma.asset_type
             FROM mentioned_assets ma
@@ -114,10 +157,14 @@ def record_daily_prices(conn) -> int:
         """)
         assets = cur.fetchall()
 
+        # Batch fetch all coin prices at once
+        coin_symbols = [code for code, atype in assets if atype == "coin"]
+        coin_prices = get_coin_prices_batch(coin_symbols) if coin_symbols else {}
+
         for asset_code, asset_type in assets:
             price = None
             if asset_type == "coin":
-                price = get_coin_price(asset_code)
+                price = coin_prices.get(asset_code)
             elif asset_type == "stock":
                 price = get_stock_price(asset_code)
 
