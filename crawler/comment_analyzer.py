@@ -21,10 +21,10 @@ def analyze_video_comments(conn, max_videos: int = 50) -> dict:
     with conn.cursor() as cur:
         # Get prediction videos without comment analysis (most recent first)
         cur.execute("""
-            SELECT DISTINCT v.id, v.youtube_video_id, v.title
+            SELECT v.id, v.youtube_video_id, v.title
             FROM videos v
-            JOIN predictions p ON p.video_id = v.id
-            WHERE v.comments_analyzed_at IS NULL
+            WHERE v.id IN (SELECT DISTINCT video_id FROM predictions)
+              AND v.comments_analyzed_at IS NULL
             ORDER BY v.published_at DESC NULLS LAST
             LIMIT %s
         """, (max_videos,))
