@@ -285,8 +285,8 @@ export async function getChannelAssetMatrix(days = 7): Promise<ChannelAssetOpini
   return rows as ChannelAssetOpinion[]
 }
 
-// #3 Asset Consensus Score (predictor/leader channels only)
-export async function getAssetConsensus(days = 7): Promise<AssetConsensus[]> {
+// #3 Asset Consensus Score (all channels)
+export async function getAssetConsensus(days = 30): Promise<AssetConsensus[]> {
   const sql = getDb()
   const rows = await sql`
     SELECT
@@ -308,11 +308,10 @@ export async function getAssetConsensus(days = 7): Promise<AssetConsensus[]> {
     LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
       AND ma.sentiment IS NOT NULL
-      AND c.channel_type IN ('predictor', 'leader')
     GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
     HAVING COUNT(*) >= 2
     ORDER BY COUNT(DISTINCT v.channel_id) DESC, COUNT(*) DESC
-    LIMIT 20
+    LIMIT 30
   `
   return rows.map((r: any) => {
     const maxPct = Math.max(r.positive_pct || 0, r.negative_pct || 0, r.neutral_pct || 0)
@@ -386,7 +385,7 @@ export async function getMentionSpike(days = 30): Promise<{ asset_name: string; 
   }).slice(0, 8)
 }
 
-// #7 Hit Rate Leaderboard (predictor/leader channels only)
+// #7 Hit Rate Leaderboard (all channels with predictions)
 export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]> {
   const sql = getDb()
   const rows = await sql`
@@ -406,10 +405,9 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
         ELSE NULL END AS hit_rate
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
-    WHERE c.channel_type IN ('predictor', 'leader')
     GROUP BY c.id, c.name, c.thumbnail_url, c.category, c.channel_type, c.prediction_intensity_score
     HAVING COUNT(*) >= 1
-    ORDER BY hit_rate DESC NULLS LAST, total_predictions DESC
+    ORDER BY COUNT(*) DESC, hit_rate DESC NULLS LAST
   `
 
   const result: HitRateLeaderboardItem[] = []

@@ -34,7 +34,7 @@ export default async function LeaderboardPage() {
               </h1>
             </div>
             <p className="text-[#5a6a88] text-sm max-w-lg">
-              예측형/리딩방 채널의 투자 예측 적중률 순위. PIS(Prediction Intensity Score) 기반 분류된 채널만 표시됩니다.
+              투자 예측을 하는 유튜버들의 예측 건수와 근거 영상을 확인하세요. 각 행을 클릭하면 원본 영상 레퍼런스를 볼 수 있습니다.
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-[#3a4a6a]">
