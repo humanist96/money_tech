@@ -1,3 +1,17 @@
+export type ChannelType = 'predictor' | 'leader' | 'analyst' | 'media' | 'unknown'
+
+export interface ClassificationDetails {
+  p1_density: number
+  p2_action_intensity: number
+  p3_concentration: number
+  p4_price_target: number
+  p5_sentiment_bias: number
+  total_videos_analyzed: number
+  period_start: string | null
+  period_end: string | null
+  reason?: string
+}
+
 export interface Channel {
   id: string
   youtube_channel_id: string
@@ -9,8 +23,20 @@ export interface Channel {
   thumbnail_url: string | null
   description: string | null
   hit_rate: number | null
+  channel_type: ChannelType
+  prediction_intensity_score: number | null
+  classification_details: ClassificationDetails | null
+  classification_updated_at: string | null
   created_at: string
   updated_at: string
+}
+
+export const CHANNEL_TYPE_CONFIG: Record<ChannelType, { label: string; color: string; badge: string }> = {
+  predictor: { label: '예측형', color: '#f97316', badge: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
+  leader: { label: '리딩방', color: '#ef4444', badge: 'bg-red-500/20 text-red-400 border-red-500/30' },
+  analyst: { label: '해설형', color: '#3b82f6', badge: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  media: { label: '미디어', color: '#6b7280', badge: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+  unknown: { label: '미분류', color: '#4b5563', badge: 'bg-gray-600/20 text-gray-500 border-gray-600/30' },
 }
 
 export interface Video {
@@ -138,11 +164,16 @@ export interface ChannelAssetOpinion {
 export interface AssetConsensus {
   asset_name: string
   asset_code: string
+  asset_type: string
   positive_pct: number
   negative_pct: number
   neutral_pct: number
   total_mentions: number
   channel_count: number
+  channels: string[]
+  buy_count: number
+  sell_count: number
+  hold_count: number
   consensus_score: number
 }
 
@@ -211,8 +242,11 @@ export interface HitRateLeaderboardItem {
   channel_name: string
   channel_thumbnail: string | null
   category: string
+  channel_type: ChannelType
+  pis: number | null
   hit_rate: number
   total_predictions: number
+  all_predictions: number
   accurate_count: number
   recent_predictions: Array<{
     prediction_type: string
