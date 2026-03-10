@@ -15,10 +15,9 @@ const CATEGORY_COLORS: Record<string, string> = {
 const PREDICTION_ICONS: Record<string, { emoji: string; color: string }> = {
   buy: { emoji: "B", color: "#22c997" },
   sell: { emoji: "S", color: "#ff5757" },
-  hold: { emoji: "H", color: "#ffb84d" },
 }
 
-export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRateRankingProps) {
+export function HitRateRanking({ data, title = "방향 적중률 리더보드" }: HitRateRankingProps) {
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
@@ -66,7 +65,10 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
                   </span>
                   <div className="flex items-center gap-1 mt-0.5">
                     {ch.recent_predictions.slice(0, 5).map((pred, j) => {
-                      const icon = PREDICTION_ICONS[pred.prediction_type] ?? PREDICTION_ICONS.hold
+                      const icon = PREDICTION_ICONS[pred.prediction_type] ?? PREDICTION_ICONS.buy
+                      const dirScore = (pred as any).direction_score
+                      const isCorrect = dirScore !== null && dirScore !== undefined && dirScore >= 0.5
+                      const isEvaluated = dirScore !== null && dirScore !== undefined
                       return (
                         <span
                           key={j}
@@ -74,13 +76,13 @@ export function HitRateRanking({ data, title = "적중률 리더보드" }: HitRa
                           style={{
                             background: `color-mix(in srgb, ${icon.color} 15%, transparent)`,
                             color: icon.color,
-                            border: pred.is_accurate === true
-                              ? `1px solid ${icon.color}`
-                              : pred.is_accurate === false
-                                ? '1px solid #ff575730'
-                                : '1px solid var(--th-border)',
+                            border: isEvaluated
+                              ? isCorrect
+                                ? `1px solid ${icon.color}`
+                                : '1px solid #ff575730'
+                              : '1px solid var(--th-border)',
                           }}
-                          title={`${pred.asset_name} - ${pred.prediction_type}${pred.is_accurate !== null ? (pred.is_accurate ? ' (적중)' : ' (빗나감)') : ''}`}
+                          title={`${pred.asset_name} - ${pred.prediction_type}${isEvaluated ? (isCorrect ? ' (적중)' : ' (빗나감)') : ''}`}
                         >
                           {icon.emoji}
                         </span>

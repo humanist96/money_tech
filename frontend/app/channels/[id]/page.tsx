@@ -251,7 +251,11 @@ export default async function ChannelDetailPage({ params }: PageProps) {
           hitRate={hitRateData.hit_rate}
           totalPredictions={hitRateData.total_predictions}
           accurateCount={hitRateData.accurate_count}
-          recentPredictions={predictions.map((p: any) => ({
+          dir1wCorrect={hitRateData.dir_1w_correct}
+          dir1wTotal={hitRateData.dir_1w_total}
+          dir1mCorrect={hitRateData.dir_1m_correct}
+          dir1mTotal={hitRateData.dir_1m_total}
+          recentPredictions={predictions.filter((p: any) => p.prediction_type !== 'hold').map((p: any) => ({
             asset_name: p.asset_name,
             asset_code: p.asset_code,
             prediction_type: p.prediction_type,
@@ -259,6 +263,10 @@ export default async function ChannelDetailPage({ params }: PageProps) {
             price_at_mention: p.price_at_mention,
             actual_price: p.actual_price_after_3m || p.actual_price_after_1m || p.actual_price_after_1w,
             is_accurate: p.is_accurate,
+            direction_1w: p.direction_1w ?? null,
+            direction_1m: p.direction_1m ?? null,
+            direction_3m: p.direction_3m ?? null,
+            direction_score: p.direction_score ?? null,
           }))}
         />
         <ProfileRadar

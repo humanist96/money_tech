@@ -11,7 +11,6 @@ interface PredictionFeedProps {
 const PREDICTION_BADGES: Record<string, { label: string; color: string }> = {
   buy: { label: "매수", color: "#22c997" },
   sell: { label: "매도", color: "#ff5757" },
-  hold: { label: "관망", color: "#ffb84d" },
 }
 
 function timeAgo(dateStr: string | null): string {
@@ -23,6 +22,35 @@ function timeAgo(dateStr: string | null): string {
   if (hours < 24) return `${hours}시간 전`
   const days = Math.floor(hours / 24)
   return `${days}일 전`
+}
+
+function DirectionIndicator({ d1w, d1m, d3m }: { d1w: boolean | null; d1m: boolean | null; d3m: boolean | null }) {
+  const periods = [
+    { label: '1주', value: d1w },
+    { label: '1월', value: d1m },
+    { label: '3월', value: d3m },
+  ]
+  const evaluated = periods.filter(p => p.value !== null)
+  if (evaluated.length === 0) return null
+
+  return (
+    <div className="flex items-center gap-1">
+      {periods.map((p) => (
+        <span
+          key={p.label}
+          className={`text-[8px] px-1 py-0.5 rounded font-medium ${
+            p.value === null
+              ? 'text-th-dim'
+              : p.value
+                ? 'bg-[#22c997]/12 text-[#22c997]'
+                : 'bg-[#ff5757]/12 text-[#ff5757]'
+          }`}
+        >
+          {p.label}{p.value === null ? '' : p.value ? '↑' : '↓'}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 export function PredictionFeed({ predictions, title = "최근 예측" }: PredictionFeedProps) {
@@ -43,8 +71,9 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
       </div>
       <div className="divide-y divide-th-border/25 max-h-[480px] overflow-y-auto">
         {predictions.map((pred) => {
-          const badge = PREDICTION_BADGES[pred.prediction_type ?? "hold"] ?? PREDICTION_BADGES.hold
+          const badge = PREDICTION_BADGES[pred.prediction_type ?? "buy"] ?? PREDICTION_BADGES.buy
           const catColor = CATEGORY_COLORS[pred.channel_category] ?? "#6b7280"
+          const score = pred.direction_score
 
           return (
             <div key={pred.id} className="px-5 py-3.5 hover:bg-th-hover/40 transition">
@@ -72,9 +101,9 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
                     >
                       {badge.label}
                     </span>
-                    {pred.is_accurate !== null && (
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${pred.is_accurate ? 'bg-[#22c997]/10 text-[#22c997]' : 'bg-[#ff5757]/10 text-[#ff5757]'}`}>
-                        {pred.is_accurate ? "적중" : "빗나감"}
+                    {score !== null && (
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${score >= 0.5 ? 'bg-[#22c997]/10 text-[#22c997]' : 'bg-[#ff5757]/10 text-[#ff5757]'}`}>
+                        {score >= 0.5 ? "적중" : "빗나감"}
                       </span>
                     )}
                   </div>
@@ -84,9 +113,12 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
                   >
                     {pred.asset_name}
                   </a>
-                  {pred.reason && (
-                    <p className="text-[11px] text-th-dim mt-1 line-clamp-2">{pred.reason}</p>
-                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <DirectionIndicator d1w={pred.direction_1w} d1m={pred.direction_1m} d3m={pred.direction_3m} />
+                    {pred.reason && (
+                      <p className="text-[11px] text-th-dim line-clamp-1">{pred.reason}</p>
+                    )}
+                  </div>
                 </div>
                 <span className="text-[10px] text-th-dim shrink-0 tabular-nums">
                   {timeAgo(pred.predicted_at)}

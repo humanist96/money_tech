@@ -192,16 +192,24 @@ export async function getChannelHitRate(channelId: string) {
   const sql = getDb()
   const rows = await sql`
     SELECT
-      COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::int AS accurate_count,
-      COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END)::int AS total_predictions,
-      CASE WHEN COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END) > 0
-        THEN COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::float /
-             COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END)
-        ELSE NULL END AS hit_rate
+      COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
+      COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
+      CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
+        THEN AVG(p.direction_score)
+        ELSE NULL END AS hit_rate,
+      COUNT(CASE WHEN p.direction_1w = true THEN 1 END)::int AS dir_1w_correct,
+      COUNT(CASE WHEN p.direction_1w IS NOT NULL THEN 1 END)::int AS dir_1w_total,
+      COUNT(CASE WHEN p.direction_1m = true THEN 1 END)::int AS dir_1m_correct,
+      COUNT(CASE WHEN p.direction_1m IS NOT NULL THEN 1 END)::int AS dir_1m_total
     FROM predictions p
     WHERE p.channel_id = ${channelId}
+      AND p.prediction_type IN ('buy', 'sell')
   `
-  return rows[0] as { accurate_count: number; total_predictions: number; hit_rate: number | null }
+  return rows[0] as {
+    accurate_count: number; total_predictions: number; hit_rate: number | null;
+    dir_1w_correct: number; dir_1w_total: number;
+    dir_1m_correct: number; dir_1m_total: number;
+  }
 }
 
 export async function getChannelPredictions(channelId: string, limit = 10) {
@@ -209,10 +217,12 @@ export async function getChannelPredictions(channelId: string, limit = 10) {
   const rows = await sql`
     SELECT p.prediction_type, p.predicted_at, p.is_accurate,
            p.actual_price_after_1w, p.actual_price_after_1m, p.actual_price_after_3m,
+           p.direction_1w, p.direction_1m, p.direction_3m, p.direction_score,
            ma.asset_name, ma.asset_code, ma.asset_type, ma.price_at_mention
     FROM predictions p
     JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
     WHERE p.channel_id = ${channelId}
+      AND p.prediction_type IN ('buy', 'sell')
     ORDER BY p.predicted_at DESC NULLS LAST
     LIMIT ${limit}
   `
@@ -392,7 +402,7 @@ export async function getMentionSpike(days = 30): Promise<{ asset_name: string; 
   }).slice(0, 8)
 }
 
-// #7 Hit Rate Leaderboard (all channels with predictions)
+// #7 Hit Rate Leaderboard (direction-based)
 export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]> {
   const sql = getDb()
   const rows = await sql`
@@ -403,29 +413,31 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
       c.category,
       c.channel_type,
       c.prediction_intensity_score AS pis,
-      COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::int AS accurate_count,
-      COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END)::int AS total_predictions,
+      COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
+      COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
       COUNT(*)::int AS all_predictions,
-      CASE WHEN COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END) > 0
-        THEN COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::float /
-             COUNT(CASE WHEN p.is_accurate IS NOT NULL THEN 1 END)
+      CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
+        THEN AVG(p.direction_score)
         ELSE NULL END AS hit_rate,
       COALESCE(ROUND(AVG(p.crowd_accuracy)::numeric, 3), 0) AS avg_crowd_accuracy,
       COUNT(CASE WHEN p.crowd_accuracy IS NOT NULL THEN 1 END)::int AS crowd_evaluated
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
+    WHERE p.prediction_type IN ('buy', 'sell')
     GROUP BY c.id, c.name, c.thumbnail_url, c.category, c.channel_type, c.prediction_intensity_score
     HAVING COUNT(*) >= 1
-    ORDER BY COUNT(*) DESC, hit_rate DESC NULLS LAST
+    ORDER BY COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) DESC, AVG(p.direction_score) DESC NULLS LAST
   `
 
   const result: HitRateLeaderboardItem[] = []
   for (const r of rows as any[]) {
     const recentPreds = await sql`
-      SELECT p.prediction_type, p.is_accurate, ma.asset_name
+      SELECT p.prediction_type, p.is_accurate, p.direction_1w, p.direction_1m, p.direction_3m,
+             p.direction_score, ma.asset_name
       FROM predictions p
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
       WHERE p.channel_id = ${r.channel_id}
+        AND p.prediction_type IN ('buy', 'sell')
       ORDER BY p.predicted_at DESC NULLS LAST
       LIMIT 5
     `
@@ -515,7 +527,7 @@ export async function getHotKeywordsRanking(): Promise<HotKeyword[]> {
   })
 }
 
-// #10 Recent Predictions Feed (deduplicated by channel + asset + type per day)
+// #10 Recent Predictions Feed (deduplicated, direction-based)
 export async function getRecentPredictions(limit = 20): Promise<PredictionFeedItem[]> {
   const sql = getDb()
   const rows = await sql`
@@ -529,10 +541,15 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
       p.prediction_type,
       p.reason,
       p.predicted_at,
-      p.is_accurate
+      p.is_accurate,
+      p.direction_1w,
+      p.direction_1m,
+      p.direction_3m,
+      p.direction_score
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
     LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+    WHERE p.prediction_type IN ('buy', 'sell')
     ORDER BY c.name, ma.asset_name, p.prediction_type, p.predicted_at::date, p.predicted_at DESC
   `
   const sorted = (rows as PredictionFeedItem[])

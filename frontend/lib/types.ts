@@ -123,6 +123,10 @@ export interface Prediction {
   actual_price_after_1m: number | null
   actual_price_after_3m: number | null
   is_accurate: boolean | null
+  direction_1w: boolean | null
+  direction_1m: boolean | null
+  direction_3m: boolean | null
+  direction_score: number | null
   created_at: string
 }
 
@@ -216,6 +220,10 @@ export interface PredictionFeedItem {
   reason: string | null
   predicted_at: string | null
   is_accurate: boolean | null
+  direction_1w: boolean | null
+  direction_1m: boolean | null
+  direction_3m: boolean | null
+  direction_score: number | null
 }
 
 export interface ChannelActivityData {

@@ -1,8 +1,7 @@
-"""Evaluate prediction accuracy by comparing predicted vs actual prices."""
+"""Evaluate prediction accuracy using directional prediction (up/down)."""
 from __future__ import annotations
 
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import psycopg2
 
@@ -11,38 +10,43 @@ from price_collector import get_stock_price, get_coin_price
 
 def evaluate_predictions(conn) -> dict:
     """
-    Evaluate all unevaluated predictions where enough time has passed.
-    Updates actual_price_after_1w, 1m, 3m and is_accurate.
+    Evaluate all unevaluated predictions using directional accuracy.
+    - buy: price went up → correct
+    - sell: price went down → correct
+    - hold: excluded from directional evaluation
+    Updates direction_1w, direction_1m, direction_3m and direction_score.
     """
     results = {"evaluated_1w": 0, "evaluated_1m": 0, "evaluated_3m": 0, "total": 0}
-    now = datetime.now(tz=None)  # naive UTC
+    now = datetime.now(tz=None)
 
     with conn.cursor() as cur:
         cur.execute("""
             SELECT p.id, p.prediction_type, p.predicted_at,
                    p.actual_price_after_1w, p.actual_price_after_1m, p.actual_price_after_3m,
+                   p.direction_1w, p.direction_1m, p.direction_3m,
                    ma.asset_code, ma.asset_type, ma.price_at_mention
             FROM predictions p
             JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-            WHERE p.prediction_type IS NOT NULL
+            WHERE p.prediction_type IN ('buy', 'sell')
             AND ma.price_at_mention IS NOT NULL
-            AND p.is_accurate IS NULL
+            AND (p.direction_1w IS NULL OR p.direction_1m IS NULL OR p.direction_3m IS NULL)
         """)
         predictions = cur.fetchall()
         results["total"] = len(predictions)
 
         for row in predictions:
-            pred_id, pred_type, predicted_at, price_1w, price_1m, price_3m, \
-                asset_code, asset_type, price_at_mention = row
+            (pred_id, pred_type, predicted_at,
+             price_1w, price_1m, price_3m,
+             dir_1w, dir_1m, dir_3m,
+             asset_code, asset_type, price_at_mention) = row
 
             if predicted_at is None:
                 continue
 
-            # Handle timezone-aware datetimes
             pa = predicted_at.replace(tzinfo=None) if hasattr(predicted_at, 'tzinfo') and predicted_at.tzinfo else predicted_at
             days_elapsed = (now - pa).days
 
-            # 1 week evaluation
+            # Collect prices for each period
             if price_1w is None and days_elapsed >= 7:
                 price = _get_current_price(asset_code, asset_type)
                 if price is not None:
@@ -53,7 +57,6 @@ def evaluate_predictions(conn) -> dict:
                     price_1w = price
                     results["evaluated_1w"] += 1
 
-            # 1 month evaluation
             if price_1m is None and days_elapsed >= 30:
                 price = _get_current_price(asset_code, asset_type)
                 if price is not None:
@@ -64,7 +67,6 @@ def evaluate_predictions(conn) -> dict:
                     price_1m = price
                     results["evaluated_1m"] += 1
 
-            # 3 month evaluation
             if price_3m is None and days_elapsed >= 90:
                 price = _get_current_price(asset_code, asset_type)
                 if price is not None:
@@ -75,14 +77,37 @@ def evaluate_predictions(conn) -> dict:
                     price_3m = price
                     results["evaluated_3m"] += 1
 
-            # Calculate accuracy using the latest available price comparison
-            actual_price = price_3m or price_1m or price_1w
-            if actual_price is not None and price_at_mention > 0:
-                is_accurate = _check_accuracy(pred_type, price_at_mention, actual_price)
-                cur.execute(
-                    "UPDATE predictions SET is_accurate = %s WHERE id = %s",
-                    (is_accurate, pred_id),
-                )
+            # Evaluate direction for each period
+            new_dir_1w = dir_1w
+            new_dir_1m = dir_1m
+            new_dir_3m = dir_3m
+
+            if dir_1w is None and price_1w is not None:
+                new_dir_1w = _check_direction(pred_type, price_at_mention, price_1w)
+
+            if dir_1m is None and price_1m is not None:
+                new_dir_1m = _check_direction(pred_type, price_at_mention, price_1m)
+
+            if dir_3m is None and price_3m is not None:
+                new_dir_3m = _check_direction(pred_type, price_at_mention, price_3m)
+
+            # Calculate direction_score (weighted: 1w=50%, 1m=30%, 3m=20%)
+            direction_score = _calc_direction_score(new_dir_1w, new_dir_1m, new_dir_3m)
+
+            # Also set is_accurate for backward compat (based on direction_score)
+            is_accurate = None
+            if direction_score is not None:
+                is_accurate = direction_score >= 0.5
+
+            cur.execute("""
+                UPDATE predictions SET
+                    direction_1w = %s,
+                    direction_1m = %s,
+                    direction_3m = %s,
+                    direction_score = %s,
+                    is_accurate = %s
+                WHERE id = %s
+            """, (new_dir_1w, new_dir_1m, new_dir_3m, direction_score, is_accurate, pred_id))
 
         conn.commit()
 
@@ -91,25 +116,24 @@ def evaluate_predictions(conn) -> dict:
 
 
 def update_channel_hit_rates(conn) -> int:
-    """Recalculate and update hit_rate for all channels."""
+    """Recalculate hit_rate using direction_score average."""
     updated = 0
     with conn.cursor() as cur:
         cur.execute("""
             SELECT c.id,
-                COUNT(CASE WHEN p.is_accurate = true THEN 1 END)::float /
-                    NULLIF(COUNT(p.id), 0) AS hit_rate,
-                COUNT(p.id) AS total_preds
+                AVG(p.direction_score) AS avg_direction_score,
+                COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) AS total_preds
             FROM channels c
             LEFT JOIN predictions p ON p.channel_id = c.id
-                AND p.is_accurate IS NOT NULL
+                AND p.direction_score IS NOT NULL
             GROUP BY c.id
-            HAVING COUNT(p.id) > 0
+            HAVING COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
         """)
         rows = cur.fetchall()
 
-        for channel_id, hit_rate, total_preds in rows:
-            if hit_rate is not None:
-                # trust_score: weighted by prediction count (more data = more trust)
+        for channel_id, avg_score, total_preds in rows:
+            if avg_score is not None:
+                hit_rate = float(avg_score)
                 trust_score = min(hit_rate * min(total_preds / 10, 1.0), 1.0)
                 cur.execute(
                     "UPDATE channels SET hit_rate = %s, trust_score = %s WHERE id = %s",
@@ -118,7 +142,7 @@ def update_channel_hit_rates(conn) -> int:
                 updated += 1
 
         conn.commit()
-    print(f"  Updated hit rates for {updated} channels")
+    print(f"  Updated hit rates for {updated} channels (direction-based)")
     return updated
 
 
@@ -131,15 +155,30 @@ def _get_current_price(asset_code: str, asset_type: str) -> float | None:
     return None
 
 
-def _check_accuracy(prediction_type: str, price_at_mention: float, actual_price: float) -> bool:
-    """Check if a prediction was accurate based on 3% threshold."""
+def _check_direction(prediction_type: str, price_at_mention: float, actual_price: float) -> bool:
+    """Check if direction prediction was correct. Simple up/down check."""
     if price_at_mention <= 0:
         return False
-    price_change = (actual_price - price_at_mention) / price_at_mention
-
     if prediction_type == "buy":
-        return price_change > 0.03  # 3% gain = accurate
+        return actual_price > price_at_mention
     elif prediction_type == "sell":
-        return price_change < -0.03  # 3% drop = accurate
-    else:  # hold
-        return abs(price_change) < 0.03  # sideways = accurate
+        return actual_price < price_at_mention
+    return False
+
+
+def _calc_direction_score(dir_1w, dir_1m, dir_3m) -> float | None:
+    """Calculate weighted direction score. 1w=50%, 1m=30%, 3m=20%."""
+    weights = []
+    if dir_1w is not None:
+        weights.append((0.5, 1.0 if dir_1w else 0.0))
+    if dir_1m is not None:
+        weights.append((0.3, 1.0 if dir_1m else 0.0))
+    if dir_3m is not None:
+        weights.append((0.2, 1.0 if dir_3m else 0.0))
+
+    if not weights:
+        return None
+
+    total_weight = sum(w for w, _ in weights)
+    score = sum(w * v for w, v in weights) / total_weight
+    return round(score, 3)
