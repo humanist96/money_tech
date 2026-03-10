@@ -195,7 +195,7 @@ export async function getChannelHitRate(channelId: string) {
       COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
       COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
       CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-        THEN AVG(p.direction_score)
+        THEN AVG(p.direction_score)::float
         ELSE NULL END AS hit_rate,
       COUNT(CASE WHEN p.direction_1w = true THEN 1 END)::int AS dir_1w_correct,
       COUNT(CASE WHEN p.direction_1w IS NOT NULL THEN 1 END)::int AS dir_1w_total,
@@ -217,7 +217,7 @@ export async function getChannelPredictions(channelId: string, limit = 10) {
   const rows = await sql`
     SELECT p.prediction_type, p.predicted_at, p.is_accurate,
            p.actual_price_after_1w, p.actual_price_after_1m, p.actual_price_after_3m,
-           p.direction_1w, p.direction_1m, p.direction_3m, p.direction_score,
+           p.direction_1w, p.direction_1m, p.direction_3m, p.direction_score::float AS direction_score,
            ma.asset_name, ma.asset_code, ma.asset_type, ma.price_at_mention
     FROM predictions p
     JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
@@ -417,9 +417,9 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
       COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
       COUNT(*)::int AS all_predictions,
       CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-        THEN AVG(p.direction_score)
+        THEN AVG(p.direction_score)::float
         ELSE NULL END AS hit_rate,
-      COALESCE(ROUND(AVG(p.crowd_accuracy)::numeric, 3), 0) AS avg_crowd_accuracy,
+      COALESCE(AVG(p.crowd_accuracy)::float, 0) AS avg_crowd_accuracy,
       COUNT(CASE WHEN p.crowd_accuracy IS NOT NULL THEN 1 END)::int AS crowd_evaluated
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
@@ -433,7 +433,7 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
   for (const r of rows as any[]) {
     const recentPreds = await sql`
       SELECT p.prediction_type, p.is_accurate, p.direction_1w, p.direction_1m, p.direction_3m,
-             p.direction_score, ma.asset_name
+             p.direction_score::float, ma.asset_name
       FROM predictions p
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
       WHERE p.channel_id = ${r.channel_id}
@@ -443,7 +443,8 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
     `
     result.push({
       ...r,
-      hit_rate: r.hit_rate ?? 0,
+      hit_rate: Number(r.hit_rate) || 0,
+      avg_crowd_accuracy: Number(r.avg_crowd_accuracy) || 0,
       recent_predictions: recentPreds as any[],
     })
   }
@@ -545,7 +546,7 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
       p.direction_1w,
       p.direction_1m,
       p.direction_3m,
-      p.direction_score
+      p.direction_score::float AS direction_score
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
     LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
@@ -709,7 +710,7 @@ export async function getChannelTypeStats() {
       channel_type,
       COUNT(*)::int as count,
       ROUND(AVG(prediction_intensity_score)::numeric, 1) as avg_pis,
-      ROUND(AVG(hit_rate)::numeric, 3) as avg_hit_rate
+      AVG(hit_rate)::float as avg_hit_rate
     FROM channels
     WHERE channel_type IS NOT NULL AND channel_type != 'unknown'
     GROUP BY channel_type

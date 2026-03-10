@@ -49,7 +49,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   const filtered = leaderboard
     .filter(item => filterCategory === 'all' || item.category === filterCategory)
     .sort((a, b) => {
-      if (sortBy === 'hit_rate') return (b.hit_rate ?? 0) - (a.hit_rate ?? 0)
+      if (sortBy === 'hit_rate') return (Number(b.hit_rate) || 0) - (Number(a.hit_rate) || 0)
       if (sortBy === 'all_predictions') return b.all_predictions - a.all_predictions
       return (b.pis ?? 0) - (a.pis ?? 0)
     })
@@ -77,9 +77,10 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
 
   const totalPredictions = leaderboard.reduce((s, l) => s + l.all_predictions, 0)
   const channelsWithEval = leaderboard.filter(l => l.total_predictions > 0)
-  const avgHitRate = channelsWithEval.length > 0
-    ? Math.round(channelsWithEval.reduce((s, l) => s + l.hit_rate, 0) / channelsWithEval.length * 100)
+  const avgHitRateRaw = channelsWithEval.length > 0
+    ? channelsWithEval.reduce((s, l) => s + (Number(l.hit_rate) || 0), 0) / channelsWithEval.length * 100
     : null
+  const avgHitRate = avgHitRateRaw != null && !isNaN(avgHitRateRaw) ? Math.round(avgHitRateRaw) : null
   const channelsWithCrowd = leaderboard.filter(l => l.crowd_evaluated > 0)
   const avgCrowdRaw = channelsWithCrowd.length > 0
     ? channelsWithCrowd.reduce((s, l) => s + (Number(l.avg_crowd_accuracy) || 0), 0) / channelsWithCrowd.length * 100
@@ -101,8 +102,8 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
       <div className="info-banner space-y-1">
         <div className="font-semibold text-th-primary text-sm mb-1">평가 방법론</div>
         <div className="flex items-start gap-2">
-          <span className="text-[#3b82f6] font-bold shrink-0">A. 가격 적중률</span>
-          <span>영상 발행일 기준 종목 가격 → 1주/1개월/3개월 후 실제 가격과 비교. 매수+3%↑=적중, 매도+3%↓=적중, 보유±3%이내=적중</span>
+          <span className="text-[#3b82f6] font-bold shrink-0">A. 방향 적중률</span>
+          <span>영상 발행일 기준 종목 가격 → 1주/1개월/3개월 후 방향성 비교. 매수→가격상승=적중, 매도→가격하락=적중. 가중평균: 1주(50%)+1개월(30%)+3개월(20%)</span>
         </div>
         <div className="flex items-start gap-2">
           <span className="text-[#e879f9] font-bold shrink-0">B. 대중 반응</span>
@@ -197,10 +198,10 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                       <div className="text-base font-bold tabular-nums" style={{
                         fontFamily: 'var(--font-outfit)',
                         color: item.total_predictions > 0
-                          ? Math.round(item.hit_rate * 100) >= 50 ? '#22c997' : '#ef4444'
+                          ? Math.round((Number(item.hit_rate) || 0) * 100) >= 50 ? '#22c997' : '#ef4444'
                           : '#3a4a6a'
                       }}>
-                        {item.total_predictions > 0 ? `${Math.round(item.hit_rate * 100)}%` : '-'}
+                        {item.total_predictions > 0 ? `${Math.round((Number(item.hit_rate) || 0) * 100)}%` : '-'}
                       </div>
                     </div>
                     <div className="text-right w-12">
