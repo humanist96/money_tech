@@ -12,11 +12,7 @@ import psycopg2.extras
 from dotenv import load_dotenv
 
 from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
-from channel_classifier import update_stale_classifications
-from comment_analyzer import analyze_video_comments, update_crowd_accuracy
 from prediction_detector import detect_predictions
-from prediction_evaluator import evaluate_predictions, update_channel_hit_rates
-from price_collector import collect_prices_for_predictions, record_daily_prices
 from youtube import (
     get_channel_info,
     get_channel_videos,
@@ -402,6 +398,8 @@ def crawl() -> None:
                         details_map = {d["id"]: d for d in details_list}
                         print(f"  Fetched details for {len(details_map)} videos (batch)")
 
+                    skip_sub = os.environ.get("SKIP_SUBTITLE", "").lower() in ("1", "true", "yes")
+
                     for video in videos:
                         video_id = video.get("id")
                         if not video_id:
@@ -415,20 +413,19 @@ def crawl() -> None:
                         if is_new:
                             total_new += 1
                             print(f"    NEW: {source.get('title', '')[:60]}")
+
+                            # Determine published_at for predictions
+                            published_at = video.get("published_at")
+                            if not published_at and details:
+                                ud = details.get("upload_date", "")
+                                if len(ud) == 8:
+                                    published_at = f"{ud[:4]}-{ud[4:6]}-{ud[6:8]}T00:00:00Z"
+
+                            # NLP analysis only for NEW videos
+                            process_video_nlp(cur, conn, video_id, source, channel_uuid, published_at, skip_subtitle=skip_sub)
+                            rate_limit_wait(0.1)
                         else:
                             total_updated += 1
-
-                        # Determine published_at for predictions
-                        published_at = video.get("published_at")
-                        if not published_at and details:
-                            ud = details.get("upload_date", "")
-                            if len(ud) == 8:
-                                published_at = f"{ud[:4]}-{ud[4:6]}-{ud[6:8]}T00:00:00Z"
-
-                        # NLP analysis (skip subtitles in fast mode)
-                        skip_sub = os.environ.get("SKIP_SUBTITLE", "").lower() in ("1", "true", "yes")
-                        process_video_nlp(cur, conn, video_id, source, channel_uuid, published_at, skip_subtitle=skip_sub)
-                        rate_limit_wait(0.1)
 
                     # Update channel video/view counts from DB
                     cur.execute(
@@ -444,36 +441,6 @@ def crawl() -> None:
             print(f"\n=== Computing daily stats for {today} ===")
             compute_daily_stats(cur, today)
             conn.commit()
-
-        # Price collection and prediction evaluation
-        print("\n=== Collecting asset prices ===")
-        try:
-            collect_prices_for_predictions(conn)
-            record_daily_prices(conn)
-        except Exception as e:
-            print(f"  Warning: price collection failed: {e}")
-
-        print("\n=== Evaluating predictions ===")
-        try:
-            evaluate_predictions(conn)
-            update_channel_hit_rates(conn)
-        except Exception as e:
-            print(f"  Warning: prediction evaluation failed: {e}")
-
-        print("\n=== Analyzing comments for prediction videos ===")
-        try:
-            comment_results = analyze_video_comments(conn, max_videos=30)
-            print(f"  Comment analysis: {comment_results}")
-            update_crowd_accuracy(conn)
-        except Exception as e:
-            print(f"  Warning: comment analysis failed: {e}")
-
-        print("\n=== Updating channel classifications ===")
-        try:
-            updated = update_stale_classifications(conn, days=30, stale_days=7)
-            print(f"  Re-classified {updated} channels")
-        except Exception as e:
-            print(f"  Warning: channel classification failed: {e}")
 
     finally:
         conn.close()

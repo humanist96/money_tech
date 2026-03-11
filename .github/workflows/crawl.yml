@@ -6,9 +6,9 @@ on:
   workflow_dispatch:  # 수동 실행
 
 jobs:
-  crawl:
+  youtube:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
@@ -19,18 +19,31 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          pip install -r crawler/requirements.txt
-          pip install yt-dlp --upgrade
-          pip install beautifulsoup4
+        run: pip install -r crawler/requirements.txt
 
       - name: Run YouTube crawler
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          SKIP_SUBTITLE: '1'
         run: |
           cd crawler
           python main.py
+
+  blog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
 
       - name: Run Blog crawler
         env:
@@ -41,6 +54,23 @@ jobs:
           cd crawler
           python blog_crawler.py
 
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [youtube, blog]
+    if: always() && (needs.youtube.result == 'success' || needs.blog.result == 'success')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
       - name: Collect prices & evaluate predictions
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -50,4 +80,4 @@ jobs:
 
       - name: Log completion
         if: always()
-        run: echo "Crawl finished at $(date -u)"
+        run: echo "Pipeline finished at $(date -u)"

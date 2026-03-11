@@ -203,12 +203,16 @@ def fetch_blog_post_content(blog_id: str, log_no: str) -> Optional[str]:
         return None
 
     # Extract main content from mobile blog page
-    # Try multiple selectors for different blog skins
+    # Try multiple selectors for different blog skins (ordered by likelihood)
     patterns = [
         r'<div class="se-main-container">(.*?)</div>\s*</div>\s*</div>',
+        r'class="se-main-container"[^>]*>(.*?)<div class="post_footer"',
+        r'<div class="__viewer_content_wrap"[^>]*>(.*?)</div>\s*</div>',
         r'<div id="postViewArea">(.*?)</div>',
         r'<div class="post_ct">(.*?)</div>',
         r'<div class="se_component_wrap">(.*?)</div>',
+        r'<div class="post-view"[^>]*>(.*?)</div>\s*</div>',
+        r'<div class="content__viewer"[^>]*>(.*?)</div>\s*</div>',
     ]
 
     for pattern in patterns:
@@ -218,16 +222,21 @@ def fetch_blog_post_content(blog_id: str, log_no: str) -> Optional[str]:
             if len(content) > 50:
                 return content[:10000]  # Limit to 10K chars
 
-    # Fallback: extract text between post area markers
-    post_match = re.search(
-        r'class="se-main-container"[^>]*>(.*?)<div class="post_footer"',
-        html,
-        re.DOTALL,
-    )
-    if post_match:
-        content = _clean_html(post_match.group(1))
-        if len(content) > 50:
-            return content[:10000]
+    # Last resort: try to extract all text between common post boundaries
+    for start_marker, end_marker in [
+        (r'class="se-main-container"', r'class="post_footer"'),
+        (r'id="post-view', r'id="post_footer"'),
+        (r'class="post_ct"', r'class="post_footer"'),
+    ]:
+        post_match = re.search(
+            f'{start_marker}[^>]*>(.*?)<div[^>]*{end_marker}',
+            html,
+            re.DOTALL,
+        )
+        if post_match:
+            content = _clean_html(post_match.group(1))
+            if len(content) > 50:
+                return content[:10000]
 
     return None
 

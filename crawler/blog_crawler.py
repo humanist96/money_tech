@@ -226,11 +226,11 @@ def crawl_blogs() -> None:
                         if is_new:
                             total_new += 1
                             print(f"    NEW: {post.title[:60]}")
+
+                            # NLP analysis only for NEW posts
+                            process_blog_post_nlp(cur, conn, post, channel_uuid)
                         else:
                             total_updated += 1
-
-                        # NLP analysis
-                        process_blog_post_nlp(cur, conn, post, channel_uuid)
 
                     # Update channel post count
                     cur.execute(
