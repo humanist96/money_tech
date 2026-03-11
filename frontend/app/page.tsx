@@ -91,8 +91,21 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Channel Ticker */}
-      <ChannelTicker channels={channels.slice(0, 10)} />
+      {/* Channel Tickers */}
+      <div className="space-y-2">
+        <ChannelTicker
+          channels={channels.filter(c => (c.platform ?? 'youtube') === 'youtube').slice(0, 12)}
+          platform="youtube"
+        />
+        <ChannelTicker
+          channels={channels
+            .filter(c => c.platform === 'naver_blog')
+            .sort((a, b) => (b.video_count ?? 0) - (a.video_count ?? 0))
+            .slice(0, 12)
+          }
+          platform="naver_blog"
+        />
+      </div>
 
       {/* Buzz Alert */}
       <BuzzAlertBanner alerts={buzzAlerts} />

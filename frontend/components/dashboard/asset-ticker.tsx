@@ -2,10 +2,12 @@
 
 import Link from "next/link"
 import type { Channel } from "@/lib/types"
-import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types"
+import { CATEGORY_LABELS, CATEGORY_COLORS, PLATFORM_CONFIG } from "@/lib/types"
 
 interface ChannelTickerProps {
   channels: Channel[]
+  label?: string
+  platform?: 'youtube' | 'naver_blog'
 }
 
 function formatCount(n: number | null): string {
@@ -15,8 +17,13 @@ function formatCount(n: number | null): string {
   return n.toLocaleString()
 }
 
-export function ChannelTicker({ channels }: ChannelTickerProps) {
+export function ChannelTicker({ channels, label, platform }: ChannelTickerProps) {
   if (channels.length === 0) return null
+
+  const isBlog = platform === 'naver_blog'
+  const platformConf = isBlog ? PLATFORM_CONFIG.naver_blog : PLATFORM_CONFIG.youtube
+  const displayLabel = label ?? (isBlog ? 'TOP 블로그' : 'TOP 채널')
+  const animClass = isBlog ? 'animate-ticker-blog' : 'animate-ticker'
 
   // Double for seamless loop
   const items = [...channels, ...channels]
@@ -27,9 +34,12 @@ export function ChannelTicker({ channels }: ChannelTickerProps) {
         {/* Label */}
         <div className="shrink-0 px-4 py-2.5 border-r border-th-border/50 bg-th-card/80 z-10">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-th-accent pulse-dot" />
+            <span
+              className="w-1.5 h-1.5 rounded-full pulse-dot"
+              style={{ background: platformConf.color }}
+            />
             <span className="text-[10px] font-bold text-th-dim uppercase tracking-wider whitespace-nowrap">
-              TOP 채널
+              {platformConf.icon} {displayLabel}
             </span>
           </div>
         </div>
@@ -39,13 +49,18 @@ export function ChannelTicker({ channels }: ChannelTickerProps) {
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-th-card-deep to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-th-card-deep to-transparent z-10 pointer-events-none" />
 
-          <div className="flex animate-ticker hover:[animation-play-state:paused]">
+          <div className={`flex ${animClass} hover:[animation-play-state:paused]`}>
             {items.map((ch, i) => {
               const color = CATEGORY_COLORS[ch.category] ?? "#6b7280"
+              const href = isBlog && ch.blog_url
+                ? ch.blog_url
+                : `/channels/${ch.id}`
+
               return (
                 <Link
                   key={`${ch.id}-${i}`}
-                  href={`/channels/${ch.id}`}
+                  href={href}
+                  target={isBlog ? "_blank" : undefined}
                   className="shrink-0 flex items-center gap-2.5 px-4 py-2 hover:bg-th-hover/50 transition-colors border-r border-th-border/20 group"
                 >
                   {/* Rank */}
@@ -91,7 +106,10 @@ export function ChannelTicker({ channels }: ChannelTickerProps) {
                         {CATEGORY_LABELS[ch.category]}
                       </span>
                       <span className="text-[9px] text-th-dim tabular-nums">
-                        {formatCount(ch.subscriber_count)}
+                        {isBlog
+                          ? `${formatCount(ch.video_count)}편`
+                          : formatCount(ch.subscriber_count)
+                        }
                       </span>
                     </div>
                   </div>

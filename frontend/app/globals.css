@@ -515,6 +515,13 @@
 .animate-ticker {
   animation: ticker 30s linear infinite;
 }
+@keyframes ticker-blog {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-ticker-blog {
+  animation: ticker-blog 35s linear infinite;
+}
 
 /* ═══════════════════════════════════════════════
    CHANNEL CARD SPECIFIC
