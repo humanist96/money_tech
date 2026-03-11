@@ -27,8 +27,8 @@ CHANNELS_FILE = os.path.join(os.path.dirname(__file__), "channels.json")
 BLOGGERS_FILE = os.path.join(os.path.dirname(__file__), "bloggers.json")
 CANDIDATES_FILE = os.path.join(os.path.dirname(__file__), "candidates.json")
 
-AUTO_REGISTER_THRESHOLD = 80
-CANDIDATE_THRESHOLD = 50
+AUTO_REGISTER_THRESHOLD = 90
+CANDIDATE_THRESHOLD = 60
 
 
 def load_existing_youtube_ids() -> set[str]:

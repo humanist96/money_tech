@@ -5,6 +5,9 @@ on:
     - cron: '0 3 * * 1'  # 매주 월요일 03:00 UTC (한국시간 12:00)
   workflow_dispatch:  # 수동 실행
 
+permissions:
+  contents: write
+
 jobs:
   discover:
     runs-on: ubuntu-latest
@@ -12,8 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5

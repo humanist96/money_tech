@@ -205,9 +205,17 @@ def calculate_blog_score(
 
     activity_score = min(recent_count / 4, 1.0) * 100
 
-    # Scale: post count from RSS (proxy for blog size)
+    # Scale: recent post frequency (need consistent posting, not just RSS fullness)
+    # 10+ posts in RSS with recent activity gets high score
     total_posts = rss_info.get("post_count", 0)
-    scale_score = min(total_posts / 15, 1.0) * 100
+    if recent_count >= 8:
+        scale_score = 100
+    elif recent_count >= 4:
+        scale_score = 70
+    elif total_posts >= 10 and recent_count >= 2:
+        scale_score = 50
+    else:
+        scale_score = 20
 
     # Relevance: keyword matching in post titles
     category_keywords = _get_category_keywords(category)
@@ -241,6 +249,10 @@ def calculate_blog_score(
 
     if ad_ratio > 0.3:
         total *= 0.5
+
+    # Hard penalty: if less than 30% relevance, unlikely a specialist
+    if relevance_score < 30:
+        total *= 0.6
 
     return {
         "total": round(total, 1),
