@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { getAssetDetail, getAssetTimeline, formatViewCount, timeAgo } from "@/lib/queries"
+import { getAssetDetail, getAssetTimeline, getConsensusTimeline, getAssetPriceHistory, formatViewCount, timeAgo } from "@/lib/queries"
 import { AssetTimeline } from "@/components/dashboard/asset-timeline"
+import { ConsensusTimelinePanel } from "@/components/features/consensus-timeline"
 
 export const dynamic = "force-dynamic"
 
@@ -30,9 +31,11 @@ const TYPE_LABELS: Record<string, string> = {
 export default async function AssetDetailPage({ params }: PageProps) {
   const { code } = await params
   const decodedCode = decodeURIComponent(code)
-  const [mentions, timeline] = await Promise.all([
+  const [mentions, timeline, consensusTimeline, priceHistory] = await Promise.all([
     getAssetDetail(decodedCode),
     getAssetTimeline(decodedCode, 30),
+    getConsensusTimeline(decodedCode, 60),
+    getAssetPriceHistory(decodedCode, 60),
   ])
 
   if (!mentions || mentions.length === 0) notFound()
@@ -119,6 +122,9 @@ export default async function AssetDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Consensus Timeline (Feature 4) */}
+      <ConsensusTimelinePanel data={consensusTimeline} assetName={assetName} priceHistory={priceHistory} />
 
       {/* YouTuber Timeline */}
       <AssetTimeline entries={timeline} assetName={assetName} />

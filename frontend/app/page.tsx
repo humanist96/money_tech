@@ -3,6 +3,7 @@ import {
   getAssetConsensus, getAssetMentions,
   getRecentPredictions, getTopAssetSentiments,
   getBuzzAlerts, getChannelPredictionProfiles,
+  getMarketSentimentGauge, getContrarianSignals,
 } from "@/lib/queries"
 import type { Channel, DailyStat } from "@/lib/types"
 import { CATEGORY_LABELS } from "@/lib/types"
@@ -15,12 +16,14 @@ import { PredictionFeed } from "@/components/dashboard/prediction-feed"
 import { AssetSentimentGrid } from "@/components/dashboard/asset-sentiment-grid"
 import { BuzzAlertBanner } from "@/components/dashboard/buzz-alert"
 import { ChannelTicker } from "@/components/dashboard/asset-ticker"
+import { MarketGaugePanel } from "@/components/features/market-gauge"
+import { ContrarianSignalPanel } from "@/components/features/contrarian-signal"
 
 export const dynamic = "force-dynamic"
 
 async function getDashboardData() {
   try {
-    const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles] = await Promise.all([
+    const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals] = await Promise.all([
       getChannels(),
       getRecentVideosWithAssets(15),
       getDailyStats(30),
@@ -31,6 +34,8 @@ async function getDashboardData() {
       getTopAssetSentiments(10, 30),
       getBuzzAlerts(48),
       getChannelPredictionProfiles(),
+      getMarketSentimentGauge(),
+      getContrarianSignals(30, 75),
     ])
 
     const today = new Date().toISOString().split("T")[0]
@@ -48,7 +53,7 @@ async function getDashboardData() {
     return {
       channels, videos, totalVideos, todayVideos, topCategory,
       consensus, assetMentions, predictions, assetSentiments,
-      buzzAlerts, predictionProfiles,
+      buzzAlerts, predictionProfiles, marketGauge, contrarianSignals,
     }
   } catch {
     return {
@@ -56,6 +61,8 @@ async function getDashboardData() {
       totalVideos: 0, todayVideos: 0, topCategory: "-",
       consensus: [], assetMentions: [], predictions: [],
       assetSentiments: [], buzzAlerts: [], predictionProfiles: [],
+      marketGauge: { overall_score: 50, category_scores: [], historical_extremes: [], current_warning: null },
+      contrarianSignals: [],
     }
   }
 }
@@ -64,6 +71,7 @@ export default async function DashboardPage() {
   const {
     channels, videos, totalVideos, todayVideos, topCategory,
     consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles,
+    marketGauge, contrarianSignals,
   } = await getDashboardData()
 
   return (
@@ -117,6 +125,16 @@ export default async function DashboardPage() {
         todayVideos={todayVideos}
         topCategory={topCategory}
       />
+
+      {/* Market Gauge + Contrarian Signal */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <MarketGaugePanel data={marketGauge} />
+        </div>
+        <div className="lg:col-span-2">
+          <ContrarianSignalPanel signals={contrarianSignals} />
+        </div>
+      </div>
 
       {/* Row: Top Mentions + Channel Prediction Profile */}
       <div className="grid gap-6 lg:grid-cols-2">

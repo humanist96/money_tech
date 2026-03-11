@@ -352,6 +352,171 @@ export interface AnalysisPrediction {
   reason: string
 }
 
+// Feature 1: Contrarian Signal
+export interface ContrarianSignal {
+  asset_name: string
+  asset_code: string
+  asset_type: string
+  consensus_pct: number
+  consensus_direction: 'buy' | 'sell'
+  channel_count: number
+  historical_avg_return_1w: number | null
+  historical_avg_return_1m: number | null
+  similar_cases: number
+  rebound_probability: number | null
+  warning_level: 'high' | 'medium' | 'low'
+}
+
+// Feature 2: Enhanced Buzz Alert (extends existing BuzzAlert)
+export interface BuzzAlertEnhanced extends BuzzAlert {
+  prev_week_mentions: number
+  growth_rate: number
+  weighted_score: number
+}
+
+// Feature 3: YouTuber Backtest Result
+export interface BacktestResult {
+  channel_id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  initial_amount: number
+  final_amount: number
+  total_return_pct: number
+  benchmark_return_pct: number
+  total_trades: number
+  win_rate: number
+  max_drawdown: number
+  trades: BacktestTrade[]
+}
+
+export interface BacktestTrade {
+  asset_name: string
+  asset_code: string
+  prediction_type: 'buy' | 'sell'
+  entry_price: number | null
+  exit_price_1w: number | null
+  exit_price_1m: number | null
+  return_1w: number | null
+  return_1m: number | null
+  predicted_at: string
+}
+
+// Feature 4: Consensus Timeline
+export interface ConsensusTimelineEntry {
+  channel_name: string
+  channel_id: string
+  channel_thumbnail: string | null
+  prediction_type: string | null
+  sentiment: string
+  published_at: string
+  video_title: string
+}
+
+// Feature 5: Daily Briefing
+export interface DailyBriefing {
+  date: string
+  top_mentioned: AssetMention[]
+  conflicting_assets: ConflictingAsset[]
+  new_recommendations: PredictionFeedItem[]
+  market_temperature: MarketTemperature[]
+}
+
+export interface ConflictingAsset {
+  asset_name: string
+  asset_code: string
+  buy_channels: string[]
+  sell_channels: string[]
+}
+
+// Feature 6: Hidden Gem Channel
+export interface HiddenGemChannel {
+  channel_id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  category: string
+  subscriber_count: number | null
+  hit_rate: number
+  total_predictions: number
+  accurate_count: number
+  prediction_intensity_score: number | null
+  radar: {
+    aggressiveness: number
+    conservatism: number
+    diversity: number
+    accuracy: number
+    depth: number
+  }
+}
+
+// Feature 8: Risk Scoreboard
+export interface RiskScore {
+  asset_name: string
+  asset_code: string
+  asset_type: string
+  score: number
+  consensus_ratio: number
+  mention_trend: 'rising' | 'falling' | 'stable'
+  mention_count: number
+  weighted_opinion: number
+  sentiment_shift: 'improving' | 'worsening' | 'stable'
+  signal_color: 'green' | 'yellow' | 'red'
+  details: {
+    consensus_score: number
+    frequency_score: number
+    expert_score: number
+    sentiment_score: number
+  }
+}
+
+// Feature 9: Weekly Winner/Loser Report
+export interface WeeklyReportItem {
+  channel_id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  category: string
+  accurate_count: number
+  total_count: number
+  accuracy_pct: number
+  best_call: {
+    asset_name: string
+    prediction_type: string
+    return_pct: number | null
+  } | null
+  worst_call: {
+    asset_name: string
+    prediction_type: string
+    return_pct: number | null
+  } | null
+}
+
+// Feature 10: Market Sentiment Gauge (enhanced)
+export interface MarketSentimentGauge {
+  overall_score: number
+  category_scores: MarketTemperature[]
+  historical_extremes: {
+    date: string
+    score: number
+    actual_market_1m: number | null
+  }[]
+  current_warning: string | null
+}
+
+export interface PortfolioResponse {
+  combinedHitRate: number | null
+  totalPredictions: number
+  accurateCount: number
+  conflicts: ConflictingAsset[]
+  recentPredictions: {
+    id: string
+    channel_name: string
+    asset_name: string
+    asset_code: string | null
+    prediction_type: string
+    direction_score: number | null
+    predicted_at: string | null
+  }[]
+}
+
 export interface BlogSearchResult {
   title: string
   link: string
