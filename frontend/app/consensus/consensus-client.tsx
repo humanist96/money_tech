@@ -153,20 +153,46 @@ function ConsensusCard({ item, expanded, onToggle }: {
   expanded: boolean
   onToggle: () => void
 }) {
-  const dominant = item.positive_pct >= item.negative_pct && item.positive_pct >= item.neutral_pct
+  const totalSignals = item.buy_count + item.sell_count + item.hold_count
+
+  // Primary: prediction-based consensus (매수/매도)
+  const hasPredictions = totalSignals > 0
+  const buyPct = hasPredictions ? (item.buy_count / totalSignals) * 100 : 0
+  const sellPct = hasPredictions ? (item.sell_count / totalSignals) * 100 : 0
+  const holdPct = hasPredictions ? (item.hold_count / totalSignals) * 100 : 0
+
+  // Determine dominant signal
+  const predDominant = hasPredictions
+    ? (item.buy_count >= item.sell_count && item.buy_count >= item.hold_count
+        ? 'buy'
+        : item.sell_count >= item.buy_count && item.sell_count >= item.hold_count
+          ? 'sell'
+          : 'hold')
+    : null
+
+  // Fallback: sentiment-based
+  const sentDominant = item.positive_pct >= item.negative_pct && item.positive_pct >= item.neutral_pct
     ? 'positive'
     : item.negative_pct >= item.positive_pct && item.negative_pct >= item.neutral_pct
       ? 'negative'
       : 'neutral'
 
-  const dominantConfig: Record<string, { label: string; color: string }> = {
+  const predConfig: Record<string, { label: string; color: string }> = {
+    buy: { label: '매수 우세', color: '#22c997' },
+    sell: { label: '매도 우세', color: '#ef4444' },
+    hold: { label: '보유 우세', color: '#f97316' },
+  }
+  const sentConfig: Record<string, { label: string; color: string }> = {
     positive: { label: '긍정 우세', color: '#22c997' },
     negative: { label: '부정 우세', color: '#ef4444' },
     neutral: { label: '중립', color: '#f97316' },
   }
-  const dc = dominantConfig[dominant]
 
-  const totalSignals = item.buy_count + item.sell_count + item.hold_count
+  // Use prediction-based when available, otherwise sentiment
+  const dc = predDominant ? predConfig[predDominant] : sentConfig[sentDominant]
+  const displayScore = hasPredictions
+    ? Math.round(Math.max(buyPct, sellPct, holdPct))
+    : item.consensus_score
 
   return (
     <button
@@ -189,44 +215,52 @@ function ConsensusCard({ item, expanded, onToggle }: {
             {item.channel_count}개 채널 · {item.total_mentions}회 언급
           </div>
 
-          {/* Sentiment Bar */}
-          <div className="mt-3 max-w-md">
-            <div className="flex h-2 rounded-full overflow-hidden bg-th-tertiary">
-              {item.positive_pct > 0 && <div className="h-full bg-[#22c997]" style={{ width: `${item.positive_pct}%` }} />}
-              {item.neutral_pct > 0 && <div className="h-full bg-[#f97316]" style={{ width: `${item.neutral_pct}%` }} />}
-              {item.negative_pct > 0 && <div className="h-full bg-[#ef4444]" style={{ width: `${item.negative_pct}%` }} />}
+          {/* Primary: Prediction Signal Bar (매수/매도/보유) */}
+          {hasPredictions && (
+            <div className="mt-3 max-w-md">
+              <div className="flex h-2.5 rounded-full overflow-hidden bg-th-tertiary">
+                {buyPct > 0 && <div className="h-full bg-[#22c997]" style={{ width: `${buyPct}%` }} />}
+                {holdPct > 0 && <div className="h-full bg-[#f97316]" style={{ width: `${holdPct}%` }} />}
+                {sellPct > 0 && <div className="h-full bg-[#ef4444]" style={{ width: `${sellPct}%` }} />}
+              </div>
+              <div className="flex gap-4 mt-1 text-[10px]">
+                <span className="text-[#22c997] font-medium">매수 {Math.round(buyPct)}% ({item.buy_count})</span>
+                {item.hold_count > 0 && <span className="text-[#f97316]">보유 {Math.round(holdPct)}% ({item.hold_count})</span>}
+                <span className="text-[#ef4444]">매도 {Math.round(sellPct)}% ({item.sell_count})</span>
+              </div>
             </div>
-            <div className="flex gap-4 mt-1 text-[10px]">
-              <span className="text-[#22c997]">긍정 {Math.round(item.positive_pct)}%</span>
-              <span className="text-[#f97316]">중립 {Math.round(item.neutral_pct)}%</span>
-              <span className="text-[#ef4444]">부정 {Math.round(item.negative_pct)}%</span>
+          )}
+
+          {/* Secondary: Sentiment Bar (긍정/중립/부정) */}
+          <div className={`max-w-md ${hasPredictions ? 'mt-2' : 'mt-3'}`}>
+            {hasPredictions && <div className="text-[9px] text-th-dim mb-1">감성 분석</div>}
+            <div className="flex h-1.5 rounded-full overflow-hidden bg-th-tertiary">
+              {item.positive_pct > 0 && <div className="h-full bg-[#22c997]/60" style={{ width: `${item.positive_pct}%` }} />}
+              {item.neutral_pct > 0 && <div className="h-full bg-[#f97316]/60" style={{ width: `${item.neutral_pct}%` }} />}
+              {item.negative_pct > 0 && <div className="h-full bg-[#ef4444]/60" style={{ width: `${item.negative_pct}%` }} />}
+            </div>
+            <div className="flex gap-4 mt-0.5 text-[9px] text-th-dim">
+              <span>긍정 {Math.round(item.positive_pct)}%</span>
+              <span>중립 {Math.round(item.neutral_pct)}%</span>
+              <span>부정 {Math.round(item.negative_pct)}%</span>
             </div>
           </div>
 
-          {/* Signals + Channels inline */}
-          <div className="flex flex-wrap items-center gap-3 mt-2">
-            {totalSignals > 0 && (
-              <div className="flex items-center gap-1.5">
-                {item.buy_count > 0 && <MiniPill label="매수" count={item.buy_count} color="#22c997" />}
-                {item.sell_count > 0 && <MiniPill label="매도" count={item.sell_count} color="#ef4444" />}
-                {item.hold_count > 0 && <MiniPill label="보유" count={item.hold_count} color="#f97316" />}
-              </div>
-            )}
-            {item.channels && item.channels.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {item.channels.slice(0, 4).map(ch => (
-                  <span key={ch} className="tag text-[9px] text-th-muted">{ch}</span>
-                ))}
-                {item.channels.length > 4 && <span className="text-[9px] text-th-dim">+{item.channels.length - 4}</span>}
-              </div>
-            )}
-          </div>
+          {/* Channels */}
+          {item.channels && item.channels.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {item.channels.slice(0, 4).map(ch => (
+                <span key={ch} className="tag text-[9px] text-th-muted">{ch}</span>
+              ))}
+              {item.channels.length > 4 && <span className="text-[9px] text-th-dim">+{item.channels.length - 4}</span>}
+            </div>
+          )}
         </div>
 
         {/* Score */}
         <div className="text-right flex-shrink-0">
           <div className="text-2xl font-bold tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color: dc.color }}>
-            {item.consensus_score}%
+            {displayScore}%
           </div>
           <div className="text-[10px]" style={{ color: dc.color }}>{dc.label}</div>
         </div>
