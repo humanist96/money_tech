@@ -35,7 +35,7 @@ export default async function AssetDetailPage({ params }: PageProps) {
     getAssetDetail(decodedCode),
     getAssetTimeline(decodedCode, 30),
     getConsensusTimeline(decodedCode, 60),
-    getAssetPriceHistory(decodedCode, 60),
+    getAssetPriceHistory(decodedCode, 60).catch(() => []),
   ])
 
   if (!mentions || mentions.length === 0) notFound()

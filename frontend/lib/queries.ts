@@ -971,11 +971,11 @@ export async function getConsensusTimeline(assetCode: string, days = 60): Promis
 export async function getAssetPriceHistory(assetCode: string, days = 60): Promise<{ date: string; price: number }[]> {
   const sql = getDb()
   const rows = await sql`
-    SELECT date::text, close_price AS price
+    SELECT recorded_date::text AS date, price
     FROM asset_prices
     WHERE asset_code = ${assetCode}
-      AND date >= NOW() - INTERVAL '1 day' * ${days}
-    ORDER BY date ASC
+      AND recorded_date >= NOW() - INTERVAL '1 day' * ${days}
+    ORDER BY recorded_date ASC
   `
   return rows as { date: string; price: number }[]
 }
