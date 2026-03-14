@@ -16,7 +16,8 @@
     {
       "matches": [
         "https://frontend-xi-six-47.vercel.app/*",
-        "http://localhost:3000/*"
+        "http://localhost:3000/*",
+        "http://localhost:3001/*"
       ],
       "js": ["content.js"],
       "run_at": "document_start"

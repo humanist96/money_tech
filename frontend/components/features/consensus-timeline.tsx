@@ -116,7 +116,7 @@ export function ConsensusTimelinePanel({ data, assetName, priceHistory }: Consen
             <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
               {assetName} 컨센서스 타임라인
             </h3>
-            <p className="text-[10px] text-th-dim">유튜버별 의견 변화 추적</p>
+            <p className="text-[10px] text-th-dim">크리에이터별 의견 변화 추적</p>
           </div>
         </div>
         <div className="flex items-center gap-3 text-[9px]">

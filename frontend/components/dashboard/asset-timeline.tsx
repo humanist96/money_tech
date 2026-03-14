@@ -40,7 +40,7 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
         <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
-          유튜버 타임라인
+          크리에이터 타임라인
         </h3>
         <p className="text-sm text-th-dim">최근 30일간 데이터가 없습니다.</p>
       </div>
@@ -60,9 +60,9 @@ export function AssetTimeline({ entries, assetName }: AssetTimelineProps) {
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-th-border/50">
         <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
-          유튜버 타임라인 — {assetName}
+          크리에이터 타임라인 — {assetName}
         </h3>
-        <p className="text-[11px] text-th-dim mt-0.5">어떤 유튜버가 언제 이 종목을 언급했는지</p>
+        <p className="text-[11px] text-th-dim mt-0.5">어떤 크리에이터가 언제 이 종목을 언급했는지</p>
       </div>
       <div className="px-6 py-4 max-h-[520px] overflow-y-auto">
         <div className="relative">

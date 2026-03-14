@@ -115,6 +115,46 @@ def evaluate_predictions(conn) -> dict:
     return results
 
 
+def evaluate_target_price_accuracy(conn) -> dict:
+    """Evaluate analyst target price accuracy.
+
+    For predictions with target_price set, compare against actual prices
+    and calculate deviation percentage.
+
+    Returns:
+        Dict with evaluation stats
+    """
+    results = {"evaluated": 0, "avg_deviation": None}
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT p.id, p.target_price, p.predicted_at,
+                   ma.asset_code, ma.asset_type, ma.price_at_mention,
+                   p.actual_price_after_1m
+            FROM predictions p
+            JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+            WHERE p.target_price IS NOT NULL
+            AND p.actual_price_after_1m IS NOT NULL
+            AND p.confidence = 'high'
+        """)
+        rows = cur.fetchall()
+
+        deviations = []
+        for row in rows:
+            pred_id, target_price, predicted_at, asset_code, asset_type, price_at_mention, actual_1m = row
+
+            if target_price and actual_1m and target_price > 0:
+                deviation = abs(actual_1m - target_price) / target_price
+                deviations.append(deviation)
+
+        if deviations:
+            results["evaluated"] = len(deviations)
+            results["avg_deviation"] = round(sum(deviations) / len(deviations), 4)
+
+    print(f"  Target price accuracy: {results}")
+    return results
+
+
 def update_channel_hit_rates(conn) -> int:
     """Recalculate hit_rate using direction_score average."""
     updated = 0

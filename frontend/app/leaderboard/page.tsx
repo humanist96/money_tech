@@ -34,7 +34,7 @@ export default async function LeaderboardPage() {
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-lg">
-              투자 예측을 하는 유튜버들의 예측 건수와 근거 영상을 확인하세요. 각 행을 클릭하면 원본 영상 레퍼런스를 볼 수 있습니다.
+              투자 예측을 하는 크리에이터들의 예측 건수와 근거 콘텐츠를 확인하세요. 각 행을 클릭하면 원본 레퍼런스를 볼 수 있습니다.
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-th-dim">

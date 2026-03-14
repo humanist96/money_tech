@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "enabled": false,
+  "teamName": "",
+  "feature": "frontend",
+  "pdcaPhase": "archived",
+  "orchestrationPattern": "leader",
+  "ctoAgent": "opus",
+  "startedAt": "2026-03-14T10:52:53.635Z",
+  "lastUpdated": "2026-03-14T11:02:14.331Z",
+  "teammates": [],
+  "progress": {
+    "totalTasks": 0,
+    "completedTasks": 0,
+    "inProgressTasks": 0,
+    "failedTasks": 0,
+    "pendingTasks": 0
+  },
+  "recentMessages": [],
+  "sessionId": "8bd3df15-ccfc-4fec-b592-4e6f2ff9d7fd"
+}

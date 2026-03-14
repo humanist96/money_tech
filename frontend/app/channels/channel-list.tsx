@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import type { Channel, ChannelType, Platform } from "@/lib/types"
-import { CATEGORY_LABELS, CATEGORY_COLORS, PLATFORM_CONFIG } from "@/lib/types"
+import { CATEGORY_LABELS, CATEGORY_COLORS, PLATFORM_CONFIG, type Platform as PlatformType } from "@/lib/types"
 import { formatViewCount } from "@/lib/queries"
 import { ChannelTypeBadge } from "@/components/ui/channel-type-badge"
 
@@ -127,36 +127,46 @@ function ChannelCardGrid({ channel, rank }: { channel: Channel; rank: number }) 
                 {channel.channel_type && channel.channel_type !== 'unknown' && (
                   <ChannelTypeBadge type={channel.channel_type as ChannelType} />
                 )}
-                {(channel.platform ?? 'youtube') === 'naver_blog' ? (
-                  <>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#03c75a]/15 text-[#03c75a] border border-[#03c75a]/25">
-                      BLOG
-                    </span>
-                    <a
-                      href={channel.blog_url ?? `https://blog.naver.com/${channel.blog_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-th-dim hover:text-[#03c75a] transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                      </svg>
-                    </a>
-                  </>
-                ) : (
-                  <a
-                    href={`https://www.youtube.com/channel/${channel.youtube_channel_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-th-dim hover:text-[#ff0000] transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                  </a>
-                )}
+                {(() => {
+                  const p = channel.platform ?? 'youtube'
+                  const pConfig = PLATFORM_CONFIG[p as keyof typeof PLATFORM_CONFIG]
+                  if (p === 'youtube') {
+                    return (
+                      <a href={`https://www.youtube.com/channel/${channel.youtube_channel_id}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="text-th-dim hover:text-[#ff0000] transition-colors"
+                        onClick={(e) => e.stopPropagation()}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                      </a>
+                    )
+                  }
+                  // Non-YouTube platforms: show badge + external link
+                  const externalUrl = p === 'naver_blog'
+                    ? (channel.blog_url ?? `https://blog.naver.com/${channel.blog_id}`)
+                    : p === 'telegram'
+                    ? `https://t.me/${channel.telegram_username}`
+                    : undefined
+                  return (
+                    <>
+                      {pConfig && (
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md border ${pConfig.badge}`}>
+                          {pConfig.label}
+                        </span>
+                      )}
+                      {externalUrl && (
+                        <a href={externalUrl} target="_blank" rel="noopener noreferrer"
+                          className="text-th-dim hover:text-th-accent transition-colors"
+                          onClick={(e) => e.stopPropagation()}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                          </svg>
+                        </a>
+                      )}
+                    </>
+                  )
+                })()}
               </div>
             </div>
           </div>
@@ -169,10 +179,12 @@ function ChannelCardGrid({ channel, rank }: { channel: Channel; rank: number }) 
 
           {/* Stats grid */}
           <div className="mt-4 pt-4 border-t border-th-border/50 space-y-3">
-            {(channel.platform ?? 'youtube') === 'naver_blog' ? (
+            {(channel.platform ?? 'youtube') !== 'youtube' ? (
               <>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-th-dim uppercase tracking-wider font-medium">포스트</span>
+                  <span className="text-[10px] text-th-dim uppercase tracking-wider font-medium">
+                    {(channel.platform ?? 'youtube') === 'analyst_report' ? '리포트' : (channel.platform ?? 'youtube') === 'telegram' ? '메시지' : '포스트'}
+                  </span>
                   <span className="text-sm font-bold tabular-nums" style={{ fontFamily: 'var(--font-outfit)', color }}>
                     {channel.video_count?.toLocaleString() ?? "-"}
                   </span>
@@ -295,6 +307,8 @@ const PLATFORM_FILTERS = [
   { value: "all", label: "전체", color: "var(--th-accent)" },
   { value: "youtube", label: "YouTube", color: "#ff0000" },
   { value: "naver_blog", label: "블로그", color: "#03c75a" },
+  { value: "telegram", label: "텔레그램", color: "#0088cc" },
+  { value: "analyst_report", label: "애널리스트", color: "#1a56db" },
 ]
 
 export function ChannelList({ channels }: ChannelListProps) {

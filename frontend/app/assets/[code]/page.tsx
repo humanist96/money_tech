@@ -131,7 +131,7 @@ export default async function AssetDetailPage({ params }: PageProps) {
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-2 glass-card-elevated rounded-2xl p-6">
-          <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>유튜버 의견 종합</h3>
+          <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>크리에이터 의견 종합</h3>
           <div className="space-y-3">
             {(["positive", "negative", "neutral"] as const).map((s) => {
               const count = sentimentCounts[s]

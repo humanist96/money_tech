@@ -25,7 +25,7 @@ export default async function WeeklyReportPage() {
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-lg">
-              이번 주 가장 잘 맞힌 유튜버와 가장 아쉬웠던 유튜버, 최고/최악의 콜을 확인하세요.
+              이번 주 가장 잘 맞힌 크리에이터와 가장 아쉬웠던 크리에이터, 최고/최악의 콜을 확인하세요.
             </p>
           </div>
         </div>

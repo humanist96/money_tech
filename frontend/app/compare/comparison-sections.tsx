@@ -979,7 +979,7 @@ function ProfileRadarOverlay({ data, selected, colorMap }: { data: any; selected
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-th-border/50">
         <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
-          유튜버 성향 비교 레이더
+          크리에이터 성향 비교 레이더
         </h3>
       </div>
       <div className="p-4">

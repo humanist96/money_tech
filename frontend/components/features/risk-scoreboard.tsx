@@ -50,7 +50,7 @@ export function RiskScoreboard({ scores }: RiskScoreboardProps) {
             <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
               종목 리스크 스코어보드
             </h3>
-            <p className="text-[10px] text-th-dim">유튜버 데이터 기반 투자 리스크 종합 점수</p>
+            <p className="text-[10px] text-th-dim">크리에이터 데이터 기반 투자 리스크 종합 점수</p>
           </div>
         </div>
       </div>

@@ -81,7 +81,12 @@ async function getAuth() {
     throw new Error('인증 토큰 추출 실패. 페이지 구조가 변경되었을 수 있습니다.')
   }
 
-  cachedAuth = { cookies, csrfToken: csrfMatch[1], sessionId: sessionMatch[1] }
+  // Extract bl (build label) for chat API
+  const blMatch = html.match(/"cfb2h"\s*:\s*"([^"]+)"/)
+  const bl = blMatch ? blMatch[1] : 'boq_labs-tailwind-frontend_20251221.14_p0'
+  console.log('[NB] auth extracted bl:', bl)
+
+  cachedAuth = { cookies, csrfToken: csrfMatch[1], sessionId: sessionMatch[1], bl }
   cacheTime = Date.now()
   return cachedAuth
 }
@@ -180,6 +185,52 @@ async function rpcCall(rpcId, params, sourcePath) {
   }
   const text = await res.text()
   return decodeBatchResponse(text, rpcId)
+}
+
+// --- Chat response parser (matches notebooklm-py _chat.py._extract_answer_from_chunk) ---
+
+function extractAnswerFromChunk(jsonStr) {
+  try {
+    const data = JSON.parse(jsonStr)
+    if (!Array.isArray(data)) return { text: null, isAnswer: false }
+
+    for (const item of data) {
+      if (!Array.isArray(item) || item.length < 3) continue
+      if (item[0] !== 'wrb.fr') continue
+
+      const innerJson = item[2]
+      if (typeof innerJson !== 'string') continue
+
+      try {
+        const innerData = JSON.parse(innerJson)
+        if (!Array.isArray(innerData) || innerData.length === 0) continue
+
+        const first = innerData[0]
+        if (!Array.isArray(first) || first.length === 0) continue
+
+        const text = first[0]
+        if (typeof text !== 'string' || text.length <= 20) continue
+
+        // Check answer type flag: first[4][-1] === 1
+        let isAnswer = false
+        if (first.length > 4 && Array.isArray(first[4])) {
+          const typeInfo = first[4]
+          if (typeInfo.length > 0 && typeInfo[typeInfo.length - 1] === 1) {
+            isAnswer = true
+          }
+        }
+
+        // Fallback: if text is long enough and looks like an answer, accept it
+        if (!isAnswer && text.length > 100) {
+          isAnswer = true
+        }
+
+        return { text, isAnswer }
+      } catch { /* inner parse error */ }
+    }
+  } catch { /* outer parse error */ }
+
+  return { text: null, isAnswer: false }
 }
 
 // --- API handlers ---
@@ -329,7 +380,7 @@ const handlers = {
     // params = [sources_array, question, conversation_history, [2, None, [1]], conversation_id]
     const params = [sourcesArray, question, null, [2, null, [1]], convId]
     // Compact JSON (no spaces) matching Python separators=(",",":")
-    const paramsJson = JSON.stringify(params).replace(/,\s+/g, ',')
+    const paramsJson = JSON.stringify(params)
     const fReqInner = [null, paramsJson]
     const fReqJson = JSON.stringify(fReqInner)
     console.log('[NB] chat sourceIds:', sourceIds.length, 'convId:', convId)
@@ -339,6 +390,7 @@ const handlers = {
 
     const chatUrl = `${BASE_URL}/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed`
     const urlParams = new URLSearchParams({
+      bl: auth.bl || 'boq_labs-tailwind-frontend_20251221.14_p0',
       hl: 'en',
       _reqid: String(Math.floor(Math.random() * 900000) + 100000),
       rt: 'c',
@@ -351,27 +403,35 @@ const handlers = {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         Cookie: auth.cookies,
         Origin: BASE_URL,
+        Referer: `${BASE_URL}/notebook/${notebookId}`,
         'User-Agent': BROWSER_HEADERS['User-Agent'],
       },
       body,
     })
 
+    if (!res.ok) {
+      const errText = await res.text()
+      console.error('[NB] chat HTTP error:', res.status, errText.slice(0, 300))
+      throw new Error(`Chat 요청 실패 (${res.status})`)
+    }
+
     const text = await res.text()
     console.log('[NB] chat raw response length:', text.length)
     console.log('[NB] chat raw first 500:', text.slice(0, 500))
 
-    // Parse chunked response matching notebooklm-py decoder
+    // Parse response matching notebooklm-py _chat.py._parse_ask_response exactly
     let cleaned = text
-    const xssiMatch = cleaned.match(/^\)\]\}'\r?\n/)
-    if (xssiMatch) cleaned = cleaned.slice(xssiMatch[0].length)
+    if (cleaned.startsWith(")]}'")) cleaned = cleaned.slice(4)
 
     let longestAnswer = ''
-    const lines = cleaned.split('\n')
+    const lines = cleaned.trim().split('\n')
     let i = 0
     while (i < lines.length) {
       const line = lines[i].trim()
       if (!line) { i++; continue }
+
       let jsonStr = null
+      // Try as byte count (number-only line)
       if (/^\d+$/.test(line)) {
         i++
         if (i < lines.length) jsonStr = lines[i]
@@ -381,31 +441,14 @@ const handlers = {
         i++
       }
       if (!jsonStr) continue
-      try {
-        const data = JSON.parse(jsonStr)
-        if (!Array.isArray(data)) continue
-        // Look through all items in the chunk
-        const items = Array.isArray(data[0]) && typeof data[0][0] === 'string' ? [data] : data
-        for (const item of items) {
-          if (!Array.isArray(item)) continue
-          // wrb.fr response
-          if (item[0] === 'wrb.fr') {
-            const innerJson = item[2]
-            if (typeof innerJson !== 'string') continue
-            try {
-              const innerData = JSON.parse(innerJson)
-              if (Array.isArray(innerData) && Array.isArray(innerData[0])) {
-                const first = innerData[0]
-                if (typeof first[0] === 'string' && first[0].length > longestAnswer.length) {
-                  longestAnswer = first[0]
-                }
-              }
-            } catch {}
-          }
-        }
-      } catch {}
+
+      const extracted = extractAnswerFromChunk(jsonStr)
+      if (extracted.text && extracted.isAnswer && extracted.text.length > longestAnswer.length) {
+        longestAnswer = extracted.text
+      }
     }
 
+    console.log('[NB] chat parsed answer length:', longestAnswer.length)
     return { answer: longestAnswer || '응답을 받지 못했습니다', conversationId: convId, references: [] }
   },
 

@@ -23,6 +23,10 @@ HOLD_PATTERNS = [
     "횡보", "눈치", "대기", "관전",
 ]
 
+# Telegram-specific patterns (short, action-oriented messages)
+TELEGRAM_BUY = ["진입", "롱", "long", "매수 진입", "타점", "📈", "🚀", "ㄱㅈㅇ"]
+TELEGRAM_SELL = ["숏", "short", "매도 진입", "탈출", "손절가", "📉", "💀", "ㅅㅈ"]
+
 # --- Price Target Patterns (for channel classification P4 metric) ---
 
 PRICE_TARGET_PATTERNS = [
@@ -54,13 +58,23 @@ DIRECT_ACTION_KEYWORDS = [
 ]
 
 
-def detect_predictions(text: str, found_assets: list[dict]) -> list[dict]:
+def detect_predictions(text: str, found_assets: list[dict], platform: str = "default") -> list[dict]:
     """
     Detect buy/sell/hold predictions for each mentioned asset.
     Uses context around each asset mention for per-asset predictions.
+
+    Args:
+        text: Combined text to analyze
+        found_assets: List of detected assets
+        platform: Source platform ('telegram' uses shorter context window and extra patterns)
     """
     if not found_assets or not text:
         return []
+
+    # Platform-specific settings
+    context_radius = 150 if platform == "telegram" else 300
+    extra_buy = TELEGRAM_BUY if platform == "telegram" else []
+    extra_sell = TELEGRAM_SELL if platform == "telegram" else []
 
     predictions = []
 
@@ -70,18 +84,22 @@ def detect_predictions(text: str, found_assets: list[dict]) -> list[dict]:
         if idx == -1:
             continue
 
-        start = max(0, idx - 300)
-        end = min(len(text), idx + len(asset["asset_name"]) + 300)
+        start = max(0, idx - context_radius)
+        end = min(len(text), idx + len(asset["asset_name"]) + context_radius)
         context = text[start:end]
 
         buy_score = sum(1 for p in BUY_PATTERNS if p in context)
+        buy_score += sum(1 for p in extra_buy if p in context)
         sell_score = sum(1 for p in SELL_PATTERNS if p in context)
+        sell_score += sum(1 for p in extra_sell if p in context)
         hold_score = sum(1 for p in HOLD_PATTERNS if p in context)
 
         if buy_score <= 1 and sell_score <= 1 and hold_score <= 1:
             # Fall back to full text if no local signal
             buy_score = sum(1 for p in BUY_PATTERNS if p in text)
+            buy_score += sum(1 for p in extra_buy if p in text)
             sell_score = sum(1 for p in SELL_PATTERNS if p in text)
+            sell_score += sum(1 for p in extra_sell if p in text)
             hold_score = sum(1 for p in HOLD_PATTERNS if p in text)
 
             if buy_score <= 1 and sell_score <= 1 and hold_score <= 1:

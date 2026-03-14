@@ -33,7 +33,7 @@ export default async function ConsensusPage() {
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-lg">
-              예측형/리딩방 채널들의 종목별 의견 일치도. 여러 유튜버가 동일 종목을 언급할 때 매수/매도/보유 의견 분포를 보여줍니다.
+              예측형/리딩방 채널들의 종목별 의견 일치도. 여러 크리에이터가 동일 종목을 언급할 때 매수/매도/보유 의견 분포를 보여줍니다.
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-th-dim">

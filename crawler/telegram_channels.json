@@ -1,0 +1,18 @@
+{
+  "stock": [
+    {"name": "제일주식정보", "username": "jeilstock"},
+    {"name": "번개맞은뉴스", "username": "stock_messenger"},
+    {"name": "고스트주식", "username": "ghoststock"},
+    {"name": "IPO공모정보", "username": "KoreaIB"},
+    {"name": "급등테마뉴스", "username": "FastStockNews"}
+  ],
+  "coin": [
+    {"name": "코인니스뉴스", "username": "coinnesskr"},
+    {"name": "블록미디어", "username": "blockmedia"},
+    {"name": "황제코인CEN", "username": "emperorcoin"},
+    {"name": "크립토퀀트알림", "username": "cq_alert_kr"},
+    {"name": "Cryptocurrencies Channel", "username": "cryptocurrency"}
+  ],
+  "real_estate": [],
+  "economy": []
+}

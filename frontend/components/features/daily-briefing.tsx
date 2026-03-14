@@ -101,7 +101,7 @@ export function DailyBriefingPanel({ topMentioned, conflicts, newRecommendations
         {/* 2. Conflicting Opinions */}
         {conflicts.length > 0 && (
           <div>
-            <SectionTitle icon="2.">유튜버 간 의견이 갈리는 종목</SectionTitle>
+            <SectionTitle icon="2.">크리에이터 간 의견이 갈리는 종목</SectionTitle>
             <div className="space-y-2">
               {conflicts.map((c) => (
                 <div key={c.asset_code} className="bg-th-tertiary/40 rounded-xl p-3">
@@ -174,7 +174,7 @@ export function DailyBriefingPanel({ topMentioned, conflicts, newRecommendations
 
               // Conflict events
               for (const c of conflicts.slice(0, 3)) {
-                events.push({ text: `${c.asset_name}: 유튜버 의견 대립 (매수 ${c.buy_channels.length} vs 매도 ${c.sell_channels.length})`, color: '#ffb84d' })
+                events.push({ text: `${c.asset_name}: 크리에이터 의견 대립 (매수 ${c.buy_channels.length} vs 매도 ${c.sell_channels.length})`, color: '#ffb84d' })
               }
 
               // High mention count events

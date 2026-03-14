@@ -1,13 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import type { AssetConsensus } from "@/lib/types"
+import { Pagination } from "@/components/ui/pagination"
 
 interface ConsensusScoreProps {
   data: AssetConsensus[]
   title?: string
+  pageSize?: number
 }
 
-export function ConsensusScore({ data, title = "종목별 합의도" }: ConsensusScoreProps) {
+export function ConsensusScore({ data, title = "종목별 합의도", pageSize = 8 }: ConsensusScoreProps) {
+  const [page, setPage] = useState(1)
+
   if (data.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
@@ -17,14 +22,17 @@ export function ConsensusScore({ data, title = "종목별 합의도" }: Consensu
     )
   }
 
+  const totalPages = Math.ceil(data.length / pageSize)
+  const paged = data.slice((page - 1) * pageSize, page * pageSize)
+
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between">
         <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title}</h3>
-        <span className="text-[10px] text-th-dim">최근 7일 | 2개 이상 채널 언급</span>
+        <span className="text-[10px] text-th-dim">최근 7일 | {data.length}개 종목</span>
       </div>
       <div className="p-4 space-y-2">
-        {data.map((asset) => {
+        {paged.map((asset) => {
           const dominant = asset.positive_pct >= asset.negative_pct && asset.positive_pct >= asset.neutral_pct
             ? "positive"
             : asset.negative_pct >= asset.positive_pct && asset.negative_pct >= asset.neutral_pct
@@ -81,6 +89,7 @@ export function ConsensusScore({ data, title = "종목별 합의도" }: Consensu
           )
         })}
       </div>
+      <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   )
 }

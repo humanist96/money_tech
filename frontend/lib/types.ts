@@ -12,7 +12,7 @@ export interface ClassificationDetails {
   reason?: string
 }
 
-export type Platform = 'youtube' | 'naver_blog'
+export type Platform = 'youtube' | 'naver_blog' | 'telegram' | 'analyst_report' | 'naver_discussion'
 
 export interface Channel {
   id: string
@@ -32,6 +32,9 @@ export interface Channel {
   prediction_intensity_score: number | null
   classification_details: ClassificationDetails | null
   classification_updated_at: string | null
+  telegram_username: string | null
+  telegram_channel_id: number | null
+  firm_code: string | null
   created_at: string
   updated_at: string
 }
@@ -39,6 +42,9 @@ export interface Channel {
 export const PLATFORM_CONFIG: Record<Platform, { label: string; icon: string; color: string; badge: string }> = {
   youtube: { label: 'YouTube', icon: '▶', color: '#ff0000', badge: 'bg-red-500/20 text-red-400 border-red-500/30' },
   naver_blog: { label: '블로그', icon: '✎', color: '#03c75a', badge: 'bg-green-500/20 text-green-400 border-green-500/30' },
+  telegram: { label: '텔레그램', icon: '✈', color: '#0088cc', badge: 'bg-sky-500/20 text-sky-400 border-sky-500/30' },
+  analyst_report: { label: '애널리스트', icon: '📊', color: '#1a56db', badge: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' },
+  naver_discussion: { label: '종목토론', icon: '💬', color: '#f59e0b', badge: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
 }
 
 export const CHANNEL_TYPE_CONFIG: Record<ChannelType, { label: string; color: string; badge: string }> = {
@@ -67,6 +73,10 @@ export interface Video {
   platform: Platform
   blog_post_url: string | null
   content_text: string | null
+  telegram_message_id: number | null
+  report_url: string | null
+  analyst_name: string | null
+  firm_name: string | null
   created_at: string
 }
 
@@ -116,6 +126,8 @@ export interface Prediction {
   mentioned_asset_id: string | null
   prediction_type: 'buy' | 'sell' | 'hold' | null
   target_price: number | null
+  previous_target_price: number | null
+  confidence: string | null
   reason: string | null
   predicted_at: string | null
   evaluation_date: string | null
@@ -127,6 +139,24 @@ export interface Prediction {
   direction_1m: boolean | null
   direction_3m: boolean | null
   direction_score: number | null
+  created_at: string
+}
+
+export interface CrowdSentiment {
+  id: string
+  stock_code: string
+  stock_name: string
+  period_start: string
+  period_end: string
+  total_posts: number
+  filtered_posts: number
+  positive_count: number
+  negative_count: number
+  neutral_count: number
+  bullish_ratio: number | null
+  sentiment_score: number | null
+  top_keywords: { keyword: string; count: number }[] | null
+  sample_posts: { title: string; views: number; sentiment: string }[] | null
   created_at: string
 }
 
@@ -353,6 +383,26 @@ export interface AnalysisPrediction {
 }
 
 // Feature 1: Contrarian Signal
+// Analyst Consensus (cross-platform comparison)
+export interface AnalystConsensus {
+  asset_name: string
+  asset_code: string
+  avg_target_price: number | null
+  median_target_price: number | null
+  max_target_price: number | null
+  min_target_price: number | null
+  firm_count: number
+  buy_count: number
+  sell_count: number
+  hold_count: number
+  recommendations: {
+    firm_name: string
+    recommendation: string
+    target_price: number | null
+    published_at: string | null
+  }[]
+}
+
 export interface ContrarianSignal {
   asset_name: string
   asset_code: string

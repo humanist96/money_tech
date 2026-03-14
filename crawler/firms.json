@@ -1,0 +1,19 @@
+{
+  "firms": [
+    {"name": "삼성증권", "code": "samsung"},
+    {"name": "미래에셋증권", "code": "mirae"},
+    {"name": "NH투자증권", "code": "nh"},
+    {"name": "KB증권", "code": "kb"},
+    {"name": "한국투자증권", "code": "koreainvest"},
+    {"name": "신한투자증권", "code": "shinhan"},
+    {"name": "하나증권", "code": "hana"},
+    {"name": "키움증권", "code": "kiwoom"},
+    {"name": "대신증권", "code": "daishin"},
+    {"name": "메리츠증권", "code": "meritz"},
+    {"name": "IBK투자증권", "code": "ibk"},
+    {"name": "유안타증권", "code": "yuanta"},
+    {"name": "한화투자증권", "code": "hanwha"},
+    {"name": "DB금융투자", "code": "db"},
+    {"name": "교보증권", "code": "kyobo"}
+  ]
+}

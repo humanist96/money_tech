@@ -88,10 +88,10 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
             </div>
             <div>
               <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
-                나만의 유튜버 포트폴리오
+                나만의 크리에이터 포트폴리오
               </h3>
               <p className="text-[10px] text-th-dim">
-                신뢰하는 유튜버를 선택하면 맞춤형 종합 피드를 제공합니다 (최대 10명)
+                신뢰하는 크리에이터를 선택하면 맞춤형 종합 피드를 제공합니다 (최대 10명)
               </p>
             </div>
           </div>
@@ -99,7 +99,7 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
             onClick={() => setShowSelector(!showSelector)}
             className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#7c6cf0]/10 text-[#7c6cf0] hover:bg-[#7c6cf0]/20 transition"
           >
-            {showSelector ? '닫기' : '유튜버 선택'}
+            {showSelector ? '닫기' : '크리에이터 선택'}
           </button>
         </div>
 
@@ -184,7 +184,7 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
       {/* Portfolio Data */}
       {selectedIds.length === 0 && (
         <div className="glass-card-elevated rounded-2xl p-8 text-center">
-          <p className="text-th-dim text-sm">유튜버를 선택하면 종합 대시보드가 표시됩니다.</p>
+          <p className="text-th-dim text-sm">크리에이터를 선택하면 종합 대시보드가 표시됩니다.</p>
         </div>
       )}
 
@@ -236,7 +236,7 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
               <div className="px-6 py-3 border-b border-th-border/50 flex items-center gap-2">
                 <span className="text-sm">&#x26A0;&#xFE0F;</span>
                 <h4 className="text-sm font-bold text-[#ffb84d]" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  내 유튜버 간 의견 충돌
+                  내 크리에이터 간 의견 충돌
                 </h4>
               </div>
               <div className="p-4 space-y-2">
@@ -263,7 +263,7 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
             <div className="glass-card-elevated rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-th-border/50">
                 <h4 className="text-sm font-bold text-th-primary" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  내 유튜버 최신 예측
+                  내 크리에이터 최신 예측
                 </h4>
               </div>
               <div className="divide-y divide-th-border/25 max-h-[400px] overflow-y-auto">

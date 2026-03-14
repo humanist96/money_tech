@@ -85,7 +85,7 @@ export function ConsensusClient({ consensus, predictorCount }: Props) {
 
       {/* Info */}
       <div className="bg-[#22c997]/10 border border-[#22c997]/20 rounded-lg px-4 py-3 text-sm text-[#22c997]">
-        종목별로 여러 유튜버의 감성(긍정/부정/중립)과 예측(매수/매도/보유)을 집계합니다.
+        종목별로 여러 크리에이터의 감성(긍정/부정/중립)과 예측(매수/매도/보유)을 집계합니다.
         각 카드를 클릭하면 <strong>근거가 된 원본 영상</strong>을 채널별로 확인할 수 있습니다.
       </div>
 

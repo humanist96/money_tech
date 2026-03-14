@@ -8,6 +8,7 @@ import type {
   ContrarianSignal, BacktestResult, BacktestTrade,
   HiddenGemChannel, RiskScore, WeeklyReportItem,
   ConflictingAsset, MarketSentimentGauge, ConsensusTimelineEntry,
+  CrowdSentiment, AnalystConsensus,
 } from './types'
 
 export async function getChannels(category?: string, platform?: string): Promise<Channel[]> {
@@ -33,7 +34,7 @@ export async function getChannelById(id: string): Promise<Channel | null> {
 export async function getRecentVideos(limit = 20): Promise<VideoWithChannel[]> {
   const sql = getDb()
   const rows = await sql`
-    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url) AS channels
+    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url, 'telegram_username', c.telegram_username) AS channels
     FROM videos v
     JOIN channels c ON v.channel_id = c.id
     ORDER BY v.published_at DESC NULLS LAST
@@ -45,7 +46,7 @@ export async function getRecentVideos(limit = 20): Promise<VideoWithChannel[]> {
 export async function getVideosByChannelId(channelId: string, limit = 50): Promise<VideoWithChannel[]> {
   const sql = getDb()
   const rows = await sql`
-    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url) AS channels
+    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url, 'telegram_username', c.telegram_username) AS channels
     FROM videos v
     JOIN channels c ON v.channel_id = c.id
     WHERE v.channel_id = ${channelId}
@@ -1325,9 +1326,9 @@ export async function getMarketSentimentGauge(): Promise<MarketSentimentGauge> {
     }))
 
   const warning = overallScore >= 80
-    ? `유튜브 탐욕지수 ${Math.round(overallScore)} - 과열 주의`
+    ? `탐욕지수 ${Math.round(overallScore)} - 과열 주의`
     : overallScore <= 20
-      ? `유튜브 공포지수 ${Math.round(overallScore)} - 역발상 매수 시점?`
+      ? `공포지수 ${Math.round(overallScore)} - 역발상 매수 시점?`
       : null
 
   return {
@@ -1361,5 +1362,104 @@ export async function getAllChannelSpecialties(): Promise<Map<string, ChannelSpe
     map.set(r.channel_id, list)
   }
   return map
+}
+
+// ============================================================
+// Crowd Sentiment (Naver Discussion Board)
+// ============================================================
+
+export async function getCrowdSentiment(stockCode: string, days: number = 7): Promise<CrowdSentiment[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT * FROM crowd_sentiment
+    WHERE stock_code = ${stockCode}
+    AND period_start >= NOW() - (${days} || ' days')::interval
+    ORDER BY period_start DESC
+  `
+  return rows as unknown as CrowdSentiment[]
+}
+
+export async function getCrowdSentimentLatest(limit: number = 20): Promise<CrowdSentiment[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT DISTINCT ON (stock_code) *
+    FROM crowd_sentiment
+    ORDER BY stock_code, period_start DESC
+    LIMIT ${limit}
+  `
+  return rows as unknown as CrowdSentiment[]
+}
+
+export async function getCrowdSentimentTrend(stockCode: string, days: number = 30): Promise<CrowdSentiment[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT * FROM crowd_sentiment
+    WHERE stock_code = ${stockCode}
+    AND period_start >= NOW() - (${days} || ' days')::interval
+    ORDER BY period_start ASC
+  `
+  return rows as unknown as CrowdSentiment[]
+}
+
+// ============================================================
+// Analyst Consensus
+// ============================================================
+
+export async function getAnalystConsensus(assetCode: string): Promise<AnalystConsensus | null> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT
+      p.target_price,
+      p.prediction_type,
+      v.firm_name,
+      p.predicted_at
+    FROM predictions p
+    JOIN videos v ON p.video_id = v.id
+    JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+    WHERE ma.asset_code = ${assetCode}
+    AND v.platform = 'analyst_report'
+    AND p.predicted_at >= NOW() - INTERVAL '90 days'
+    ORDER BY p.predicted_at DESC
+  ` as any[]
+
+  if (rows.length === 0) return null
+
+  const targetPrices = rows
+    .map((r: any) => r.target_price)
+    .filter((p: any): p is number => p != null && p > 0)
+
+  const recommendations = rows.map((r: any) => ({
+    firm_name: r.firm_name || '',
+    recommendation: r.prediction_type || '',
+    target_price: r.target_price,
+    published_at: r.predicted_at,
+  }))
+
+  return {
+    asset_name: '',
+    asset_code: assetCode,
+    avg_target_price: targetPrices.length > 0 ? targetPrices.reduce((a: number, b: number) => a + b, 0) / targetPrices.length : null,
+    median_target_price: targetPrices.length > 0 ? targetPrices.sort((a: number, b: number) => a - b)[Math.floor(targetPrices.length / 2)] : null,
+    max_target_price: targetPrices.length > 0 ? Math.max(...targetPrices) : null,
+    min_target_price: targetPrices.length > 0 ? Math.min(...targetPrices) : null,
+    firm_count: new Set(rows.map((r: any) => r.firm_name)).size,
+    buy_count: rows.filter((r: any) => r.prediction_type === 'buy').length,
+    sell_count: rows.filter((r: any) => r.prediction_type === 'sell').length,
+    hold_count: rows.filter((r: any) => r.prediction_type === 'hold').length,
+    recommendations,
+  }
+}
+
+export async function getAnalystReports(limit: number = 20): Promise<VideoWithChannel[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url, 'telegram_username', c.telegram_username) AS channels
+    FROM videos v
+    JOIN channels c ON v.channel_id = c.id
+    WHERE v.platform = 'analyst_report'
+    ORDER BY v.published_at DESC NULLS LAST
+    LIMIT ${limit}
+  `
+  return rows as unknown as VideoWithChannel[]
 }
 

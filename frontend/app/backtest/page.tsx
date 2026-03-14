@@ -30,11 +30,11 @@ export default async function BacktestPage() {
                 </svg>
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
-                유튜버 백테스팅
+                크리에이터 백테스팅
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-lg">
-              특정 유튜버의 과거 추천을 그대로 따랐을 때의 가상 수익률을 계산합니다.
+              특정 크리에이터의 과거 추천을 그대로 따랐을 때의 가상 수익률을 계산합니다.
               초기 투자금 1,000만원 기준으로 시뮬레이션합니다.
             </p>
           </div>

@@ -29,7 +29,7 @@ export default async function ChannelsPage() {
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-md">
-              재테크 유튜브 채널과 네이버 블로거를 검색하고 다양한 지표로 비교하세요
+              재테크 크리에이터를 검색하고 다양한 지표로 비교하세요
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-th-dim">

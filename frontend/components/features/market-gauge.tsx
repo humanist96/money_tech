@@ -85,7 +85,7 @@ function FearGreedGauge({ score, size = 240 }: { score: number; size?: number })
       </svg>
 
       <span className="text-lg font-bold mt-1" style={{ color }}>{label}</span>
-      <span className="text-xs text-th-dim mt-0.5">유튜브 재테크 감성 지수</span>
+      <span className="text-xs text-th-dim mt-0.5">재테크 콘텐츠 감성 지수</span>
     </div>
   )
 }
@@ -131,7 +131,7 @@ export function MarketGaugePanel({ data }: MarketGaugeProps) {
             <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
               시장 온도계
             </h3>
-            <p className="text-[10px] text-th-dim">유튜브 재테크 생태계 종합 감성 지수</p>
+            <p className="text-[10px] text-th-dim">재테크 콘텐츠 생태계 종합 감성 지수</p>
           </div>
         </div>
         <span className="text-[10px] text-th-dim">최근 7일</span>

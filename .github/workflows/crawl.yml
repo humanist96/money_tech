@@ -54,11 +54,80 @@ jobs:
           cd crawler
           python blog_crawler.py
 
+  telegram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      - name: Run Telegram crawler
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          TELEGRAM_SESSION_STRING: ${{ secrets.TELEGRAM_SESSION_STRING }}
+        run: |
+          cd crawler
+          python telegram_crawler.py
+
+  analyst-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      - name: Run Analyst Report crawler
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd crawler
+          python report_crawler.py
+
+  discussion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      - name: Run Discussion crawler
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd crawler
+          python discussion_crawler.py
+
   evaluate:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [youtube, blog]
-    if: always() && (needs.youtube.result == 'success' || needs.blog.result == 'success')
+    needs: [youtube, blog, telegram, analyst-report, discussion]
+    if: always() && (needs.youtube.result == 'success' || needs.blog.result == 'success' || needs.telegram.result == 'success' || needs.analyst-report.result == 'success')
 
     steps:
       - uses: actions/checkout@v4

@@ -705,6 +705,13 @@
 .nav-link:hover::after {
   width: 16px;
 }
+.nav-link-active {
+  color: var(--th-accent);
+  background: var(--th-bg-hover);
+}
+.nav-link-active::after {
+  width: 16px;
+}
 
 /* ═══════════════════════════════════════════════
    PREDICTION TYPE BADGES (consistent across themes)

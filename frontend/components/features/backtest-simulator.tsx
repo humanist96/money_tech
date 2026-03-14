@@ -239,9 +239,9 @@ export function BacktestSimulator({ channels }: BacktestSimulatorProps) {
           </div>
           <div>
             <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
-              유튜버 백테스팅 시뮬레이터
+              크리에이터 백테스팅 시뮬레이터
             </h3>
-            <p className="text-[10px] text-th-dim">이 유튜버 말만 들었다면 수익률은?</p>
+            <p className="text-[10px] text-th-dim">이 크리에이터 말만 들었다면 수익률은?</p>
           </div>
         </div>
       </div>
@@ -254,7 +254,7 @@ export function BacktestSimulator({ channels }: BacktestSimulatorProps) {
             onChange={(e) => { setSelectedChannel(e.target.value); setResult(null) }}
             className="flex-1 min-w-[200px] bg-th-tertiary border border-th-border rounded-xl px-4 py-2.5 text-sm text-th-primary focus:outline-none focus:border-[#7c6cf0]/50"
           >
-            <option value="">유튜버를 선택하세요</option>
+            <option value="">크리에이터를 선택하세요</option>
             {channels.map((ch) => (
               <option key={ch.id} value={ch.id}>{ch.name}</option>
             ))}

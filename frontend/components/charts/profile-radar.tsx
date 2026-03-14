@@ -32,7 +32,7 @@ export function ProfileRadar({ channelName, data, channels }: ProfileRadarProps)
   if (profiles.length === 0) {
     return (
       <div className="glass-card-elevated rounded-2xl p-6">
-        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>유튜버 성향 프로파일</h3>
+        <h3 className="font-bold text-th-primary text-[15px] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>크리에이터 성향 프로파일</h3>
         <p className="text-sm text-th-dim">프로파일 데이터가 없습니다.</p>
       </div>
     )
@@ -53,7 +53,7 @@ export function ProfileRadar({ channelName, data, channels }: ProfileRadarProps)
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-th-border/50">
         <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
-          {profiles.length > 1 ? "유튜버 성향 비교" : "유튜버 성향 프로파일"}
+          {profiles.length > 1 ? "크리에이터 성향 비교" : "크리에이터 성향 프로파일"}
         </h3>
       </div>
       <div className="p-4">

@@ -24,12 +24,12 @@ export default async function PortfolioPage() {
                 </svg>
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
-                나만의 유튜버 포트폴리오
+                나만의 크리에이터 포트폴리오
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-lg">
-              신뢰하는 유튜버를 선택하면 종합 적중률, 의견 충돌 알림, 최신 예측을 맞춤형으로 제공합니다.
-              선택한 유튜버는 브라우저에 저장됩니다.
+              신뢰하는 크리에이터를 선택하면 종합 적중률, 의견 충돌 알림, 최신 예측을 맞춤형으로 제공합니다.
+              선택한 크리에이터는 브라우저에 저장됩니다.
             </p>
           </div>
         </div>
