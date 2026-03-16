@@ -147,6 +147,10 @@
     {
       "name": "리치캣 배당부자 직장인",
       "channel_id": "UCVa8fHYHFbgwyKHQDoJfDXw"
+    },
+    {
+      "name": "용사부",
+      "channel_id": "UC-jgYMsPz6NuDT9j9dmNODg"
     }
   ],
   "coin": [
@@ -189,6 +193,38 @@
     {
       "name": "Momo Trades",
       "channel_id": "UCbIqfEX5t9oD5_V2GeSrnBw"
+    },
+    {
+      "name": "오늘의대박코인",
+      "channel_id": "UCX5NEnCdESXjIACXyhkt_Hg"
+    },
+    {
+      "name": "해피카펠라-비트코인 LIVE",
+      "channel_id": "UCRuNjeWgdNsWXtlFskRfwmg"
+    },
+    {
+      "name": "지디티 비트코인-8년차 21년코인졸업생Gdt",
+      "channel_id": "UCnTZT0MkNOi6RUkCRMSXDjQ"
+    },
+    {
+      "name": "비트코인 일루미나티",
+      "channel_id": "UC3vBufn2MqRFyHk297at70w"
+    },
+    {
+      "name": "디파이 농부 조선생 | Professor Jo",
+      "channel_id": "UC7H3LGAlRWd3_fm5yOS_piw"
+    },
+    {
+      "name": "코인아빠의 시장경제",
+      "channel_id": "UCfV1HKaKAXwHAOR7v8Ct8BA"
+    },
+    {
+      "name": "Scenario X┃크립토 시나리오",
+      "channel_id": "UCq4kdfAVLBJgBGBPmJf9_UQ"
+    },
+    {
+      "name": "TPark Crypto",
+      "channel_id": "UCb99eolnssbbeEBjcaw9lIw"
     }
   ],
   "real_estate": [
@@ -239,6 +275,26 @@
     {
       "name": "집공략",
       "channel_id": "UC8L4UAyMMBqK7Ulf3FgkdQA"
+    },
+    {
+      "name": "부동산 비밀노트",
+      "channel_id": "UCzL2yITVm0mjBSOALSWW_AA"
+    },
+    {
+      "name": "이웃사람 《부동산TV》",
+      "channel_id": "UCARu95WiKt85wMVvJ_tx7tw"
+    },
+    {
+      "name": "경매와 상가투자 | 부가남",
+      "channel_id": "UCmDBkGyVLKeNndxx6QarZqw"
+    },
+    {
+      "name": "유이사의 부동산스터디",
+      "channel_id": "UCSYLLzRsqZQOMQrHDc95aSQ"
+    },
+    {
+      "name": "경매광장 - 경매물건 분석채널",
+      "channel_id": "UCHMcvkAQhWL6ylfUcnM-IBw"
     }
   ],
   "economy": [
