@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-14T11:01:42.922Z",
+  "lastUpdated": "2026-03-20T04:53:00.544Z",
   "activeFeatures": [
     "frontend",
     "channels",
@@ -38,7 +38,9 @@
     "backtest-simulator.tsx",
     "daily-briefing.tsx",
     "risk-scoreboard.tsx",
-    "consensus-timeline.tsx"
+    "consensus-timeline.tsx",
+    "queries",
+    "enhanced-buzz-alert.tsx"
   ],
   "primaryFeature": "frontend",
   "features": {
@@ -52,7 +54,7 @@
       "phaseNumber": 3,
       "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/lib/queries.ts",
       "timestamps": {
-        "lastUpdated": "2026-03-14T10:59:57.049Z"
+        "lastUpdated": "2026-03-20T04:47:04.537Z"
       }
     },
     "channels": {
@@ -90,9 +92,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-07T06:10:23.448Z",
-        "lastUpdated": "2026-03-14T11:00:03.829Z"
+        "lastUpdated": "2026-03-20T04:47:09.585Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/dashboard/asset-timeline.tsx"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/dashboard/dashboard-content.tsx"
     },
     "charts": {
       "phase": "do",
@@ -155,9 +157,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-07T06:28:05.600Z",
-        "lastUpdated": "2026-03-11T06:16:18.337Z"
+        "lastUpdated": "2026-03-20T04:53:00.544Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/discover_blog.py"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/discover.py"
     },
     "channel-profiles": {
       "phase": "do",
@@ -522,6 +524,32 @@
         "lastUpdated": "2026-03-14T11:01:39.409Z"
       },
       "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/features/consensus-timeline.tsx"
+    },
+    "queries": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-20T04:42:26.608Z",
+        "lastUpdated": "2026-03-20T04:47:00.506Z"
+      },
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/lib/queries/index.ts"
+    },
+    "enhanced-buzz-alert.tsx": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-20T04:43:43.961Z",
+        "lastUpdated": "2026-03-20T04:43:43.961Z"
+      },
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/features/enhanced-buzz-alert.tsx"
     }
   },
   "pipeline": {
@@ -532,7 +560,7 @@
   "session": {
     "startedAt": "2026-03-07T06:05:25.008Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-14T11:01:42.922Z"
+    "lastActivity": "2026-03-20T04:53:00.544Z"
   },
   "history": [
     {
@@ -4870,6 +4898,474 @@
     {
       "timestamp": "2026-03-14T11:01:42.922Z",
       "feature": "compare",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:26.608Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:28.170Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:33.375Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:38.204Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:38.536Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:46.089Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:50.288Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:53.856Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:58.093Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:42:59.052Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:02.379Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:03.784Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:08.638Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:09.174Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:15.264Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:20.247Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:22.426Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:24.136Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:27.428Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:29.803Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:31.261Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:35.000Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:39.642Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:43.961Z",
+      "feature": "enhanced-buzz-alert.tsx",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:48.186Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:49.313Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:54.293Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:43:54.941Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:01.496Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:05.380Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:05.415Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:10.303Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:21.484Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:22.604Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:44:27.649Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:46:44.060Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:46:49.377Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:46:55.388Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:46:58.981Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:46:59.086Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:00.106Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:00.204Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:00.299Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:00.398Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:00.506Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:04.537Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:05.553Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:09.585Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:13.916Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:24.881Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:47:31.687Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:48:04.367Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:48:59.133Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:50:06.790Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:50:41.832Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:50:51.516Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:50:56.659Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:07.219Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:19.153Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:23.586Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:27.040Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:36.447Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:40.202Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:43.301Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:50.179Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:53.954Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:51:59.057Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:03.132Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:07.431Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:15.132Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:18.816Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:23.327Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:26.892Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:30.660Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:36.772Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:40.391Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:52:56.762Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T04:53:00.544Z",
+      "feature": "crawler",
       "phase": "do",
       "action": "updated"
     }

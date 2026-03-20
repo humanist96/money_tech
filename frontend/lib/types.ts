@@ -305,7 +305,20 @@ export interface HitRateLeaderboardItem {
     prediction_type: string
     is_accurate: boolean | null
     asset_name: string
+    direction_score: number | null
   }>
+}
+
+// Channel Prediction Profile (dashboard)
+export interface PredictionProfile {
+  channel_id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  category: string
+  buy_count: number
+  sell_count: number
+  hold_count: number
+  total: number
 }
 
 // Asset YouTuber Timeline
@@ -318,6 +331,7 @@ export interface AssetTimelineEntry {
   prediction_type: string | null
   video_title: string
   youtube_video_id: string
+  blog_post_url: string | null
   published_at: string
 }
 

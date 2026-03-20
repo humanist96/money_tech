@@ -1,20 +1,10 @@
 "use client"
 
 import Link from "next/link"
-
-interface ChannelPredictionData {
-  channel_id: string
-  channel_name: string
-  channel_thumbnail: string | null
-  category: string
-  buy_count: number
-  sell_count: number
-  hold_count: number
-  total: number
-}
+import type { PredictionProfile } from "@/lib/types"
 
 interface ChannelPredictionProfileProps {
-  data: ChannelPredictionData[]
+  data: PredictionProfile[]
   title?: string
 }
 

@@ -1,7 +1,10 @@
 "use client"
 
-import type { Channel } from "@/lib/types"
-import type { AssetConsensus, PredictionFeedItem, TopAssetSentiment, MarketSentimentGauge } from "@/lib/types"
+import type {
+  Channel, AssetConsensus, PredictionFeedItem, TopAssetSentiment,
+  MarketSentimentGauge, VideoWithChannel, MentionedAsset, AssetMention, BuzzAlert,
+  PredictionProfile, ContrarianSignal,
+} from "@/lib/types"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { VideoFeed } from "@/components/dashboard/video-feed"
 import { TopMentionsChart } from "@/components/dashboard/top-mentions-chart"
@@ -17,18 +20,18 @@ import { DashboardLayout, type DashboardSection } from "@/components/dashboard/d
 
 interface DashboardContentProps {
   channels: Channel[]
-  videos: any[]
+  videos: (VideoWithChannel & { mentioned_assets?: MentionedAsset[] })[]
   totalVideos: number
   todayVideos: number
   topCategory: string
   consensus: AssetConsensus[]
-  assetMentions: any[]
+  assetMentions: AssetMention[]
   predictions: PredictionFeedItem[]
   assetSentiments: TopAssetSentiment[]
-  buzzAlerts: any[]
-  predictionProfiles: any[]
+  buzzAlerts: BuzzAlert[]
+  predictionProfiles: PredictionProfile[]
   marketGauge: MarketSentimentGauge
-  contrarianSignals: any[]
+  contrarianSignals: ContrarianSignal[]
 }
 
 export function DashboardContent({

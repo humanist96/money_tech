@@ -5,6 +5,7 @@ from datetime import datetime
 
 import psycopg2
 
+from logger import logger
 from price_collector import get_stock_price, get_coin_price
 
 
@@ -111,7 +112,7 @@ def evaluate_predictions(conn) -> dict:
 
         conn.commit()
 
-    print(f"  Evaluated predictions: {results}")
+    logger.info("Evaluated predictions: %s", results)
     return results
 
 
@@ -151,7 +152,7 @@ def evaluate_target_price_accuracy(conn) -> dict:
             results["evaluated"] = len(deviations)
             results["avg_deviation"] = round(sum(deviations) / len(deviations), 4)
 
-    print(f"  Target price accuracy: {results}")
+    logger.info("Target price accuracy: %s", results)
     return results
 
 
@@ -182,7 +183,7 @@ def update_channel_hit_rates(conn) -> int:
                 updated += 1
 
         conn.commit()
-    print(f"  Updated hit rates for {updated} channels (direction-based)")
+    logger.info("Updated hit rates for %d channels (direction-based)", updated)
     return updated
 
 

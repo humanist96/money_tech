@@ -9,17 +9,13 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
+from db import get_conn, close_pool
+from logger import logger
 from naver_research import fetch_multiple_pages, AnalystReport
 from report_prediction_detector import map_recommendation, determine_confidence
 from asset_dictionary import find_assets_in_text, analyze_sentiment, generate_simple_summary
 
 load_dotenv()
-
-DATABASE_URL = os.environ["DATABASE_URL"]
-
-
-def get_conn():
-    return psycopg2.connect(DATABASE_URL)
 
 
 def load_firms() -> list[dict]:
@@ -69,13 +65,13 @@ def upsert_report(cur, report: AnalystReport, channel_uuid: str) -> bool:
     title = f"[{report.firm_name}] {report.title}"
 
     # Build description with recommendation and target price
-    desc_parts = [f"종목: {report.asset_name} ({report.asset_code})"]
+    desc_parts = [f"\uc885\ubaa9: {report.asset_name} ({report.asset_code})"]
     if report.recommendation:
-        desc_parts.append(f"투자의견: {report.recommendation}")
+        desc_parts.append(f"\ud22c\uc790\uc758\uacac: {report.recommendation}")
     if report.target_price:
-        desc_parts.append(f"목표가: {report.target_price:,.0f}원")
+        desc_parts.append(f"\ubaa9\ud45c\uac00: {report.target_price:,.0f}\uc6d0")
     if report.previous_target:
-        desc_parts.append(f"이전목표가: {report.previous_target:,.0f}원")
+        desc_parts.append(f"\uc774\uc804\ubaa9\ud45c\uac00: {report.previous_target:,.0f}\uc6d0")
     description = " | ".join(desc_parts)
 
     if existing:
@@ -179,9 +175,9 @@ def process_report_prediction(cur, conn, report: AnalystReport, channel_uuid: st
         sentiment = "positive" if pred_type == "buy" else "negative" if pred_type == "sell" else "neutral"
         summary_parts = [f"{report.firm_name}: {report.asset_name}"]
         if report.recommendation:
-            summary_parts.append(f"의견={report.recommendation}")
+            summary_parts.append(f"\uc758\uacac={report.recommendation}")
         if report.target_price:
-            summary_parts.append(f"목표가={report.target_price:,.0f}원")
+            summary_parts.append(f"\ubaa9\ud45c\uac00={report.target_price:,.0f}\uc6d0")
         summary = " | ".join(summary_parts)
 
         cur.execute(
@@ -192,11 +188,11 @@ def process_report_prediction(cur, conn, report: AnalystReport, channel_uuid: st
         conn.commit()
 
         if pred_type:
-            tp_str = f", 목표가={report.target_price:,.0f}원" if report.target_price else ""
-            print(f"    Prediction: {pred_type}{tp_str}")
+            tp_str = f", \ubaa9\ud45c\uac00={report.target_price:,.0f}\uc6d0" if report.target_price else ""
+            logger.info("Prediction: %s%s", pred_type, tp_str)
 
     except Exception as e:
-        print(f"    Warning: Report prediction failed: {e}")
+        logger.error("Report prediction failed: %s", e, exc_info=True)
         conn.rollback()
 
 
@@ -208,8 +204,7 @@ def crawl_reports(max_pages: int = 3) -> None:
     total_new = 0
     total_updated = 0
 
-    conn = get_conn()
-    try:
+    with get_conn() as conn:
         with conn.cursor() as cur:
             # Ensure firm channels exist
             firm_uuids: dict[str, str] = {}
@@ -217,12 +212,12 @@ def crawl_reports(max_pages: int = 3) -> None:
                 uuid = upsert_firm_channel(cur, firm)
                 firm_uuids[firm["name"]] = uuid
             conn.commit()
-            print(f"Registered {len(firm_uuids)} securities firms")
+            logger.info("Registered %d securities firms", len(firm_uuids))
 
             # Fetch reports from Naver Research
-            print(f"\n=== Fetching Analyst Reports (max {max_pages} pages) ===")
+            logger.info("=== Fetching Analyst Reports (max %d pages) ===", max_pages)
             reports = fetch_multiple_pages(max_pages)
-            print(f"Total reports fetched: {len(reports)}")
+            logger.info("Total reports fetched: %d", len(reports))
 
             for report in reports:
                 # Find or create channel for this firm
@@ -239,8 +234,8 @@ def crawl_reports(max_pages: int = 3) -> None:
 
                 if is_new:
                     total_new += 1
-                    tp_str = f" 목표가={report.target_price:,.0f}" if report.target_price else ""
-                    print(f"  NEW: [{report.firm_name}] {report.asset_name} {report.recommendation or ''}{tp_str}")
+                    tp_str = f" \ubaa9\ud45c\uac00={report.target_price:,.0f}" if report.target_price else ""
+                    logger.info("NEW: [%s] %s %s%s", report.firm_name, report.asset_name, report.recommendation or "", tp_str)
 
                     # Store structured prediction
                     process_report_prediction(cur, conn, report, channel_uuid)
@@ -262,12 +257,11 @@ def crawl_reports(max_pages: int = 3) -> None:
                 )
             conn.commit()
 
-    finally:
-        conn.close()
+    close_pool()
 
-    print(f"\n=== Report Crawl complete ===")
-    print(f"New reports: {total_new}")
-    print(f"Updated reports: {total_updated}")
+    logger.info("=== Report Crawl complete ===")
+    logger.info("New reports: %d", total_new)
+    logger.info("Updated reports: %d", total_updated)
 
 
 if __name__ == "__main__":

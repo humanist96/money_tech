@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 
 from discover_youtube import discover_youtube_channels
 from discover_blog import discover_blog_channels
+from logger import logger
 
 load_dotenv()
 
@@ -83,7 +84,7 @@ def auto_register_youtube(candidates: list[dict], dry_run: bool = False) -> int:
         })
         existing_ids.add(c["channel_id"])
         added += 1
-        print(f"  Auto-registered YouTube: {c['name']} ({category}, score={c['score']['total']})")
+        logger.info(f"  Auto-registered YouTube: {c['name']} ({category}, score={c['score']['total']})")
 
     if added > 0:
         with open(CHANNELS_FILE, "w", encoding="utf-8") as f:
@@ -123,7 +124,7 @@ def auto_register_blog(candidates: list[dict], dry_run: bool = False) -> int:
         })
         existing_ids.add(c["blog_id"])
         added += 1
-        print(f"  Auto-registered Blog: {c['name']} ({category}, score={c['score']['total']})")
+        logger.info(f"  Auto-registered Blog: {c['name']} ({category}, score={c['score']['total']})")
 
     if added > 0:
         with open(BLOGGERS_FILE, "w", encoding="utf-8") as f:
@@ -143,7 +144,7 @@ def check_existing_health() -> dict:
         with open(CHANNELS_FILE, encoding="utf-8") as f:
             yt_data = json.load(f)
 
-        print("\n=== Checking YouTube channel health ===")
+        logger.info("\n=== Checking YouTube channel health ===")
         for category, channels in yt_data.items():
             for ch in channels:
                 stats = get_channel_stats(ch["channel_id"])
@@ -179,9 +180,9 @@ def check_existing_health() -> dict:
                             "category": category,
                             "reason": "No uploads in 60 days",
                         })
-                        print(f"  INACTIVE: {ch['name']} ({category})")
+                        logger.info(f"  INACTIVE: {ch['name']} ({category})")
     except Exception as e:
-        print(f"  YouTube health check error: {e}")
+        logger.error("YouTube health check error: %s", e, exc_info=True)
 
     # Check Blog health
     try:
@@ -189,7 +190,7 @@ def check_existing_health() -> dict:
         with open(BLOGGERS_FILE, encoding="utf-8") as f:
             blog_data = json.load(f)
 
-        print("\n=== Checking Blog health ===")
+        logger.info("\n=== Checking Blog health ===")
         for category, bloggers in blog_data.items():
             for b in bloggers:
                 rss = get_blog_rss_info(b["blog_id"])
@@ -200,7 +201,7 @@ def check_existing_health() -> dict:
                         "category": category,
                         "reason": "RSS unavailable or empty",
                     })
-                    print(f"  INACTIVE: {b['name']} ({category}) - no RSS")
+                    logger.info(f"  INACTIVE: {b['name']} ({category}) - no RSS")
                     continue
 
                 cutoff = datetime.now(timezone.utc) - timedelta(days=60)
@@ -217,9 +218,9 @@ def check_existing_health() -> dict:
                         "category": category,
                         "reason": "No posts in 60 days",
                     })
-                    print(f"  INACTIVE: {b['name']} ({category})")
+                    logger.info(f"  INACTIVE: {b['name']} ({category})")
     except Exception as e:
-        print(f"  Blog health check error: {e}")
+        logger.error("Blog health check error: %s", e, exc_info=True)
 
     return report
 
@@ -232,7 +233,7 @@ def main():
     skip_health = "--skip-health" in args
 
     if dry_run:
-        print("=== DRY RUN MODE - no files will be modified ===\n")
+        logger.info("=== DRY RUN MODE - no files will be modified ===\n")
 
     now = datetime.now(timezone.utc).isoformat()
     report = {
@@ -247,66 +248,66 @@ def main():
     # YouTube discovery
     if not blog_only:
         existing_yt = load_existing_youtube_ids()
-        print(f"Existing YouTube channels: {len(existing_yt)}")
+        logger.info(f"Existing YouTube channels: {len(existing_yt)}")
 
         yt_candidates = discover_youtube_channels(existing_yt)
         qualified = [c for c in yt_candidates if c["score"]["total"] >= CANDIDATE_THRESHOLD]
         report["youtube_candidates"] = qualified
 
-        print(f"\n=== YouTube Results ===")
-        print(f"Total candidates found: {len(yt_candidates)}")
-        print(f"Qualified (score>={CANDIDATE_THRESHOLD}): {len(qualified)}")
-        print(f"Auto-register (score>={AUTO_REGISTER_THRESHOLD}): "
+        logger.info(f"\n=== YouTube Results ===")
+        logger.info(f"Total candidates found: {len(yt_candidates)}")
+        logger.info(f"Qualified (score>={CANDIDATE_THRESHOLD}): {len(qualified)}")
+        logger.info(f"Auto-register (score>={AUTO_REGISTER_THRESHOLD}): "
               f"{sum(1 for c in qualified if c['score']['total'] >= AUTO_REGISTER_THRESHOLD)}")
 
         added = auto_register_youtube(qualified, dry_run=dry_run)
         report["youtube_auto_registered"] = added
         if added:
-            print(f"  -> Auto-registered {added} new YouTube channels")
+            logger.info(f"  -> Auto-registered {added} new YouTube channels")
 
     # Blog discovery
     if not youtube_only:
         existing_blog = load_existing_blog_ids()
-        print(f"\nExisting bloggers: {len(existing_blog)}")
+        logger.info(f"\nExisting bloggers: {len(existing_blog)}")
 
         blog_candidates = discover_blog_channels(existing_blog)
         qualified = [c for c in blog_candidates if c["score"]["total"] >= CANDIDATE_THRESHOLD]
         report["blog_candidates"] = qualified
 
-        print(f"\n=== Blog Results ===")
-        print(f"Total candidates found: {len(blog_candidates)}")
-        print(f"Qualified (score>={CANDIDATE_THRESHOLD}): {len(qualified)}")
-        print(f"Auto-register (score>={AUTO_REGISTER_THRESHOLD}): "
+        logger.info(f"\n=== Blog Results ===")
+        logger.info(f"Total candidates found: {len(blog_candidates)}")
+        logger.info(f"Qualified (score>={CANDIDATE_THRESHOLD}): {len(qualified)}")
+        logger.info(f"Auto-register (score>={AUTO_REGISTER_THRESHOLD}): "
               f"{sum(1 for c in qualified if c['score']['total'] >= AUTO_REGISTER_THRESHOLD)}")
 
         added = auto_register_blog(qualified, dry_run=dry_run)
         report["blog_auto_registered"] = added
         if added:
-            print(f"  -> Auto-registered {added} new bloggers")
+            logger.info(f"  -> Auto-registered {added} new bloggers")
 
     # Health check
     if not skip_health:
         health = check_existing_health()
         report["health"] = health
         if health.get("youtube_inactive"):
-            print(f"\n  YouTube inactive: {len(health['youtube_inactive'])} channels")
+            logger.info(f"\n  YouTube inactive: {len(health['youtube_inactive'])} channels")
         if health.get("blog_inactive"):
-            print(f"  Blog inactive: {len(health['blog_inactive'])} bloggers")
+            logger.info(f"  Blog inactive: {len(health['blog_inactive'])} bloggers")
 
     # Save candidates report
     with open(CANDIDATES_FILE, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2, default=str)
         f.write("\n")
-    print(f"\nCandidates report saved to {CANDIDATES_FILE}")
+    logger.info(f"\nCandidates report saved to {CANDIDATES_FILE}")
 
     # Summary
-    print(f"\n{'='*50}")
-    print(f"DISCOVERY COMPLETE")
-    print(f"  YouTube auto-registered: {report['youtube_auto_registered']}")
-    print(f"  Blog auto-registered: {report['blog_auto_registered']}")
-    print(f"  YouTube candidates: {len(report['youtube_candidates'])}")
-    print(f"  Blog candidates: {len(report['blog_candidates'])}")
-    print(f"{'='*50}")
+    logger.info(f"\n{'='*50}")
+    logger.info(f"DISCOVERY COMPLETE")
+    logger.info(f"  YouTube auto-registered: {report['youtube_auto_registered']}")
+    logger.info(f"  Blog auto-registered: {report['blog_auto_registered']}")
+    logger.info(f"  YouTube candidates: {len(report['youtube_candidates'])}")
+    logger.info(f"  Blog candidates: {len(report['blog_candidates'])}")
+    logger.info(f"{'='*50}")
 
 
 if __name__ == "__main__":

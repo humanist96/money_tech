@@ -11,16 +11,12 @@ import psycopg2.extras
 from dotenv import load_dotenv
 
 from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
+from db import get_conn, close_pool
+from logger import logger
 from prediction_detector import detect_predictions
 from telegram_client import create_client, get_channel_messages, get_channel_info, TelegramMessage
 
 load_dotenv()
-
-DATABASE_URL = os.environ["DATABASE_URL"]
-
-
-def get_conn():
-    return psycopg2.connect(DATABASE_URL)
 
 
 def load_telegram_channels() -> dict[str, list[dict]]:
@@ -169,10 +165,10 @@ def process_telegram_nlp(cur, conn, msg: TelegramMessage, channel_uuid: str) -> 
                             ),
                         )
                 if preds:
-                    print(f"    Detected {len(preds)} predictions")
+                    logger.info("Detected %d predictions", len(preds))
 
             conn.commit()
-            print(f"    Found {len(found_assets)} assets mentioned")
+            logger.info("Found %d assets mentioned", len(found_assets))
 
         title = (msg.text or "").split("\n")[0][:100]
         summary = generate_simple_summary(title, found_assets, sentiment)
@@ -183,7 +179,7 @@ def process_telegram_nlp(cur, conn, msg: TelegramMessage, channel_uuid: str) -> 
         )
         conn.commit()
     except Exception as e:
-        print(f"    Warning: NLP analysis failed: {e}")
+        logger.error("NLP analysis failed: %s", e, exc_info=True)
         conn.rollback()
 
 
@@ -203,24 +199,23 @@ async def _crawl_telegram_async() -> None:
     client = create_client()
 
     if not client:
-        print("Failed to create Telegram client. Check env vars.")
+        logger.error("Failed to create Telegram client. Check env vars.")
         return
 
     total_new = 0
     total_updated = 0
 
-    conn = get_conn()
-    try:
+    with get_conn() as conn:
         async with client:
             with conn.cursor() as cur:
                 for category, channels in channels_config.items():
                     if not channels:
                         continue
-                    print(f"\n=== Telegram Category: {category} ({len(channels)} channels) ===")
+                    logger.info("=== Telegram Category: %s (%d channels) ===", category, len(channels))
 
                     for ch_config in channels:
                         username = ch_config["username"]
-                        print(f"\nProcessing channel: @{username}")
+                        logger.info("Processing channel: @%s", username)
 
                         # Fetch channel info
                         ch_info = await get_channel_info(client, username)
@@ -231,11 +226,11 @@ async def _crawl_telegram_async() -> None:
                         # Get backfill marker
                         min_id = get_max_message_id(cur, channel_uuid)
                         if min_id > 0:
-                            print(f"  Backfill: fetching messages after ID {min_id}")
+                            logger.info("Backfill: fetching messages after ID %d", min_id)
 
                         # Fetch messages
                         messages = await get_channel_messages(client, username, limit=50, min_id=min_id)
-                        print(f"  Messages: {len(messages)} fetched")
+                        logger.info("Messages: %d fetched", len(messages))
 
                         for msg in messages:
                             is_new = upsert_telegram_message(cur, msg, channel_uuid)
@@ -243,7 +238,7 @@ async def _crawl_telegram_async() -> None:
 
                             if is_new:
                                 total_new += 1
-                                print(f"    NEW: {msg.text[:60]}...")
+                                logger.info("NEW: %s...", msg.text[:60])
                                 process_telegram_nlp(cur, conn, msg, channel_uuid)
                             else:
                                 total_updated += 1
@@ -259,12 +254,11 @@ async def _crawl_telegram_async() -> None:
                         )
                         conn.commit()
 
-    finally:
-        conn.close()
+    close_pool()
 
-    print(f"\n=== Telegram Crawl complete ===")
-    print(f"New messages: {total_new}")
-    print(f"Updated messages: {total_updated}")
+    logger.info("=== Telegram Crawl complete ===")
+    logger.info("New messages: %d", total_new)
+    logger.info("Updated messages: %d", total_updated)
 
 
 def crawl_telegram() -> None:

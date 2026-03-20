@@ -10,16 +10,12 @@ import psycopg2.extras
 from dotenv import load_dotenv
 
 from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
+from db import get_conn, close_pool
+from logger import logger
 from naver_blog import fetch_rss_posts, fetch_blog_post_content, fetch_blog_profile_image
 from prediction_detector import detect_predictions
 
 load_dotenv()
-
-DATABASE_URL = os.environ["DATABASE_URL"]
-
-
-def get_conn():
-    return psycopg2.connect(DATABASE_URL)
 
 
 def load_bloggers() -> dict[str, list[dict]]:
@@ -155,10 +151,10 @@ def process_blog_post_nlp(cur, conn, post, channel_uuid: str) -> None:
                             ),
                         )
                 if preds:
-                    print(f"    Detected {len(preds)} predictions")
+                    logger.info("Detected %d predictions", len(preds))
 
             conn.commit()
-            print(f"    Found {len(found_assets)} assets mentioned")
+            logger.info("Found %d assets mentioned", len(found_assets))
 
         summary = generate_simple_summary(post.title, found_assets, sentiment)
         cur.execute(
@@ -168,7 +164,7 @@ def process_blog_post_nlp(cur, conn, post, channel_uuid: str) -> None:
         )
         conn.commit()
     except Exception as e:
-        print(f"    Warning: NLP analysis failed: {e}")
+        logger.error("NLP analysis failed: %s", e, exc_info=True)
         conn.rollback()
 
 
@@ -179,15 +175,14 @@ def crawl_blogs() -> None:
     total_new = 0
     total_updated = 0
 
-    conn = get_conn()
-    try:
+    with get_conn() as conn:
         with conn.cursor() as cur:
             for category, bloggers in bloggers_config.items():
-                print(f"\n=== Blog Category: {category} ({len(bloggers)} bloggers) ===")
+                logger.info("=== Blog Category: %s (%d bloggers) ===", category, len(bloggers))
 
                 for blogger in bloggers:
                     blog_id = blogger["blog_id"]
-                    print(f"\nProcessing blogger: {blogger['name']} ({blog_id})")
+                    logger.info("Processing blogger: %s (%s)", blogger["name"], blog_id)
 
                     channel_uuid = upsert_blogger(cur, blogger, category)
                     conn.commit()
@@ -201,14 +196,14 @@ def crawl_blogs() -> None:
                                 (profile_img, channel_uuid),
                             )
                             conn.commit()
-                            print(f"  Profile image: OK")
+                            logger.info("Profile image: OK")
                     except Exception as e:
-                        print(f"  Profile image fetch failed: {e}")
+                        logger.error("Profile image fetch failed: %s", e, exc_info=True)
                         conn.rollback()
 
                     # Fetch RSS posts
                     posts = fetch_rss_posts(blog_id, max_posts=15)
-                    print(f"  RSS: {len(posts)} posts found")
+                    logger.info("RSS: %d posts found", len(posts))
 
                     if not posts:
                         continue
@@ -225,7 +220,7 @@ def crawl_blogs() -> None:
 
                         if is_new:
                             total_new += 1
-                            print(f"    NEW: {post.title[:60]}")
+                            logger.info("NEW: %s", post.title[:60])
 
                             # NLP analysis only for NEW posts
                             process_blog_post_nlp(cur, conn, post, channel_uuid)
@@ -243,12 +238,11 @@ def crawl_blogs() -> None:
                     )
                     conn.commit()
 
-    finally:
-        conn.close()
+    close_pool()
 
-    print(f"\n=== Blog Crawl complete ===")
-    print(f"New posts: {total_new}")
-    print(f"Updated posts: {total_updated}")
+    logger.info("=== Blog Crawl complete ===")
+    logger.info("New posts: %d", total_new)
+    logger.info("Updated posts: %d", total_updated)
 
 
 if __name__ == "__main__":

@@ -3,23 +3,27 @@
 import { useState } from "react"
 import Link from "next/link"
 import { CATEGORY_COLORS, PLATFORM_CONFIG } from "@/lib/types"
-import type { Platform } from "@/lib/types"
+import type { Platform, VideoWithChannel, MentionedAsset } from "@/lib/types"
+
+type VideoFeedItem = VideoWithChannel & {
+  mentioned_assets?: MentionedAsset[]
+}
 import { formatViewCount, formatDuration, timeAgo } from "@/lib/queries"
 import { Pagination } from "@/components/ui/pagination"
 
 interface VideoFeedProps {
-  videos: any[]
+  videos: VideoFeedItem[]
   title?: string
   pageSize?: number
 }
 
-function getPostUrl(video: any): string {
+function getPostUrl(video: VideoFeedItem): string {
   const platform = video.platform ?? 'youtube'
   switch (platform) {
     case 'naver_blog':
       return video.blog_post_url || '#'
     case 'telegram':
-      return `https://t.me/${video.channels?.telegram_username || 'c'}/${video.telegram_message_id || ''}`
+      return `https://t.me/${(video.channels as Record<string, unknown>)?.telegram_username || 'c'}/${video.telegram_message_id || ''}`
     case 'analyst_report':
       return video.report_url || '#'
     default:
@@ -27,7 +31,7 @@ function getPostUrl(video: any): string {
   }
 }
 
-function PlatformThumbnail({ video, postUrl }: { video: any; postUrl: string }) {
+function PlatformThumbnail({ video, postUrl }: { video: VideoFeedItem; postUrl: string }) {
   const platform = (video.platform ?? 'youtube') as Platform
   const config = PLATFORM_CONFIG[platform] || PLATFORM_CONFIG.youtube
 
@@ -140,7 +144,7 @@ export function VideoFeed({ videos, title = "최신 콘텐츠", pageSize = 5 }: 
                   </div>
                   {video.mentioned_assets && video.mentioned_assets.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {video.mentioned_assets.slice(0, 5).map((asset: any, j: number) => {
+                      {video.mentioned_assets.slice(0, 5).map((asset: MentionedAsset, j: number) => {
                         const sentimentColor = asset.sentiment === 'positive' ? '#22c997'
                           : asset.sentiment === 'negative' ? '#ff5757' : '#7c6cf0'
                         return (

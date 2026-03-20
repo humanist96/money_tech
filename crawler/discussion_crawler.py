@@ -10,15 +10,15 @@ import psycopg2.extras
 from dotenv import load_dotenv
 
 from asset_dictionary import STOCK_DICT
+from db import get_conn, close_pool
+from logger import logger
 from naver_discussion import fetch_multiple_pages
 from discussion_filter import filter_posts
 from crowd_sentiment_analyzer import compute_crowd_sentiment
 
 load_dotenv()
 
-DATABASE_URL = os.environ["DATABASE_URL"]
-
-# Top 20 stocks by market cap → crawl every 6 hours
+# Top 20 stocks by market cap -> crawl every 6 hours
 TOP_STOCKS = [
     ("삼성전자", "005930"), ("SK하이닉스", "000660"), ("LG에너지솔루션", "373220"),
     ("삼성바이오로직스", "207940"), ("현대차", "005380"), ("기아", "000270"),
@@ -29,7 +29,7 @@ TOP_STOCKS = [
     ("KT", "030200"), ("한국전력", "015760"),
 ]
 
-# Remaining stocks from STOCK_DICT (Korean stocks only) → crawl every 24 hours
+# Remaining stocks from STOCK_DICT (Korean stocks only) -> crawl every 24 hours
 def get_secondary_stocks() -> list[tuple[str, str]]:
     """Get non-top stocks for secondary crawling."""
     top_codes = {code for _, code in TOP_STOCKS}
@@ -41,10 +41,6 @@ def get_secondary_stocks() -> list[tuple[str, str]]:
             seen_codes.add(code)
             secondary.append((name, code))
     return secondary[:30]  # Cap at 30 additional stocks
-
-
-def get_conn():
-    return psycopg2.connect(DATABASE_URL)
 
 
 def should_crawl(cur, stock_code: str, hours: int = 6) -> bool:
@@ -128,12 +124,12 @@ def crawl_stock_discussion(cur, conn, stock_name: str, stock_code: str, max_page
         True if successful
     """
     try:
-        print(f"  Crawling {stock_name} ({stock_code})...")
+        logger.info("Crawling %s (%s)...", stock_name, stock_code)
 
         # Fetch posts
         raw_posts = fetch_multiple_pages(stock_code, max_pages)
         if not raw_posts:
-            print(f"    No posts found")
+            logger.info("No posts found")
             log_crawl(cur, stock_code, max_pages, 0, 0)
             conn.commit()
             return True
@@ -153,11 +149,11 @@ def crawl_stock_discussion(cur, conn, stock_name: str, stock_code: str, max_page
         conn.commit()
 
         bullish_str = f"{sentiment_data['bullish_ratio']:.0%}" if sentiment_data["bullish_ratio"] is not None else "N/A"
-        print(f"    {len(raw_posts)} raw → {len(filtered_posts)} filtered | Bullish: {bullish_str}")
+        logger.info("%d raw -> %d filtered | Bullish: %s", len(raw_posts), len(filtered_posts), bullish_str)
         return True
 
     except Exception as e:
-        print(f"    Error crawling {stock_name}: {e}")
+        logger.error("Error crawling %s: %s", stock_name, e, exc_info=True)
         conn.rollback()
         try:
             log_crawl(cur, stock_code, max_pages, 0, 0, "error")
@@ -173,14 +169,13 @@ def crawl_discussions(top_only: bool = False) -> None:
     Args:
         top_only: If True, only crawl TOP_STOCKS (for frequent runs)
     """
-    conn = get_conn()
     total_crawled = 0
     total_skipped = 0
 
-    try:
+    with get_conn() as conn:
         with conn.cursor() as cur:
             # Top stocks (6-hour interval)
-            print(f"\n=== Top Stocks Discussion ({len(TOP_STOCKS)} stocks) ===")
+            logger.info("=== Top Stocks Discussion (%d stocks) ===", len(TOP_STOCKS))
             for stock_name, stock_code in TOP_STOCKS:
                 if not should_crawl(cur, stock_code, hours=6):
                     total_skipped += 1
@@ -191,7 +186,7 @@ def crawl_discussions(top_only: bool = False) -> None:
             # Secondary stocks (24-hour interval)
             if not top_only:
                 secondary = get_secondary_stocks()
-                print(f"\n=== Secondary Stocks Discussion ({len(secondary)} stocks) ===")
+                logger.info("=== Secondary Stocks Discussion (%d stocks) ===", len(secondary))
                 for stock_name, stock_code in secondary:
                     if not should_crawl(cur, stock_code, hours=24):
                         total_skipped += 1
@@ -199,12 +194,11 @@ def crawl_discussions(top_only: bool = False) -> None:
                     if crawl_stock_discussion(cur, conn, stock_name, stock_code, max_pages=2):
                         total_crawled += 1
 
-    finally:
-        conn.close()
+    close_pool()
 
-    print(f"\n=== Discussion Crawl complete ===")
-    print(f"Crawled: {total_crawled}")
-    print(f"Skipped (recent): {total_skipped}")
+    logger.info("=== Discussion Crawl complete ===")
+    logger.info("Crawled: %d", total_crawled)
+    logger.info("Skipped (recent): %d", total_skipped)
 
 
 if __name__ == "__main__":

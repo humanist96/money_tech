@@ -66,7 +66,7 @@ export function HitRateRanking({ data, title = "방향 적중률 리더보드" }
                   <div className="flex items-center gap-1 mt-0.5">
                     {ch.recent_predictions.slice(0, 5).map((pred, j) => {
                       const icon = PREDICTION_ICONS[pred.prediction_type] ?? PREDICTION_ICONS.buy
-                      const dirScore = (pred as any).direction_score
+                      const dirScore = pred.direction_score
                       const isCorrect = dirScore !== null && dirScore !== undefined && dirScore >= 0.5
                       const isEvaluated = dirScore !== null && dirScore !== undefined
                       return (

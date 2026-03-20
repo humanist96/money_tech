@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from asset_dictionary import analyze_sentiment
+from logger import logger
 from youtube import get_video_comments, rate_limit_wait
 
 
@@ -31,10 +32,10 @@ def analyze_video_comments(conn, max_videos: int = 50) -> dict:
         videos = cur.fetchall()
 
     if not videos:
-        print("  No videos need comment analysis")
+        logger.info("No videos need comment analysis")
         return results
 
-    print(f"  Analyzing comments for {len(videos)} prediction videos")
+    logger.info("Analyzing comments for %d prediction videos", len(videos))
 
     for vid_uuid, youtube_video_id, title in videos:
         try:
@@ -85,12 +86,12 @@ def analyze_video_comments(conn, max_videos: int = 50) -> dict:
 
             conn.commit()
             results["analyzed"] += 1
-            print(f"    {title[:50]}... → +{positive} -{negative} ={neutral} (score: {score:.2f})")
+            logger.info("%s... -> +%d -%d =%d (score: %.2f)", title[:50], positive, negative, neutral, score)
 
             rate_limit_wait(0.2)
 
         except Exception as e:
-            print(f"    Error analyzing {youtube_video_id}: {e}")
+            logger.error("Error analyzing %s: %s", youtube_video_id, e, exc_info=True)
             results["errors"] += 1
             try:
                 conn.rollback()
@@ -146,7 +147,7 @@ def update_crowd_accuracy(conn) -> int:
 
         conn.commit()
 
-    print(f"  Updated crowd_accuracy for {updated} predictions")
+    logger.info("Updated crowd_accuracy for %d predictions", updated)
     return updated
 
 

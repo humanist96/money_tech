@@ -11,8 +11,9 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
-from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
-from prediction_detector import detect_predictions
+from db import get_conn, close_pool
+from logger import logger
+from nlp_pipeline import NLPPipeline
 from youtube import (
     get_channel_info,
     get_channel_videos,
@@ -23,12 +24,6 @@ from youtube import (
 )
 
 load_dotenv()
-
-DATABASE_URL = os.environ["DATABASE_URL"]
-
-
-def get_conn():
-    return psycopg2.connect(DATABASE_URL)
 
 
 def load_channels() -> dict[str, list[dict]]:
@@ -216,7 +211,7 @@ def compute_daily_stats(cur, date_str: str) -> None:
                 if sentiment_val in sentiment_distribution:
                     sentiment_distribution[sentiment_val] = cnt
         except Exception as e:
-            print(f"  Warning: sentiment distribution query failed: {e}")
+            logger.warning("Sentiment distribution query failed: %s", e)
 
         cur.execute(
             """INSERT INTO daily_stats (date, category, total_videos, top_channels, top_keywords, sentiment_distribution)
@@ -236,7 +231,10 @@ def compute_daily_stats(cur, date_str: str) -> None:
             ),
         )
 
-    print(f"  Daily stats computed for {date_str}")
+    logger.info("Daily stats computed for %s", date_str)
+
+
+_nlp = NLPPipeline()
 
 
 def process_video_nlp(cur, conn, video_id: str, video: dict, channel_uuid: str, published_at: str | None, skip_subtitle: bool = False) -> None:
@@ -267,72 +265,19 @@ def process_video_nlp(cur, conn, video_id: str, video: dict, channel_uuid: str, 
         description = video.get("description", "") or ""
         combined_text = f"{title} {description} {subtitle_text or ''}"
 
-        found_assets = find_assets_in_text(combined_text)
-        sentiment = analyze_sentiment(combined_text)
+        result = _nlp.process(combined_text, title)
 
-        if found_assets:
-            cur.execute(
-                "SELECT id FROM videos WHERE youtube_video_id = %s",
-                (video_id,),
-            )
-            vid_row = cur.fetchone()
-            if vid_row:
-                vid_uuid = str(vid_row[0])
-                for asset in found_assets:
-                    asset_sentiment = analyze_sentiment_for_asset(combined_text, asset["asset_name"])
-                    cur.execute(
-                        """INSERT INTO mentioned_assets
-                        (video_id, asset_type, asset_name, asset_code, sentiment)
-                        VALUES (%s, %s, %s, %s, %s)
-                        ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                            sentiment = EXCLUDED.sentiment""",
-                        (
-                            vid_uuid,
-                            asset["asset_type"],
-                            asset["asset_name"],
-                            asset["asset_code"],
-                            asset_sentiment,
-                        ),
-                    )
-
-                # Detect and store predictions
-                preds = detect_predictions(combined_text, found_assets)
-                for pred in preds:
-                    cur.execute(
-                        "SELECT id FROM mentioned_assets WHERE video_id = %s AND asset_name = %s",
-                        (vid_uuid, pred["asset_name"]),
-                    )
-                    ma_row = cur.fetchone()
-                    if ma_row:
-                        cur.execute(
-                            """INSERT INTO predictions
-                            (video_id, channel_id, mentioned_asset_id, prediction_type, reason, predicted_at)
-                            VALUES (%s, %s, %s, %s, %s, %s)
-                            ON CONFLICT DO NOTHING""",
-                            (
-                                vid_uuid,
-                                channel_uuid,
-                                str(ma_row[0]),
-                                pred["prediction_type"],
-                                pred.get("reason", ""),
-                                published_at,
-                            ),
-                        )
-                if preds:
-                    print(f"    Detected {len(preds)} predictions")
-
-            conn.commit()
-            print(f"    Found {len(found_assets)} assets mentioned")
-
-        summary = generate_simple_summary(title, found_assets, sentiment)
+        # Look up video UUID for DB storage
         cur.execute(
-            """UPDATE videos SET summary = %s, sentiment = %s
-            WHERE youtube_video_id = %s""",
-            (summary, sentiment, video_id),
+            "SELECT id FROM videos WHERE youtube_video_id = %s",
+            (video_id,),
         )
-        conn.commit()
+        vid_row = cur.fetchone()
+        if vid_row:
+            vid_uuid = str(vid_row[0])
+            _nlp.store_results(cur, conn, vid_uuid, channel_uuid, result, published_at)
     except Exception as e:
-        print(f"    Warning: NLP analysis failed: {e}")
+        logger.error("NLP analysis failed: %s", e, exc_info=True)
         conn.rollback()
 
 
@@ -344,14 +289,13 @@ def crawl() -> None:
     total_new = 0
     total_updated = 0
 
-    conn = get_conn()
-    try:
+    with get_conn() as conn:
         with conn.cursor() as cur:
             for category, channels in channels_config.items():
-                print(f"\n=== Category: {category} ===")
+                logger.info("=== Category: %s ===", category)
 
                 for ch in channels:
-                    print(f"\nProcessing: {ch['name']} ({ch['channel_id']})")
+                    logger.info("Processing: %s (%s)", ch["name"], ch["channel_id"])
 
                     channel_uuid = upsert_channel(cur, ch, category)
                     conn.commit()
@@ -378,14 +322,14 @@ def crawl() -> None:
                                 ),
                             )
                             conn.commit()
-                            print(f"  Subscribers: {ch_info.get('subscriber_count')}")
+                            logger.info("Subscribers: %s", ch_info.get("subscriber_count"))
                     except Exception as e:
-                        print(f"  Warning: could not update channel info: {e}")
+                        logger.error("Could not update channel info: %s", e, exc_info=True)
                         conn.rollback()
 
                     # Fetch video list (1-2 API calls via playlist)
                     videos = get_channel_videos(ch["channel_id"], max_items=30)
-                    print(f"  Found {len(videos)} videos")
+                    logger.info("Found %d videos", len(videos))
 
                     if not videos:
                         continue
@@ -396,7 +340,7 @@ def crawl() -> None:
                     if video_ids:
                         details_list = get_video_details_batch(video_ids)
                         details_map = {d["id"]: d for d in details_list}
-                        print(f"  Fetched details for {len(details_map)} videos (batch)")
+                        logger.info("Fetched details for %d videos (batch)", len(details_map))
 
                     skip_sub = os.environ.get("SKIP_SUBTITLE", "").lower() in ("1", "true", "yes")
 
@@ -412,7 +356,7 @@ def crawl() -> None:
 
                         if is_new:
                             total_new += 1
-                            print(f"    NEW: {source.get('title', '')[:60]}")
+                            logger.info("NEW: %s", source.get("title", "")[:60])
 
                             # Determine published_at for predictions
                             published_at = video.get("published_at")
@@ -438,16 +382,15 @@ def crawl() -> None:
                     conn.commit()
                     rate_limit_wait(0.2)
 
-            print(f"\n=== Computing daily stats for {today} ===")
+            logger.info("=== Computing daily stats for %s ===", today)
             compute_daily_stats(cur, today)
             conn.commit()
 
-    finally:
-        conn.close()
+    close_pool()
 
-    print(f"\n=== Crawl complete ===")
-    print(f"New videos: {total_new}")
-    print(f"Updated videos: {total_updated}")
+    logger.info("=== Crawl complete ===")
+    logger.info("New videos: %d", total_new)
+    logger.info("Updated videos: %d", total_updated)
 
 
 if __name__ == "__main__":

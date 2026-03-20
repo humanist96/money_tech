@@ -6,6 +6,8 @@ from datetime import datetime
 
 import requests
 
+from logger import logger
+
 # CoinGecko symbol mapping
 COINGECKO_IDS = {
     "BTC": "bitcoin", "ETH": "ethereum", "XRP": "ripple",
@@ -68,7 +70,7 @@ def get_coin_prices_batch(symbols: list[str]) -> dict[str, float | None]:
                 if sym and "krw" in prices:
                     result[sym] = prices["krw"]
         except Exception as e:
-            print(f"  Warning: CoinGecko batch fetch failed: {e}")
+            logger.warning("CoinGecko batch fetch failed: %s", e)
 
         if i + 50 < len(coin_ids):
             time.sleep(2)  # Rate limit between batches
@@ -98,10 +100,10 @@ def get_stock_price(code: str, date_str: str | None = None) -> float | None:
             return None
         return float(df["종가"].iloc[0])
     except ImportError:
-        print("  Warning: pykrx not installed, skipping stock price")
+        logger.warning("pykrx not installed, skipping stock price")
         return None
     except Exception as e:
-        print(f"  Warning: stock price fetch failed for {code}: {e}")
+        logger.warning("Stock price fetch failed for %s: %s", code, e)
         return None
 
 
@@ -138,7 +140,7 @@ def collect_prices_for_predictions(conn) -> int:
                 updated += 1
 
         conn.commit()
-    print(f"  Collected prices for {updated} assets")
+    logger.info("Collected prices for %d assets", updated)
     return updated
 
 
@@ -178,8 +180,8 @@ def record_daily_prices(conn) -> int:
                     )
                     recorded += 1
                 except Exception as e:
-                    print(f"  Warning: price record failed for {asset_code}: {e}")
+                    logger.warning("Price record failed for %s: %s", asset_code, e)
 
         conn.commit()
-    print(f"  Recorded {recorded} daily prices")
+    logger.info("Recorded %d daily prices", recorded)
     return recorded

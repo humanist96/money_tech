@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import type { BuzzAlertEnhanced } from "@/lib/types"
 
 interface EnhancedBuzzAlertProps {
-  alerts: any[]
+  alerts: BuzzAlertEnhanced[]
 }
 
 const SENTIMENT_COLORS: Record<string, string> = {
