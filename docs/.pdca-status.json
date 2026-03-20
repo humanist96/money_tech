@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-20T04:53:00.544Z",
+  "lastUpdated": "2026-03-20T05:03:49.732Z",
   "activeFeatures": [
     "frontend",
     "channels",
@@ -157,9 +157,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-07T06:28:05.600Z",
-        "lastUpdated": "2026-03-20T04:53:00.544Z"
+        "lastUpdated": "2026-03-20T05:03:49.732Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/discover.py"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/nlp_pipeline.py"
     },
     "channel-profiles": {
       "phase": "do",
@@ -560,7 +560,7 @@
   "session": {
     "startedAt": "2026-03-07T06:05:25.008Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-20T04:53:00.544Z"
+    "lastActivity": "2026-03-20T05:03:49.732Z"
   },
   "history": [
     {
@@ -5365,6 +5365,78 @@
     },
     {
       "timestamp": "2026-03-20T04:53:00.544Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:01:12.547Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:01:29.565Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:01:38.776Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:01:58.935Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:02:02.833Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:02:09.366Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:02:27.045Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:02:52.251Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:03:14.217Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:03:27.315Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:03:37.499Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:03:49.732Z",
       "feature": "crawler",
       "phase": "do",
       "action": "updated"

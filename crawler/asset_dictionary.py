@@ -1,6 +1,8 @@
 """Asset dictionary for Korean stock/coin/real estate name recognition."""
 from __future__ import annotations
 
+import time
+
 # Major Korean stocks (종목명 → 종목코드)
 STOCK_DICT: dict[str, str] = {
     # 대형주
@@ -220,3 +222,112 @@ def generate_simple_summary(title: str, assets: list[dict], sentiment: str) -> s
         return f"{title}"
 
     return f"언급 자산: {', '.join(asset_names)} | 논조: {sentiment_kr.get(sentiment, '중립')}"
+
+
+# ---------------------------------------------------------------------------
+# DB-backed asset dictionary with fallback to hardcoded dicts
+# ---------------------------------------------------------------------------
+
+
+def load_assets_from_db(cur) -> tuple[dict, dict, dict]:
+    """Load asset dictionaries from database.
+
+    Returns (stock_dict, coin_dict, real_estate_dict) with same format
+    as hardcoded dicts (name -> code mapping, including aliases).
+    """
+    cur.execute(
+        """SELECT asset_name, asset_code, asset_type, aliases
+           FROM asset_dictionary
+           WHERE is_active = true"""
+    )
+    stock_dict: dict[str, str] = {}
+    coin_dict: dict[str, str] = {}
+    re_dict: dict[str, str] = {}
+
+    for name, code, atype, aliases in cur.fetchall():
+        target = (
+            stock_dict
+            if atype == "stock"
+            else coin_dict
+            if atype == "coin"
+            else re_dict
+        )
+        target[name] = code
+        if aliases:
+            for alias in aliases:
+                target[alias] = code
+
+    return stock_dict, coin_dict, re_dict
+
+
+class DynamicAssetDictionary:
+    """Asset dictionary that loads from DB with hardcoded fallback.
+
+    - Tries DB first via ``load_assets_from_db()``
+    - Falls back to module-level hardcoded dicts if DB is unavailable
+    - Caches for 1 hour (configurable via ``_cache_ttl``)
+    """
+
+    def __init__(self) -> None:
+        self._stock: dict[str, str] = dict(STOCK_DICT)
+        self._coin: dict[str, str] = dict(COIN_DICT)
+        self._real_estate: dict[str, str] = dict(REAL_ESTATE_DICT)
+        self._loaded_at: float = 0
+        self._cache_ttl: int = 3600  # 1 hour
+
+    def refresh(self, cur=None) -> None:
+        """Reload from DB if available and cache expired."""
+        if time.time() - self._loaded_at < self._cache_ttl:
+            return
+        if cur is None:
+            return
+        try:
+            s, c, r = load_assets_from_db(cur)
+            if s:  # only update if we got data
+                self._stock = s
+                self._coin = c
+                self._real_estate = r
+                self._loaded_at = time.time()
+        except Exception:
+            pass  # keep using current (hardcoded or previously loaded)
+
+    def find_assets_in_text(self, text: str) -> list[dict]:
+        """Extract mentioned assets from *text*.
+
+        Same return format as the module-level ``find_assets_in_text()``.
+        """
+        results: list[dict] = []
+        seen: set[str] = set()
+
+        for name, code in self._stock.items():
+            if name in text and code not in seen:
+                seen.add(code)
+                results.append({
+                    "asset_type": "stock",
+                    "asset_name": name,
+                    "asset_code": code,
+                })
+
+        for name, code in self._coin.items():
+            if name in text and code not in seen:
+                seen.add(code)
+                results.append({
+                    "asset_type": "coin",
+                    "asset_name": name,
+                    "asset_code": code,
+                })
+
+        for name, region in self._real_estate.items():
+            if name in text and region and name not in seen:
+                seen.add(name)
+                results.append({
+                    "asset_type": "real_estate",
+                    "asset_name": name,
+                    "asset_code": region,
+                })
+
+        return results
+
+
+# Module-level singleton (uses hardcoded dicts until refresh() is called)
+_asset_dict = DynamicAssetDictionary()

@@ -235,6 +235,7 @@ def compute_daily_stats(cur, date_str: str) -> None:
 
 
 _nlp = NLPPipeline()
+_use_llm = bool(os.environ.get("OPENAI_API_KEY"))
 
 
 def process_video_nlp(cur, conn, video_id: str, video: dict, channel_uuid: str, published_at: str | None, skip_subtitle: bool = False) -> None:
@@ -265,7 +266,7 @@ def process_video_nlp(cur, conn, video_id: str, video: dict, channel_uuid: str, 
         description = video.get("description", "") or ""
         combined_text = f"{title} {description} {subtitle_text or ''}"
 
-        result = _nlp.process(combined_text, title)
+        result = _nlp.process(combined_text, title, use_llm=_use_llm)
 
         # Look up video UUID for DB storage
         cur.execute(

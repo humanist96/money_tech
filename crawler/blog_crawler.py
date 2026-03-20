@@ -9,11 +9,10 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
-from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
 from db import get_conn, close_pool
 from logger import logger
 from naver_blog import fetch_rss_posts, fetch_blog_post_content, fetch_blog_profile_image
-from prediction_detector import detect_predictions
+from nlp_pipeline import NLPPipeline
 
 load_dotenv()
 
@@ -94,75 +93,27 @@ def upsert_blog_post(cur, post, channel_uuid: str) -> bool:
         return True
 
 
+_nlp = NLPPipeline()
+_use_llm = bool(os.environ.get("OPENAI_API_KEY"))
+
+
 def process_blog_post_nlp(cur, conn, post, channel_uuid: str) -> None:
-    """Run NLP analysis on a blog post (same pipeline as YouTube videos)."""
+    """Run NLP analysis on a blog post using unified NLPPipeline."""
     try:
         combined_text = f"{post.title} {post.description} {post.content_text or ''}"
 
-        found_assets = find_assets_in_text(combined_text)
-        sentiment = analyze_sentiment(combined_text)
+        result = _nlp.process(combined_text, post.title, use_llm=_use_llm)
 
-        if found_assets:
-            cur.execute(
-                "SELECT id FROM videos WHERE blog_post_url = %s",
-                (post.link,),
-            )
-            vid_row = cur.fetchone()
-            if vid_row:
-                vid_uuid = str(vid_row[0])
-                for asset in found_assets:
-                    asset_sentiment = analyze_sentiment_for_asset(combined_text, asset["asset_name"])
-                    cur.execute(
-                        """INSERT INTO mentioned_assets
-                        (video_id, asset_type, asset_name, asset_code, sentiment)
-                        VALUES (%s, %s, %s, %s, %s)
-                        ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                            sentiment = EXCLUDED.sentiment""",
-                        (
-                            vid_uuid,
-                            asset["asset_type"],
-                            asset["asset_name"],
-                            asset["asset_code"],
-                            asset_sentiment,
-                        ),
-                    )
-
-                # Detect predictions
-                preds = detect_predictions(combined_text, found_assets)
-                for pred in preds:
-                    cur.execute(
-                        "SELECT id FROM mentioned_assets WHERE video_id = %s AND asset_name = %s",
-                        (vid_uuid, pred["asset_name"]),
-                    )
-                    ma_row = cur.fetchone()
-                    if ma_row:
-                        cur.execute(
-                            """INSERT INTO predictions
-                            (video_id, channel_id, mentioned_asset_id, prediction_type, reason, predicted_at)
-                            VALUES (%s, %s, %s, %s, %s, %s)
-                            ON CONFLICT DO NOTHING""",
-                            (
-                                vid_uuid,
-                                channel_uuid,
-                                str(ma_row[0]),
-                                pred["prediction_type"],
-                                pred.get("reason", ""),
-                                post.published_at,
-                            ),
-                        )
-                if preds:
-                    logger.info("Detected %d predictions", len(preds))
-
-            conn.commit()
-            logger.info("Found %d assets mentioned", len(found_assets))
-
-        summary = generate_simple_summary(post.title, found_assets, sentiment)
         cur.execute(
-            """UPDATE videos SET summary = %s, sentiment = %s
-            WHERE blog_post_url = %s""",
-            (summary, sentiment, post.link),
+            "SELECT id FROM videos WHERE blog_post_url = %s",
+            (post.link,),
         )
-        conn.commit()
+        vid_row = cur.fetchone()
+        if vid_row:
+            vid_uuid = str(vid_row[0])
+            _nlp.store_results(
+                cur, conn, vid_uuid, channel_uuid, result, post.published_at
+            )
     except Exception as e:
         logger.error("NLP analysis failed: %s", e, exc_info=True)
         conn.rollback()
