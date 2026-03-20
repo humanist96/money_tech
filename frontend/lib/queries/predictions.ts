@@ -3,6 +3,7 @@ import type {
   PredictionFeedItem, HitRateLeaderboardItem,
   BacktestResult, BacktestTrade, WeeklyReportItem,
   ConsensusTimelineEntry, AnalystConsensus,
+  ActivePrediction, PredictionTimelineData,
 } from '../types'
 
 // Recent Predictions Feed (deduplicated, direction-based)
@@ -298,5 +299,124 @@ export async function getAnalystConsensus(assetCode: string): Promise<AnalystCon
     sell_count: rows.filter((r: any) => r.prediction_type === 'sell').length,
     hold_count: rows.filter((r: any) => r.prediction_type === 'hold').length,
     recommendations,
+  }
+}
+
+// Active Predictions Tracker
+export async function getActivePredictions(limit = 30): Promise<ActivePrediction[]> {
+  const sql = getDb()
+  const rows = await sql`
+    SELECT
+      p.id,
+      p.channel_id,
+      c.name AS channel_name,
+      c.thumbnail_url AS channel_thumbnail,
+      COALESCE(ma.asset_name, '(미지정)') AS asset_name,
+      ma.asset_code,
+      p.prediction_type,
+      ma.price_at_mention::float AS mentioned_price,
+      p.target_price::float AS target_price,
+      latest_price.price::float AS current_price,
+      p.predicted_at,
+      EXTRACT(DAY FROM NOW() - p.predicted_at)::int AS days_since,
+      p.is_accurate,
+      p.direction_score::float AS direction_score,
+      p.reason,
+      CASE
+        WHEN ma.price_at_mention IS NOT NULL
+          AND p.target_price IS NOT NULL
+          AND p.target_price != ma.price_at_mention
+          AND latest_price.price IS NOT NULL
+        THEN LEAST(GREATEST(
+          ((latest_price.price - ma.price_at_mention) / (p.target_price - ma.price_at_mention) * 100)::float,
+          -100
+        ), 200)
+        ELSE NULL
+      END AS progress_pct
+    FROM predictions p
+    JOIN channels c ON p.channel_id = c.id
+    LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+    LEFT JOIN LATERAL (
+      SELECT ap.price
+      FROM asset_prices ap
+      WHERE ap.asset_code = ma.asset_code
+      ORDER BY ap.recorded_date DESC
+      LIMIT 1
+    ) latest_price ON true
+    WHERE p.prediction_type IN ('buy', 'sell', 'hold')
+      AND p.predicted_at >= NOW() - INTERVAL '30 days'
+    ORDER BY p.predicted_at DESC
+    LIMIT ${limit}
+  `
+
+  return (rows as any[]).map(r => ({
+    id: r.id,
+    channel_id: r.channel_id,
+    channel_name: r.channel_name,
+    channel_thumbnail: r.channel_thumbnail,
+    asset_name: r.asset_name,
+    asset_code: r.asset_code,
+    prediction_type: r.prediction_type,
+    mentioned_price: r.mentioned_price != null ? Number(r.mentioned_price) : null,
+    target_price: r.target_price != null ? Number(r.target_price) : null,
+    current_price: r.current_price != null ? Number(r.current_price) : null,
+    progress_pct: r.progress_pct != null ? Math.round(Number(r.progress_pct) * 10) / 10 : null,
+    predicted_at: r.predicted_at,
+    days_since: Number(r.days_since) || 0,
+    is_accurate: r.is_accurate,
+    direction_score: r.direction_score != null ? Number(r.direction_score) : null,
+    reason: r.reason,
+  }))
+}
+
+// Prediction Timeline (price history for a specific prediction)
+export async function getPredictionTimeline(predictionId: string): Promise<PredictionTimelineData | null> {
+  const sql = getDb()
+
+  const predRows = await sql`
+    SELECT
+      p.id,
+      c.name AS channel_name,
+      COALESCE(ma.asset_name, '(미지정)') AS asset_name,
+      ma.asset_code,
+      p.prediction_type,
+      ma.price_at_mention::float AS mentioned_price,
+      p.target_price::float AS target_price,
+      p.predicted_at,
+      p.is_accurate
+    FROM predictions p
+    JOIN channels c ON p.channel_id = c.id
+    LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+    WHERE p.id = ${predictionId}
+    LIMIT 1
+  `
+
+  if (predRows.length === 0) return null
+  const pred = predRows[0] as any
+
+  const priceRows = pred.asset_code
+    ? await sql`
+        SELECT recorded_date::text AS date, price::float AS price
+        FROM asset_prices
+        WHERE asset_code = ${pred.asset_code}
+          AND recorded_date >= ${pred.predicted_at}::date
+        ORDER BY recorded_date ASC
+      `
+    : []
+
+  return {
+    id: pred.id,
+    channel_name: pred.channel_name,
+    asset_name: pred.asset_name,
+    asset_code: pred.asset_code,
+    prediction_type: pred.prediction_type,
+    mentioned_price: pred.mentioned_price != null ? Number(pred.mentioned_price) : null,
+    target_price: pred.target_price != null ? Number(pred.target_price) : null,
+    predicted_at: pred.predicted_at,
+    is_accurate: pred.is_accurate,
+    timeline: (priceRows as any[]).map(r => ({
+      date: r.date,
+      price: Number(r.price),
+    })),
   }
 }

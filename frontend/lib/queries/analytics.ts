@@ -1,5 +1,5 @@
 import { getDb } from '../db'
-import type { RiskScore, HiddenGemChannel } from '../types'
+import type { RiskScore, HiddenGemChannel, ConflictingOpinion } from '../types'
 
 // Risk Scoreboard
 export async function getRiskScoreboard(days = 14): Promise<RiskScore[]> {
@@ -162,6 +162,67 @@ export async function getHiddenGemChannels(): Promise<HiddenGemChannel[]> {
       accuracy: Math.min((Number(r.hit_rate) || 0) * 100, 100),
       depth: Math.min(Number(r.depth) || 0, 100),
     },
+  }))
+}
+
+// Conflicting Opinions Detection
+export async function getConflictingOpinions(days = 14): Promise<ConflictingOpinion[]> {
+  const sql = getDb()
+  const rows = await sql`
+    WITH asset_predictions AS (
+      SELECT
+        ma.asset_name,
+        ma.asset_code,
+        c.name AS channel_name,
+        p.prediction_type,
+        MAX(v.published_at) AS latest_at
+      FROM predictions p
+      JOIN videos v ON p.video_id = v.id
+      JOIN channels c ON p.channel_id = c.id
+      JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+      WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
+        AND p.prediction_type IN ('buy', 'sell')
+        AND ma.asset_code IS NOT NULL
+      GROUP BY ma.asset_name, ma.asset_code, c.name, p.prediction_type
+    ),
+    conflict_data AS (
+      SELECT
+        asset_name,
+        asset_code,
+        ARRAY_AGG(DISTINCT channel_name) FILTER (WHERE prediction_type = 'buy') AS bullish_channels,
+        ARRAY_AGG(DISTINCT channel_name) FILTER (WHERE prediction_type = 'sell') AS bearish_channels,
+        COUNT(DISTINCT channel_name) FILTER (WHERE prediction_type = 'buy')::int AS buy_count,
+        COUNT(DISTINCT channel_name) FILTER (WHERE prediction_type = 'sell')::int AS sell_count,
+        MAX(latest_at) AS recent_date
+      FROM asset_predictions
+      GROUP BY asset_name, asset_code
+      HAVING COUNT(DISTINCT channel_name) FILTER (WHERE prediction_type = 'buy') >= 1
+        AND COUNT(DISTINCT channel_name) FILTER (WHERE prediction_type = 'sell') >= 1
+    )
+    SELECT
+      asset_name,
+      asset_code,
+      bullish_channels,
+      bearish_channels,
+      buy_count,
+      sell_count,
+      (buy_count + sell_count)::int AS total_opinions,
+      LEAST(buy_count, sell_count)::float / GREATEST(buy_count, sell_count)::float AS conflict_score,
+      recent_date
+    FROM conflict_data
+    ORDER BY LEAST(buy_count, sell_count)::float / GREATEST(buy_count, sell_count)::float DESC,
+             (buy_count + sell_count) DESC
+    LIMIT 30
+  `
+
+  return (rows as any[]).map(r => ({
+    asset_name: r.asset_name,
+    asset_code: r.asset_code,
+    bullish_channels: r.bullish_channels || [],
+    bearish_channels: r.bearish_channels || [],
+    conflict_score: Number(r.conflict_score) || 0,
+    total_opinions: Number(r.total_opinions) || 0,
+    recent_date: r.recent_date ? String(r.recent_date) : '',
   }))
 }
 

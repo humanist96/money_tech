@@ -54,6 +54,15 @@ const PRIMARY_ITEMS: NavItem[] = [
       </svg>
     ),
   },
+  {
+    href: "/assistant",
+    label: "AI 어시스턴트",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2l1.09 3.26L16.36 6l-2.63 2.09L14.82 12 12 9.91 9.18 12l1.09-3.91L7.64 6l3.27-.74z" />
+      </svg>
+    ),
+  },
 ]
 
 const NAV_GROUPS: NavGroup[] = [
@@ -94,12 +103,30 @@ const NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
+        href: "/predictions",
+        label: "예측 트래커",
+        icon: (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+          </svg>
+        ),
+      },
+      {
         href: "/crowd",
         label: "개미심리",
         icon: (
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
             <line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+        ),
+      },
+      {
+        href: "/conflicts",
+        label: "의견충돌",
+        icon: (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 20L10 4" /><path d="M20 20L14 4" /><path d="M2 16h6" /><path d="M16 16h6" />
           </svg>
         ),
       },

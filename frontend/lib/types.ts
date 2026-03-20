@@ -492,6 +492,16 @@ export interface ConflictingAsset {
   sell_channels: string[]
 }
 
+export interface ConflictingOpinion {
+  asset_name: string
+  asset_code: string
+  bullish_channels: string[]
+  bearish_channels: string[]
+  conflict_score: number
+  total_opinions: number
+  recent_date: string
+}
+
 // Feature 6: Hidden Gem Channel
 export interface HiddenGemChannel {
   channel_id: string
@@ -632,6 +642,44 @@ export interface NotebookQuizQuestion {
   options: string[]
   answer: string
   explanation: string
+}
+
+// Prediction Tracker
+export interface ActivePrediction {
+  id: string
+  channel_id: string
+  channel_name: string
+  channel_thumbnail: string | null
+  asset_name: string
+  asset_code: string | null
+  prediction_type: 'buy' | 'sell' | 'hold' | null
+  mentioned_price: number | null
+  target_price: number | null
+  current_price: number | null
+  progress_pct: number | null
+  predicted_at: string | null
+  days_since: number
+  is_accurate: boolean | null
+  direction_score: number | null
+  reason: string | null
+}
+
+export interface PredictionTimelinePoint {
+  date: string
+  price: number
+}
+
+export interface PredictionTimelineData {
+  id: string
+  channel_name: string
+  asset_name: string
+  asset_code: string | null
+  prediction_type: 'buy' | 'sell' | 'hold' | null
+  mentioned_price: number | null
+  target_price: number | null
+  predicted_at: string | null
+  is_accurate: boolean | null
+  timeline: PredictionTimelinePoint[]
 }
 
 export type Database = {

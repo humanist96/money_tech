@@ -35,6 +35,8 @@ export {
   getWeeklyReport,
   getConsensusTimeline,
   getAnalystConsensus,
+  getActivePredictions,
+  getPredictionTimeline,
 } from './predictions'
 
 // Assets
@@ -67,6 +69,7 @@ export {
 export {
   getRiskScoreboard,
   getHiddenGemChannels,
+  getConflictingOpinions,
 } from './analytics'
 
 // Crowd
