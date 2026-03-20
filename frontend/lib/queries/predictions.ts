@@ -37,30 +37,12 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
 }
 
 // Hit Rate Leaderboard (direction-based)
+// Uses mv_hit_rate_leaderboard materialized view for the main aggregation,
+// then fetches recent_predictions per channel (N+1 queries, but main query is instant).
 export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]> {
   const sql = getDb()
   const rows = await sql`
-    SELECT
-      c.id AS channel_id,
-      c.name AS channel_name,
-      c.thumbnail_url AS channel_thumbnail,
-      c.category,
-      c.channel_type,
-      c.prediction_intensity_score AS pis,
-      COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
-      COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
-      COUNT(*)::int AS all_predictions,
-      CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-        THEN AVG(p.direction_score)::float
-        ELSE NULL END AS hit_rate,
-      COALESCE(AVG(p.crowd_accuracy)::float, 0) AS avg_crowd_accuracy,
-      COUNT(CASE WHEN p.crowd_accuracy IS NOT NULL THEN 1 END)::int AS crowd_evaluated
-    FROM predictions p
-    JOIN channels c ON p.channel_id = c.id
-    WHERE p.prediction_type IN ('buy', 'sell')
-    GROUP BY c.id, c.name, c.thumbnail_url, c.category, c.channel_type, c.prediction_intensity_score
-    HAVING COUNT(*) >= 1
-    ORDER BY COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) DESC, AVG(p.direction_score) DESC NULLS LAST
+    SELECT * FROM mv_hit_rate_leaderboard
   `
 
   const result: HitRateLeaderboardItem[] = []

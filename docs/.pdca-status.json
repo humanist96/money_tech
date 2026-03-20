@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-20T05:03:49.732Z",
+  "lastUpdated": "2026-03-20T05:17:16.478Z",
   "activeFeatures": [
     "frontend",
     "channels",
@@ -40,7 +40,8 @@
     "risk-scoreboard.tsx",
     "consensus-timeline.tsx",
     "queries",
-    "enhanced-buzz-alert.tsx"
+    "enhanced-buzz-alert.tsx",
+    "crowd"
   ],
   "primaryFeature": "frontend",
   "features": {
@@ -52,9 +53,9 @@
       "archivedAt": "2026-03-11T12:00:00.000Z",
       "archivedTo": "docs/archive/2026-03/10-features/",
       "phaseNumber": 3,
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/lib/queries.ts",
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/page.tsx",
       "timestamps": {
-        "lastUpdated": "2026-03-20T04:47:04.537Z"
+        "lastUpdated": "2026-03-20T05:16:03.064Z"
       }
     },
     "channels": {
@@ -66,7 +67,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-07T06:08:45.781Z",
-        "lastUpdated": "2026-03-14T10:59:10.527Z"
+        "lastUpdated": "2026-03-20T05:16:07.416Z"
       },
       "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/channels/page.tsx"
     },
@@ -118,9 +119,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-07T06:14:19.010Z",
-        "lastUpdated": "2026-03-09T06:33:21.880Z"
+        "lastUpdated": "2026-03-20T05:16:08.334Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/trends/trend-details.tsx"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/trends/page.tsx"
     },
     "compare": {
       "phase": "do",
@@ -157,9 +158,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-07T06:28:05.600Z",
-        "lastUpdated": "2026-03-20T05:03:49.732Z"
+        "lastUpdated": "2026-03-20T05:16:41.141Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/nlp_pipeline.py"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/crawler/evaluate.py"
     },
     "channel-profiles": {
       "phase": "do",
@@ -365,7 +366,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T04:43:23.815Z",
-        "lastUpdated": "2026-03-14T10:59:20.149Z"
+        "lastUpdated": "2026-03-20T05:16:09.199Z"
       },
       "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/leaderboard/page.tsx"
     },
@@ -378,9 +379,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T04:44:24.092Z",
-        "lastUpdated": "2026-03-14T10:59:46.355Z"
+        "lastUpdated": "2026-03-20T05:16:11.423Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/consensus/consensus-client.tsx"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/consensus/page.tsx"
     },
     "predictions": {
       "phase": "do",
@@ -443,7 +444,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-14T10:59:07.005Z",
-        "lastUpdated": "2026-03-14T10:59:07.005Z"
+        "lastUpdated": "2026-03-20T05:16:10.532Z"
       },
       "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/weekly-report/page.tsx"
     },
@@ -534,9 +535,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-20T04:42:26.608Z",
-        "lastUpdated": "2026-03-20T04:47:00.506Z"
+        "lastUpdated": "2026-03-20T05:17:16.478Z"
       },
-      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/lib/queries/index.ts"
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/lib/queries/dashboard.ts"
     },
     "enhanced-buzz-alert.tsx": {
       "phase": "do",
@@ -550,6 +551,19 @@
         "lastUpdated": "2026-03-20T04:43:43.961Z"
       },
       "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/components/features/enhanced-buzz-alert.tsx"
+    },
+    "crowd": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-20T05:16:12.237Z",
+        "lastUpdated": "2026-03-20T05:16:55.791Z"
+      },
+      "lastFile": "/Users/koscom/@work/money_tech/money_tech/frontend/app/crowd/page.tsx"
     }
   },
   "pipeline": {
@@ -560,7 +574,7 @@
   "session": {
     "startedAt": "2026-03-07T06:05:25.008Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-20T05:03:49.732Z"
+    "lastActivity": "2026-03-20T05:17:16.478Z"
   },
   "history": [
     {
@@ -5438,6 +5452,90 @@
     {
       "timestamp": "2026-03-20T05:03:49.732Z",
       "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:02.665Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:03.064Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:07.416Z",
+      "feature": "channels",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:08.334Z",
+      "feature": "trends",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:09.199Z",
+      "feature": "leaderboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:10.532Z",
+      "feature": "weekly-report",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:11.423Z",
+      "feature": "consensus",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:12.237Z",
+      "feature": "crowd",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:36.247Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:41.141Z",
+      "feature": "crawler",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:55.791Z",
+      "feature": "crowd",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:16:56.465Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:17:10.945Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-20T05:17:16.478Z",
+      "feature": "queries",
       "phase": "do",
       "action": "updated"
     }

@@ -1,7 +1,7 @@
 import { getHitRateLeaderboard, getChannelTypeStats } from "@/lib/queries"
 import { LeaderboardClient } from "./leaderboard-client"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 export default async function LeaderboardPage() {
   let leaderboard: Awaited<ReturnType<typeof getHitRateLeaderboard>> = []

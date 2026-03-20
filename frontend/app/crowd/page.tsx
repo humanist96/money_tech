@@ -1,10 +1,15 @@
 import { getCrowdSentimentLatest } from "@/lib/queries"
 import { CrowdDashboard } from "./crowd-dashboard"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 1800
 
 export default async function CrowdPage() {
-  const sentiments = await getCrowdSentimentLatest(30)
+  let sentiments: Awaited<ReturnType<typeof getCrowdSentimentLatest>> = []
+  try {
+    sentiments = await getCrowdSentimentLatest(30)
+  } catch {
+    // fallback to empty
+  }
 
   return (
     <div className="space-y-6">

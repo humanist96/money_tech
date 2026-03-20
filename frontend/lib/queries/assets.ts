@@ -46,33 +46,41 @@ export async function getAssetDetail(assetCode: string) {
 }
 
 // Asset Consensus Score (all channels)
+// Uses mv_asset_consensus materialized view (default 30 days, refreshed after each crawl)
+// Falls back to live query when custom days parameter is provided
 export async function getAssetConsensus(days = 30): Promise<AssetConsensus[]> {
   const sql = getDb()
-  const rows = await sql`
-    SELECT
-      ma.asset_name,
-      ma.asset_code,
-      ma.asset_type,
-      COUNT(CASE WHEN ma.sentiment = 'positive' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS positive_pct,
-      COUNT(CASE WHEN ma.sentiment = 'negative' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS negative_pct,
-      COUNT(CASE WHEN ma.sentiment = 'neutral' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS neutral_pct,
-      COUNT(*)::int AS total_mentions,
-      COUNT(DISTINCT v.channel_id)::int AS channel_count,
-      ARRAY_AGG(DISTINCT c.name) AS channels,
-      COUNT(CASE WHEN p.prediction_type = 'buy' THEN 1 END)::int AS buy_count,
-      COUNT(CASE WHEN p.prediction_type = 'sell' THEN 1 END)::int AS sell_count,
-      COUNT(CASE WHEN p.prediction_type = 'hold' THEN 1 END)::int AS hold_count
-    FROM mentioned_assets ma
-    JOIN videos v ON ma.video_id = v.id
-    JOIN channels c ON v.channel_id = c.id
-    LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
-    WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
-      AND ma.sentiment IS NOT NULL
-    GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
-    HAVING COUNT(*) >= 2
-    ORDER BY COUNT(DISTINCT v.channel_id) DESC, COUNT(*) DESC
-    LIMIT 30
-  `
+
+  const rows = days === 30
+    ? await sql`
+        SELECT * FROM mv_asset_consensus
+      `
+    : await sql`
+        SELECT
+          ma.asset_name,
+          ma.asset_code,
+          ma.asset_type,
+          COUNT(CASE WHEN ma.sentiment = 'positive' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS positive_pct,
+          COUNT(CASE WHEN ma.sentiment = 'negative' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS negative_pct,
+          COUNT(CASE WHEN ma.sentiment = 'neutral' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS neutral_pct,
+          COUNT(*)::int AS total_mentions,
+          COUNT(DISTINCT v.channel_id)::int AS channel_count,
+          ARRAY_AGG(DISTINCT c.name) AS channels,
+          COUNT(CASE WHEN p.prediction_type = 'buy' THEN 1 END)::int AS buy_count,
+          COUNT(CASE WHEN p.prediction_type = 'sell' THEN 1 END)::int AS sell_count,
+          COUNT(CASE WHEN p.prediction_type = 'hold' THEN 1 END)::int AS hold_count
+        FROM mentioned_assets ma
+        JOIN videos v ON ma.video_id = v.id
+        JOIN channels c ON v.channel_id = c.id
+        LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
+        WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
+          AND ma.sentiment IS NOT NULL
+        GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
+        HAVING COUNT(*) >= 2
+        ORDER BY COUNT(DISTINCT v.channel_id) DESC, COUNT(*) DESC
+        LIMIT 30
+      `
+
   return rows.map((r: any) => {
     const maxPct = Math.max(r.positive_pct || 0, r.negative_pct || 0, r.neutral_pct || 0)
     return { ...r, consensus_score: Math.round(maxPct) }

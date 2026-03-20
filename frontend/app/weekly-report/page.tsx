@@ -1,7 +1,7 @@
 import { getWeeklyReport } from "@/lib/queries"
 import { WeeklyReportPanel } from "@/components/features/weekly-report"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 export default async function WeeklyReportPage() {
   let report = { winners: [] as any[], losers: [] as any[], bestCall: null as any, worstCall: null as any }

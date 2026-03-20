@@ -14,6 +14,21 @@ from channel_classifier import update_stale_classifications
 load_dotenv()
 
 
+def refresh_materialized_views(conn):
+    """Refresh materialized views after data update."""
+    logger.info("Refreshing materialized views...")
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT refresh_materialized_views()")
+        conn.commit()
+        logger.info("Materialized views refreshed successfully")
+    except Exception as e:
+        logger.error("Failed to refresh materialized views: %s", e, exc_info=True)
+        conn.rollback()
+    finally:
+        cur.close()
+
+
 def main():
     with get_conn() as conn:
         logger.info("=== Price Collection ===")
@@ -49,6 +64,12 @@ def main():
             logger.info("Re-classified %d channels", updated)
         except Exception as e:
             logger.error("Channel classification failed: %s", e, exc_info=True)
+
+        logger.info("=== Refresh Materialized Views ===")
+        try:
+            refresh_materialized_views(conn)
+        except Exception as e:
+            logger.error("Materialized view refresh failed: %s", e, exc_info=True)
 
         logger.info("=== Evaluation pipeline complete ===")
 

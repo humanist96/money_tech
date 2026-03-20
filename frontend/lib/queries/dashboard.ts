@@ -57,19 +57,9 @@ export async function getMarketSentimentGauge(): Promise<MarketSentimentGauge> {
       Math.max(categoryScores.reduce((sum, d) => sum + d.total_count, 0), 1)
     : 50
 
+  // Use mv_market_sentiment materialized view (pre-computed 90-day daily scores)
   const historicalRows = await sql`
-    SELECT
-      v.published_at::date AS date,
-      ((COUNT(CASE WHEN ma.sentiment = 'positive' THEN 1 END)::float -
-        COUNT(CASE WHEN ma.sentiment = 'negative' THEN 1 END)::float) /
-        NULLIF(COUNT(*), 0) * 50 + 50) AS score
-    FROM mentioned_assets ma
-    JOIN videos v ON ma.video_id = v.id
-    WHERE v.published_at >= NOW() - INTERVAL '90 days'
-      AND ma.sentiment IS NOT NULL
-    GROUP BY v.published_at::date
-    HAVING COUNT(*) >= 5
-    ORDER BY date ASC
+    SELECT date, score FROM mv_market_sentiment ORDER BY date ASC
   `
 
   const extremes = (historicalRows as any[])

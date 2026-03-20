@@ -1,7 +1,7 @@
 import { getAssetConsensus, getPredictorChannels } from "@/lib/queries"
 import { ConsensusClient } from "./consensus-client"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 1800
 
 export default async function ConsensusPage() {
   let consensus: Awaited<ReturnType<typeof getAssetConsensus>> = []

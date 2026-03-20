@@ -11,7 +11,7 @@ import { CorrelationNetwork } from "@/components/charts/correlation-network"
 import { CategoryBarChart } from "@/components/charts/category-bar-chart"
 import { TrendDetails } from "./trend-details"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 1800
 
 async function getTrendData() {
   try {

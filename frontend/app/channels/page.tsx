@@ -2,7 +2,7 @@ import { getChannels } from "@/lib/queries"
 import type { Channel } from "@/lib/types"
 import { ChannelList } from "./channel-list"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 export default async function ChannelsPage() {
   let channels: Channel[]
