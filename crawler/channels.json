@@ -151,6 +151,22 @@
     {
       "name": "용사부",
       "channel_id": "UC-jgYMsPz6NuDT9j9dmNODg"
+    },
+    {
+      "name": "주식왕 채국장의 코스피 1만 코스닥 3천",
+      "channel_id": "UCl7_Zg4RdQbHx0kXaiKL-5g"
+    },
+    {
+      "name": "황금별의 부자노트",
+      "channel_id": "UCkW6_HOvW5FndM_gfHPdYdA"
+    },
+    {
+      "name": "트리마제 미국주식",
+      "channel_id": "UCw2y3T4HjmmVown3WLQ2u7g"
+    },
+    {
+      "name": "ETF 아는 형",
+      "channel_id": "UCIt_hQy30blHrVAS7QLTyTg"
     }
   ],
   "coin": [
@@ -225,6 +241,22 @@
     {
       "name": "TPark Crypto",
       "channel_id": "UCb99eolnssbbeEBjcaw9lIw"
+    },
+    {
+      "name": "코인천국",
+      "channel_id": "UCe1uFmR_PnYMzGF9FVJsxPg"
+    },
+    {
+      "name": "블록체인 연구소 - 비트랩",
+      "channel_id": "UCsimrB2dRfGJAS6kGVVB4MQ"
+    },
+    {
+      "name": "스트릿TV",
+      "channel_id": "UCBztIYIgMyDd0wBTP0meL5Q"
+    },
+    {
+      "name": "코인응급실ㅣ차트분석 No.01채널",
+      "channel_id": "UCkUut7ZZ--Lq770kucc0xsg"
     }
   ],
   "real_estate": [
@@ -295,6 +327,22 @@
     {
       "name": "경매광장 - 경매물건 분석채널",
       "channel_id": "UCHMcvkAQhWL6ylfUcnM-IBw"
+    },
+    {
+      "name": "부동산그래프",
+      "channel_id": "UCXo9KdLZmf_ALl4Sljsl-_Q"
+    },
+    {
+      "name": "LH청약센터",
+      "channel_id": "UCu61x77ULoV6nyTSOS42aJA"
+    },
+    {
+      "name": "낭만부동산",
+      "channel_id": "UCb30h2IisWRP01ZdKQoC8rA"
+    },
+    {
+      "name": "이경민의 부동산하이킥",
+      "channel_id": "UCUPVXTwjAERAB4Og7czjPcw"
     }
   ],
   "economy": [
