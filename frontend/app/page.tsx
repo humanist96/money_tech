@@ -11,49 +11,47 @@ import { DashboardContent } from "@/components/dashboard/dashboard-content"
 
 export const dynamic = "force-dynamic"
 
-async function getDashboardData() {
+async function safeQuery<T>(name: string, fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
-    const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals] = await Promise.all([
-      getChannels(),
-      getRecentVideosWithAssets(15),
-      getDailyStats(30),
-      getTotalVideoCount(),
-      getAssetConsensus(30),
-      getAssetMentions(30),
-      getRecentPredictions(20),
-      getTopAssetSentiments(10, 30),
-      getBuzzAlerts(48),
-      getChannelPredictionProfiles(),
-      getMarketSentimentGauge(),
-      getContrarianSignals(30, 75),
-    ])
+    return await fn()
+  } catch (e) {
+    console.error(`[Dashboard] ${name} failed:`, e instanceof Error ? e.message : e)
+    return fallback
+  }
+}
 
-    const today = new Date().toISOString().split("T")[0]
-    const todayStats = stats.filter((s) => new Date(s.date).toISOString().split("T")[0] === today)
-    const todayVideos = todayStats.reduce((sum, s) => sum + (s.total_videos ?? 0), 0)
+async function getDashboardData() {
+  const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals] = await Promise.all([
+    safeQuery("getChannels", () => getChannels(), [] as Channel[]),
+    safeQuery("getRecentVideosWithAssets", () => getRecentVideosWithAssets(15), []),
+    safeQuery("getDailyStats", () => getDailyStats(30), []),
+    safeQuery("getTotalVideoCount", () => getTotalVideoCount(), 0),
+    safeQuery("getAssetConsensus", () => getAssetConsensus(30), []),
+    safeQuery("getAssetMentions", () => getAssetMentions(30), []),
+    safeQuery("getRecentPredictions", () => getRecentPredictions(20), []),
+    safeQuery("getTopAssetSentiments", () => getTopAssetSentiments(10, 30), []),
+    safeQuery("getBuzzAlerts", () => getBuzzAlerts(48), []),
+    safeQuery("getChannelPredictionProfiles", () => getChannelPredictionProfiles(), []),
+    safeQuery("getMarketSentimentGauge", () => getMarketSentimentGauge(), { overall_score: 50, category_scores: [], historical_extremes: [], current_warning: null }),
+    safeQuery("getContrarianSignals", () => getContrarianSignals(30, 75), []),
+  ])
 
-    const last7 = stats.filter((s) => new Date(s.date) >= new Date(Date.now() - 7 * 86400000))
-    const catCounts: Record<string, number> = {}
-    for (const s of last7) {
-      catCounts[s.category] = (catCounts[s.category] ?? 0) + (s.total_videos ?? 0)
-    }
-    const topCatEntry = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]
-    const topCategory = topCatEntry ? CATEGORY_LABELS[topCatEntry[0]] ?? topCatEntry[0] : "-"
+  const today = new Date().toISOString().split("T")[0]
+  const todayStats = (stats as any[]).filter((s) => new Date(s.date).toISOString().split("T")[0] === today)
+  const todayVideos = todayStats.reduce((sum, s) => sum + (s.total_videos ?? 0), 0)
 
-    return {
-      channels, videos, totalVideos, todayVideos, topCategory,
-      consensus, assetMentions, predictions, assetSentiments,
-      buzzAlerts, predictionProfiles, marketGauge, contrarianSignals,
-    }
-  } catch {
-    return {
-      channels: [] as Channel[], videos: [] as any[],
-      totalVideos: 0, todayVideos: 0, topCategory: "-",
-      consensus: [], assetMentions: [], predictions: [],
-      assetSentiments: [], buzzAlerts: [], predictionProfiles: [],
-      marketGauge: { overall_score: 50, category_scores: [], historical_extremes: [], current_warning: null },
-      contrarianSignals: [],
-    }
+  const last7 = (stats as any[]).filter((s) => new Date(s.date) >= new Date(Date.now() - 7 * 86400000))
+  const catCounts: Record<string, number> = {}
+  for (const s of last7) {
+    catCounts[s.category] = (catCounts[s.category] ?? 0) + (s.total_videos ?? 0)
+  }
+  const topCatEntry = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0]
+  const topCategory = topCatEntry ? CATEGORY_LABELS[topCatEntry[0]] ?? topCatEntry[0] : "-"
+
+  return {
+    channels, videos, totalVideos, todayVideos, topCategory,
+    consensus, assetMentions, predictions, assetSentiments,
+    buzzAlerts, predictionProfiles, marketGauge, contrarianSignals,
   }
 }
 
