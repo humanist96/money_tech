@@ -10,7 +10,7 @@ import type { Channel } from "@/lib/types"
 import { CATEGORY_LABELS } from "@/lib/types"
 import { DashboardContent } from "@/components/dashboard/dashboard-content"
 
-export const revalidate = 300
+export const dynamic = "force-dynamic"
 
 const getCachedDashboardData = unstable_cache(
   async () => {

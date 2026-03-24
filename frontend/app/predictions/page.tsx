@@ -1,7 +1,7 @@
 import { getActivePredictions } from "@/lib/queries"
 import { PredictionsClient } from "./predictions-client"
 
-export const revalidate = 1800
+export const dynamic = "force-dynamic"
 
 export default async function PredictionsPage() {
   let predictions: Awaited<ReturnType<typeof getActivePredictions>> = []

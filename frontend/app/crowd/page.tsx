@@ -1,7 +1,7 @@
 import { getCrowdSentimentLatest } from "@/lib/queries"
 import { CrowdDashboard } from "./crowd-dashboard"
 
-export const revalidate = 1800
+export const dynamic = "force-dynamic"
 
 export default async function CrowdPage() {
   let sentiments: Awaited<ReturnType<typeof getCrowdSentimentLatest>> = []
