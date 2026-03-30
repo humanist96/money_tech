@@ -167,6 +167,18 @@
     {
       "name": "ETF 아는 형",
       "channel_id": "UCIt_hQy30blHrVAS7QLTyTg"
+    },
+    {
+      "name": "주식장인",
+      "channel_id": "UCYCJtL5PP64m4xSL27N-cJw"
+    },
+    {
+      "name": "미국주식의 모든것 - 미주모",
+      "channel_id": "UCr5oaHbo3FhagiG9lrDD5uw"
+    },
+    {
+      "name": "서대리TV",
+      "channel_id": "UCtQkxwZkrruYdy2bVNNW-Rw"
     }
   ],
   "coin": [
@@ -257,6 +269,10 @@
     {
       "name": "코인응급실ㅣ차트분석 No.01채널",
       "channel_id": "UCkUut7ZZ--Lq770kucc0xsg"
+    },
+    {
+      "name": "리플코인전망",
+      "channel_id": "UC1ENA45C-flS8HqIi-Nd8jw"
     }
   ],
   "real_estate": [
@@ -343,6 +359,18 @@
     {
       "name": "이경민의 부동산하이킥",
       "channel_id": "UCUPVXTwjAERAB4Og7czjPcw"
+    },
+    {
+      "name": "집과사람 부동산경매학원",
+      "channel_id": "UC2NHFLhZ4LT-2kE0hghRtTA"
+    },
+    {
+      "name": "상가투자, 토지투자 김종율TV",
+      "channel_id": "UCa08Pwp6Rj7jGz6QElDHojw"
+    },
+    {
+      "name": "보이는부동산-경매공매",
+      "channel_id": "UCcl46r1PLtVh9oOKmV7fEKw"
     }
   ],
   "economy": [
