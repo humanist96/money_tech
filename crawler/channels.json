@@ -179,6 +179,10 @@
     {
       "name": "서대리TV",
       "channel_id": "UCtQkxwZkrruYdy2bVNNW-Rw"
+    },
+    {
+      "name": "차트분석",
+      "channel_id": "UCNB_-Cf71Qj9XFC1p7XJcrw"
     }
   ],
   "coin": [
@@ -371,6 +375,10 @@
     {
       "name": "보이는부동산-경매공매",
       "channel_id": "UCcl46r1PLtVh9oOKmV7fEKw"
+    },
+    {
+      "name": "대박땅꾼 아카데미",
+      "channel_id": "UCoyA-0efbgYY7GAAvrRH0ZA"
     }
   ],
   "economy": [
