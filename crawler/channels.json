@@ -183,6 +183,14 @@
     {
       "name": "차트분석",
       "channel_id": "UCNB_-Cf71Qj9XFC1p7XJcrw"
+    },
+    {
+      "name": "반교수(ProfHalf)의 미국 투자 스토리(미투리)",
+      "channel_id": "UCczff_dQVVb9sSEULFUJ-sw"
+    },
+    {
+      "name": "강남개미의 주식매매일지",
+      "channel_id": "UC0d8hdMG9SRfOCL4cqgmRwg"
     }
   ],
   "coin": [
@@ -277,6 +285,18 @@
     {
       "name": "리플코인전망",
       "channel_id": "UC1ENA45C-flS8HqIi-Nd8jw"
+    },
+    {
+      "name": "웨돔의 비트코인",
+      "channel_id": "UC9stxmmO1eaSTh9F9WETURg"
+    },
+    {
+      "name": "아인의 비트코인",
+      "channel_id": "UCD6vWupLJnie8Rr6nWXCAJg"
+    },
+    {
+      "name": "밥코인",
+      "channel_id": "UC2eJqRWN3CqcPNX2PdMNdsQ"
     }
   ],
   "real_estate": [
@@ -379,6 +399,10 @@
     {
       "name": "대박땅꾼 아카데미",
       "channel_id": "UCoyA-0efbgYY7GAAvrRH0ZA"
+    },
+    {
+      "name": "마이옥션TV - 부동산 경매의 모든 것",
+      "channel_id": "UCsB4-8k5DBRkzC1lk02-aoQ"
     }
   ],
   "economy": [
@@ -477,6 +501,10 @@
     {
       "name": "JD부자연구소",
       "channel_id": "UCJN8yfW2p6Gd8-wZ04pGAkg"
+    },
+    {
+      "name": "절세미녀 김희연 회계사",
+      "channel_id": "UC2ByczqyZtt0Lj2DCkQuXJA"
     }
   ]
 }
