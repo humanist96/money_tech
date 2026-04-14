@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import time
 
+from logger import logger
+
 # Major Korean stocks (종목명 → 종목코드)
 STOCK_DICT: dict[str, str] = {
     # 대형주
@@ -276,20 +278,37 @@ class DynamicAssetDictionary:
         self._cache_ttl: int = 3600  # 1 hour
 
     def refresh(self, cur=None) -> None:
-        """Reload from DB if available and cache expired."""
+        """Reload from DB if available and cache expired.
+
+        Wrapped in a SAVEPOINT so a query failure (e.g. table missing on a
+        partially-migrated DB) is contained and does not leave the surrounding
+        transaction in an aborted state. Without the savepoint the silent
+        ``except: pass`` previously caused every subsequent INSERT in the same
+        transaction to fail with InFailedSqlTransaction — see incident notes
+        on 2026-04-14.
+        """
         if time.time() - self._loaded_at < self._cache_ttl:
             return
         if cur is None:
             return
         try:
+            cur.execute("SAVEPOINT load_assets_dict")
+        except Exception:
+            return
+        try:
             s, c, r = load_assets_from_db(cur)
-            if s:  # only update if we got data
+            cur.execute("RELEASE SAVEPOINT load_assets_dict")
+            if s:
                 self._stock = s
                 self._coin = c
                 self._real_estate = r
                 self._loaded_at = time.time()
-        except Exception:
-            pass  # keep using current (hardcoded or previously loaded)
+        except Exception as exc:
+            try:
+                cur.execute("ROLLBACK TO SAVEPOINT load_assets_dict")
+            except Exception:
+                pass
+            logger.warning("asset_dictionary refresh failed, falling back: %s", exc)
 
     def find_assets_in_text(self, text: str) -> list[dict]:
         """Extract mentioned assets from *text*.
