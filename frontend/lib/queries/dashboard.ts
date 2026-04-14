@@ -199,10 +199,22 @@ export async function getContrarianSignals(days = 30, threshold = 75): Promise<C
           ELSE NULL END AS rebound_pct
       FROM mentioned_assets ma
       JOIN videos v ON ma.video_id = v.id
-      LEFT JOIN asset_prices ap_1w ON ap_1w.asset_code = ma.asset_code
-        AND ap_1w.recorded_date = (v.published_at::date + INTERVAL '7 days')::date
-      LEFT JOIN asset_prices ap_1m ON ap_1m.asset_code = ma.asset_code
-        AND ap_1m.recorded_date = (v.published_at::date + INTERVAL '30 days')::date
+      LEFT JOIN LATERAL (
+        SELECT price FROM asset_prices
+        WHERE asset_code = ma.asset_code
+          AND recorded_date >= (v.published_at::date + INTERVAL '7 days')::date
+          AND recorded_date <= (v.published_at::date + INTERVAL '14 days')::date
+        ORDER BY recorded_date ASC
+        LIMIT 1
+      ) ap_1w ON TRUE
+      LEFT JOIN LATERAL (
+        SELECT price FROM asset_prices
+        WHERE asset_code = ma.asset_code
+          AND recorded_date >= (v.published_at::date + INTERVAL '30 days')::date
+          AND recorded_date <= (v.published_at::date + INTERVAL '45 days')::date
+        ORDER BY recorded_date ASC
+        LIMIT 1
+      ) ap_1m ON TRUE
       WHERE ma.asset_code IS NOT NULL AND ma.price_at_mention IS NOT NULL
       GROUP BY ma.asset_code
     )

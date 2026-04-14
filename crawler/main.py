@@ -5,7 +5,9 @@ import json
 import os
 import re
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+KST = timezone(timedelta(hours=9))
 
 import psycopg2
 import psycopg2.extras
@@ -144,8 +146,16 @@ def extract_keywords_from_title(title: str) -> list[str]:
 
 
 def compute_daily_stats(cur, date_str: str) -> None:
-    """Compute and store daily statistics for each category."""
+    """Compute and store daily statistics for each category.
+
+    date_str is the KST calendar date. Boundaries are computed in KST so that
+    Korean morning content does not slip into the previous UTC day.
+    """
     categories = ["stock", "coin", "real_estate", "economy"]
+
+    kst_start = f"{date_str}T00:00:00+09:00"
+    next_day = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+    kst_end = f"{next_day}T00:00:00+09:00"
 
     for category in categories:
         cur.execute(
@@ -159,11 +169,11 @@ def compute_daily_stats(cur, date_str: str) -> None:
         cur.execute(
             """SELECT channel_id, title, tags, view_count FROM videos
             WHERE channel_id = ANY(%s::uuid[])
-            AND published_at >= %s AND published_at < %s::date + 1""",
+            AND published_at >= %s::timestamptz AND published_at < %s::timestamptz""",
             (
                 list(channel_ids.keys()),
-                f"{date_str}T00:00:00Z",
-                date_str,
+                kst_start,
+                kst_end,
             ),
         )
         videos = cur.fetchall()
@@ -202,10 +212,10 @@ def compute_daily_stats(cur, date_str: str) -> None:
                 JOIN videos v ON ma.video_id = v.id
                 JOIN channels c ON v.channel_id = c.id
                 WHERE c.category = %s
-                AND v.published_at >= %s AND v.published_at < %s::date + 1
+                AND v.published_at >= %s::timestamptz AND v.published_at < %s::timestamptz
                 AND ma.sentiment IS NOT NULL
                 GROUP BY ma.sentiment""",
-                (category, f"{date_str}T00:00:00Z", date_str),
+                (category, kst_start, kst_end),
             )
             for sentiment_val, cnt in cur.fetchall():
                 if sentiment_val in sentiment_distribution:
@@ -285,7 +295,7 @@ def process_video_nlp(cur, conn, video_id: str, video: dict, channel_uuid: str, 
 def crawl() -> None:
     """Main crawling function - uses YouTube Data API v3 with batch requests."""
     channels_config = load_channels()
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now(KST).strftime("%Y-%m-%d")
 
     total_new = 0
     total_updated = 0
@@ -372,11 +382,12 @@ def crawl() -> None:
                         else:
                             total_updated += 1
 
-                    # Update channel video/view counts from DB
+                    # Update channel video/view counts from DB and stamp last_crawled_at
                     cur.execute(
                         """UPDATE channels SET
                             video_count = COALESCE((SELECT count(*) FROM videos WHERE channel_id = %s), video_count),
-                            total_view_count = COALESCE((SELECT coalesce(sum(view_count), 0) FROM videos WHERE channel_id = %s), total_view_count)
+                            total_view_count = COALESCE((SELECT coalesce(sum(view_count), 0) FROM videos WHERE channel_id = %s), total_view_count),
+                            last_crawled_at = NOW()
                         WHERE id = %s""",
                         (channel_uuid, channel_uuid, channel_uuid),
                     )

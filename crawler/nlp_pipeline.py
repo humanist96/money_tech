@@ -288,7 +288,7 @@ class NLPPipeline:
                         """INSERT INTO predictions
                         (video_id, channel_id, mentioned_asset_id, prediction_type, reason, predicted_at)
                         VALUES (%s, %s, %s, %s, %s, %s)
-                        ON CONFLICT DO NOTHING""",
+                        ON CONFLICT (video_id, mentioned_asset_id, prediction_type) DO NOTHING""",
                         (
                             video_uuid,
                             channel_uuid,
@@ -359,7 +359,7 @@ class NLPPipeline:
                 (video_id, channel_id, mentioned_asset_id, prediction_type,
                  target_price, previous_target_price, confidence, reason, predicted_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT DO NOTHING""",
+                ON CONFLICT (video_id, mentioned_asset_id, prediction_type) DO NOTHING""",
                 (
                     video_uuid,
                     channel_uuid,
