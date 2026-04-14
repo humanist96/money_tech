@@ -159,9 +159,22 @@ def crawl_blogs() -> None:
                     if not posts:
                         continue
 
+                    # Pre-fetch which post URLs already exist so we only scrape
+                    # full content for genuinely new posts. Cuts per-blogger time
+                    # from ~30s to ~5s in the steady state where almost all RSS
+                    # entries are already ingested.
+                    post_links = [p.link for p in posts if p.link]
+                    existing_links: set[str] = set()
+                    if post_links:
+                        cur.execute(
+                            "SELECT blog_post_url FROM videos WHERE blog_post_url = ANY(%s)",
+                            (post_links,),
+                        )
+                        existing_links = {row[0] for row in cur.fetchall()}
+
                     for post in posts:
-                        # Try to fetch full content if we have a log_no
-                        if post.log_no:
+                        is_existing = post.link in existing_links
+                        if not is_existing and post.log_no:
                             full_text = fetch_blog_post_content(blog_id, post.log_no)
                             if full_text:
                                 post.content_text = full_text
