@@ -255,6 +255,26 @@
     {
       "name": "https://blog.naver.com/무역포털 경제 이야기",
       "blog_id": "black2160"
+    },
+    {
+      "name": "kariana님의블로그",
+      "blog_id": "kariana"
+    },
+    {
+      "name": "현우의 경제일기",
+      "blog_id": "ziskorea"
+    },
+    {
+      "name": "재클쌤의 경제7스푼",
+      "blog_id": "lancelot85"
+    },
+    {
+      "name": "욕심 덜어내고 GO!",
+      "blog_id": "yihh0623"
+    },
+    {
+      "name": "재테크왕 숫사자",
+      "blog_id": "chastian"
     }
   ],
   "coin": [
@@ -357,6 +377,18 @@
     {
       "name": "취생몽사",
       "blog_id": "yichang2024"
+    },
+    {
+      "name": "todaycoininfo님의 블로그",
+      "blog_id": "todaycoininfo"
+    },
+    {
+      "name": "냥코노미",
+      "blog_id": "catconomy_"
+    },
+    {
+      "name": "구프로의 코인이야기 (feat. 엣지퀀트)",
+      "blog_id": "skbb23"
     }
   ],
   "real_estate": [
@@ -1139,6 +1171,34 @@
     {
       "name": "5분요정",
       "blog_id": "justfiveminute"
+    },
+    {
+      "name": "매물부자 현서씨",
+      "blog_id": "dearest88"
+    },
+    {
+      "name": "이브라힘클로드",
+      "blog_id": "irbypnc183"
+    },
+    {
+      "name": "부산재개발빵집 010-2991-5121",
+      "blog_id": "flowersj000"
+    },
+    {
+      "name": "중흥김동진공인중개사 041-664-1472",
+      "blog_id": "sul0872"
+    },
+    {
+      "name": "부동산투자는 이렇게 하는겁니다",
+      "blog_id": "usim4414"
+    },
+    {
+      "name": "(주)나인부동산중개법인",
+      "blog_id": "9realty"
+    },
+    {
+      "name": "재개발 넘버원",
+      "blog_id": "porgej4140"
     }
   ],
   "economy": [
@@ -1185,6 +1245,10 @@
     {
       "name": "13년 경력 상속세, 양도세, 증여세 전문 세무사",
       "blog_id": "skj34088"
+    },
+    {
+      "name": "달마의 투자노트",
+      "blog_id": "poool8"
     }
   ]
 }
