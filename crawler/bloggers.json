@@ -275,6 +275,26 @@
     {
       "name": "재테크왕 숫사자",
       "blog_id": "chastian"
+    },
+    {
+      "name": "모으냥의 재테크 블로그 ≽^•˕•^≼,",
+      "blog_id": "moeunyang"
+    },
+    {
+      "name": "나의 상상은 현실이 된다",
+      "blog_id": "kunguk"
+    },
+    {
+      "name": "mazingerz님의블로그",
+      "blog_id": "mazigerz"
+    },
+    {
+      "name": "세종 경매 114",
+      "blog_id": "sjpc113"
+    },
+    {
+      "name": "법무법인 수림 투자사기 피해구제",
+      "blog_id": "stronglyluk"
     }
   ],
   "coin": [
@@ -389,6 +409,10 @@
     {
       "name": "구프로의 코인이야기 (feat. 엣지퀀트)",
       "blog_id": "skbb23"
+    },
+    {
+      "name": "스마일차차차",
+      "blog_id": "smaile4865"
     }
   ],
   "real_estate": [
@@ -1199,6 +1223,66 @@
     {
       "name": "재개발 넘버원",
       "blog_id": "porgej4140"
+    },
+    {
+      "name": "친절한 경매누나",
+      "blog_id": "gold-castle1"
+    },
+    {
+      "name": "15년경력 다리들경매공인",
+      "blog_id": "7babybear"
+    },
+    {
+      "name": "임경당부동산중개법인(주) 과천점",
+      "blog_id": "realtor-wook"
+    },
+    {
+      "name": "집 보는 사초생",
+      "blog_id": "pi-ok"
+    },
+    {
+      "name": "제주영어교육도시 전문 제주영도부동산",
+      "blog_id": "jeju_youngdo"
+    },
+    {
+      "name": "푸그니s의 경제이야기",
+      "blog_id": "kyock23"
+    },
+    {
+      "name": "부동산매입매각 전문 밸류코어랩 빌딩매매,신축부지",
+      "blog_id": "ysrealty1677"
+    },
+    {
+      "name": "Real Estate•Stock• Tax Law",
+      "blog_id": "dragon-788"
+    },
+    {
+      "name": "월급쟁이 탈출 프로젝트",
+      "blog_id": "rushout3"
+    },
+    {
+      "name": "This is 투자",
+      "blog_id": "rafaaael206"
+    },
+    {
+      "name": "부동산 투자는 이렇게 하는겁니다",
+      "blog_id": "cellblock0002"
+    },
+    {
+      "name": "의정부 우리동네 이야기",
+      "blog_id": "saehan8781212"
+    },
+    {
+      "name": "허브 부동산정보",
+      "blog_id": "mata1070"
+    },
+    {
+      "name": "좋은집구하기 -경성부동산(노원역)",
+      "blog_id": "khkim700"
+    },
+    {
+      "name": "내가 원하는 부동산 찾기 동화 르 플로랑 부동산",
+      "blog_id": "dhlee665"
     }
   ],
   "economy": [
@@ -1249,6 +1333,10 @@
     {
       "name": "달마의 투자노트",
       "blog_id": "poool8"
+    },
+    {
+      "name": "평화세무회계",
+      "blog_id": "peacetax0416"
     }
   ]
 }
