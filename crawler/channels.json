@@ -199,6 +199,10 @@
     {
       "name": "스마트 타이거 – TIGER ETF 공식 유튜브 채널",
       "channel_id": "UCNcMZz0cIba-4xBLZcoWrBA"
+    },
+    {
+      "name": "한국투자증권",
+      "channel_id": "UCU6f21g_qaJk6rkX-IF6X2g"
     }
   ],
   "coin": [
@@ -305,6 +309,18 @@
     {
       "name": "밥코인",
       "channel_id": "UC2eJqRWN3CqcPNX2PdMNdsQ"
+    },
+    {
+      "name": "박작가의 크립토연구소",
+      "channel_id": "UCqaXPyhWGtS_Vt20GQQDSbg"
+    },
+    {
+      "name": "오늘의 코인뉴스",
+      "channel_id": "UCDBniJtWmmDbGiJ68UbBrUw"
+    },
+    {
+      "name": "크립토tv",
+      "channel_id": "UCFSzDKpEAp9zYHEy8FfhOrw"
     }
   ],
   "real_estate": [

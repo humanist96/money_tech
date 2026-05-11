@@ -319,6 +319,34 @@
     {
       "name": "리치송의 머니쿠키",
       "blog_id": "richmoneycookie"
+    },
+    {
+      "name": "개미책사",
+      "blog_id": "79gytn"
+    },
+    {
+      "name": "덤인베스트",
+      "blog_id": "yolowow"
+    },
+    {
+      "name": "살림문제해결노트",
+      "blog_id": "skinpick"
+    },
+    {
+      "name": "해나루-핵심뉴스",
+      "blog_id": "mkj0914"
+    },
+    {
+      "name": "IM DABABA 컨설팅",
+      "blog_id": "hero1197"
+    },
+    {
+      "name": "찬바람이불면",
+      "blog_id": "shinhhcc"
+    },
+    {
+      "name": "독(讀,읽을독)한 남자의 투자여행",
+      "blog_id": "taeho0210"
     }
   ],
   "coin": [
@@ -445,6 +473,14 @@
     {
       "name": "매화난초",
       "blog_id": "start8181"
+    },
+    {
+      "name": "난 행복해♡",
+      "blog_id": "pcbee83"
+    },
+    {
+      "name": "메이킹 블록체인",
+      "blog_id": "happypcb"
     }
   ],
   "real_estate": [
@@ -1355,6 +1391,34 @@
     {
       "name": "한국부동산원 공식 블로그",
       "blog_id": "kabblog"
+    },
+    {
+      "name": "미소랑부동산톡톡! 010-2202-7270",
+      "blog_id": "930miso"
+    },
+    {
+      "name": "부동산 아재",
+      "blog_id": "ysw9ta"
+    },
+    {
+      "name": "부동산맥",
+      "blog_id": "jaesang7777"
+    },
+    {
+      "name": "소리하우스",
+      "blog_id": "kiyaheueo"
+    },
+    {
+      "name": "부동산 파노라마",
+      "blog_id": "goodtays"
+    },
+    {
+      "name": "천국의 미소님 블로그",
+      "blog_id": "chpark1252_"
+    },
+    {
+      "name": "개포축복",
+      "blog_id": "kwonym1014mee"
     }
   ],
   "economy": [
