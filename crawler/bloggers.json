@@ -347,6 +347,22 @@
     {
       "name": "독(讀,읽을독)한 남자의 투자여행",
       "blog_id": "taeho0210"
+    },
+    {
+      "name": "웅코의 꿈꾸는 오두막",
+      "blog_id": "hwg20000"
+    },
+    {
+      "name": "실용주의자 퀸개미",
+      "blog_id": "mong4862"
+    },
+    {
+      "name": "재미진 저널리스트의 금융탐구생활",
+      "blog_id": "press02"
+    },
+    {
+      "name": "WHY DAILY",
+      "blog_id": "archimall"
     }
   ],
   "coin": [
@@ -481,6 +497,10 @@
     {
       "name": "메이킹 블록체인",
       "blog_id": "happypcb"
+    },
+    {
+      "name": "LET ME CATER TO YOU",
+      "blog_id": "sonemelody"
     }
   ],
   "real_estate": [
@@ -1419,6 +1439,38 @@
     {
       "name": "개포축복",
       "blog_id": "kwonym1014mee"
+    },
+    {
+      "name": "주디의 주택 디딤돌 - 재개발, 재건축, 분양권",
+      "blog_id": "rkdtjsdnr3e"
+    },
+    {
+      "name": "슈퍼팬트하우스",
+      "blog_id": "fullmoon0303"
+    },
+    {
+      "name": "더리얼부동산경매학원",
+      "blog_id": "therealacademy"
+    },
+    {
+      "name": "규민부동산공인중개사사무소",
+      "blog_id": "sale_in"
+    },
+    {
+      "name": "오를집연구소",
+      "blog_id": "replayaction"
+    },
+    {
+      "name": "이야기",
+      "blog_id": "studiolaon"
+    },
+    {
+      "name": "부동산 맛동산",
+      "blog_id": "jang6234"
+    },
+    {
+      "name": "50대에 경험하거나 경험할 모든 것을 담는다.",
+      "blog_id": "comstory50s"
     }
   ],
   "economy": [
@@ -1473,6 +1525,10 @@
     {
       "name": "평화세무회계",
       "blog_id": "peacetax0416"
+    },
+    {
+      "name": "자본과 사회",
+      "blog_id": "capital-society"
     }
   ]
 }
