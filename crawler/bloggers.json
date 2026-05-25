@@ -363,6 +363,34 @@
     {
       "name": "WHY DAILY",
       "blog_id": "archimall"
+    },
+    {
+      "name": "열달애비",
+      "blog_id": "humanresource"
+    },
+    {
+      "name": "건강한 마음!!",
+      "blog_id": "helpnara"
+    },
+    {
+      "name": "내 집마련 투자연구소!",
+      "blog_id": "yjae0000"
+    },
+    {
+      "name": "비누의 경제 공방",
+      "blog_id": "soap77777"
+    },
+    {
+      "name": "경제현미경의 디테일한 시야",
+      "blog_id": "jkyun0621"
+    },
+    {
+      "name": "에르메의 재테크북",
+      "blog_id": "hermebook"
+    },
+    {
+      "name": "멘토링하우스",
+      "blog_id": "mentoringhouse"
     }
   ],
   "coin": [
@@ -501,6 +529,14 @@
     {
       "name": "LET ME CATER TO YOU",
       "blog_id": "sonemelody"
+    },
+    {
+      "name": "작은재미",
+      "blog_id": "solifeso"
+    },
+    {
+      "name": "세상은 넓고 갈곳은 많다!!님의 블로그",
+      "blog_id": "manukejjw"
     }
   ],
   "real_estate": [
@@ -1471,6 +1507,42 @@
     {
       "name": "50대에 경험하거나 경험할 모든 것을 담는다.",
       "blog_id": "comstory50s"
+    },
+    {
+      "name": "Rich Maker",
+      "blog_id": "richmaker400"
+    },
+    {
+      "name": "명당 공인중개사사무소",
+      "blog_id": "kkulmd96"
+    },
+    {
+      "name": "제주도 표선 해오름 부동산",
+      "blog_id": "poouhohojeju"
+    },
+    {
+      "name": "법률사무소 정금 | 박순배 변호사",
+      "blog_id": "wake_6776"
+    },
+    {
+      "name": "수원맘 카카오 부동산",
+      "blog_id": "wms6420"
+    },
+    {
+      "name": "제이감정평가사사무소",
+      "blog_id": "j_kappraiser"
+    },
+    {
+      "name": "태복플래닝 블로그",
+      "blog_id": "taebokplanning3"
+    },
+    {
+      "name": "무실동 원주역 우미린 더나은 공인중개사사무소",
+      "blog_id": "mk_mh2016"
+    },
+    {
+      "name": "숨겨진 보험 이야기",
+      "blog_id": "changju6934"
     }
   ],
   "economy": [
@@ -1529,6 +1601,10 @@
     {
       "name": "자본과 사회",
       "blog_id": "capital-society"
+    },
+    {
+      "name": "WCOF(세계문명기구재단) 설립준비위원회",
+      "blog_id": "rehouse"
     }
   ]
 }
