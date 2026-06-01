@@ -391,6 +391,26 @@
     {
       "name": "멘토링하우스",
       "blog_id": "mentoringhouse"
+    },
+    {
+      "name": "주식 알려주는 WooCuRella",
+      "blog_id": "woocurella"
+    },
+    {
+      "name": "살아있는 것을 보라!",
+      "blog_id": "forlong-21"
+    },
+    {
+      "name": "대중과 멀어지는 삶",
+      "blog_id": "ymi5025"
+    },
+    {
+      "name": "금성인의 지구 정복",
+      "blog_id": "hojin4231"
+    },
+    {
+      "name": "한녕, 경제로그",
+      "blog_id": "isshoko"
     }
   ],
   "coin": [
@@ -537,6 +557,14 @@
     {
       "name": "세상은 넓고 갈곳은 많다!!님의 블로그",
       "blog_id": "manukejjw"
+    },
+    {
+      "name": "평범한 일상에서의 탈출~~",
+      "blog_id": "naifu"
+    },
+    {
+      "name": "겨울이의 부자플랜",
+      "blog_id": "beyond363"
     }
   ],
   "real_estate": [
@@ -1543,6 +1571,54 @@
     {
       "name": "숨겨진 보험 이야기",
       "blog_id": "changju6934"
+    },
+    {
+      "name": "돈이 되는 경제 상식",
+      "blog_id": "ooopoooo_"
+    },
+    {
+      "name": "인천 30년 용현동 부동산911공인중개사, 032-887-9110",
+      "blog_id": "911bds"
+    },
+    {
+      "name": "법무법인도아",
+      "blog_id": "zlzl1471"
+    },
+    {
+      "name": "★김씨아저씨 부동산 투자★",
+      "blog_id": "kww7931"
+    },
+    {
+      "name": "자본시장스토리",
+      "blog_id": "daldal_uncle"
+    },
+    {
+      "name": "법무법인 로윈 민사전담",
+      "blog_id": "ohxwlqh630ohx"
+    },
+    {
+      "name": "부동산에 관한 모든 이야기 !!",
+      "blog_id": "realtygonggam"
+    },
+    {
+      "name": "삼성화재 대출상담사 나프로 010-9199-6699",
+      "blog_id": "samsungfire-napro"
+    },
+    {
+      "name": "낭만부동산",
+      "blog_id": "3064567"
+    },
+    {
+      "name": "부동산 브레인",
+      "blog_id": "1103pcy"
+    },
+    {
+      "name": "재클형님의 재테크클라스",
+      "blog_id": "snsplus1"
+    },
+    {
+      "name": "리더스의 돈공부",
+      "blog_id": "mappy1000"
     }
   ],
   "economy": [
@@ -1605,6 +1681,14 @@
     {
       "name": "WCOF(세계문명기구재단) 설립준비위원회",
       "blog_id": "rehouse"
+    },
+    {
+      "name": "맘시생의 임신출산육아일상",
+      "blog_id": "qndjtdj"
+    },
+    {
+      "name": "변덕장이 오곰땡이의 뉴욕 시티 5.1",
+      "blog_id": "ohgom12"
     }
   ]
 }
