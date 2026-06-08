@@ -411,6 +411,34 @@
     {
       "name": "한녕, 경제로그",
       "blog_id": "isshoko"
+    },
+    {
+      "name": "office_investor님의 블로그",
+      "blog_id": "office_investor"
+    },
+    {
+      "name": "투신",
+      "blog_id": "jinos_"
+    },
+    {
+      "name": "사라와 함께 스스로 재테크",
+      "blog_id": "mbony21c"
+    },
+    {
+      "name": "100억부자 최플리",
+      "blog_id": "100djrqnwkchlvmffl"
+    },
+    {
+      "name": "은성의 홍익세상",
+      "blog_id": "chinagold"
+    },
+    {
+      "name": "포마 투자노트",
+      "blog_id": "isdn2721"
+    },
+    {
+      "name": "Destiny's IT·경제·재테크 맛집",
+      "blog_id": "jenny_on"
     }
   ],
   "coin": [
@@ -1619,6 +1647,26 @@
     {
       "name": "리더스의 돈공부",
       "blog_id": "mappy1000"
+    },
+    {
+      "name": "상남자중개사",
+      "blog_id": "realtor_gs"
+    },
+    {
+      "name": "BTS(진부동산:010.9219.5211)",
+      "blog_id": "1chic"
+    },
+    {
+      "name": "광명자이부동산",
+      "blog_id": "ck0537"
+    },
+    {
+      "name": "내집마련 뽀식이",
+      "blog_id": "bbosik30"
+    },
+    {
+      "name": "금융 비밀을 풀어주는 여자",
+      "blog_id": "amjmn486"
     }
   ],
   "economy": [
@@ -1689,6 +1737,10 @@
     {
       "name": "변덕장이 오곰땡이의 뉴욕 시티 5.1",
       "blog_id": "ohgom12"
+    },
+    {
+      "name": "세무법인 세안택스(슈퍼맨세무사)",
+      "blog_id": "luxuryjh72"
     }
   ]
 }
