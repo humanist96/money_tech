@@ -207,6 +207,10 @@
     {
       "name": "ACE ETF",
       "channel_id": "UCnuyNitL5SIfBJvTJcdDNLQ"
+    },
+    {
+      "name": "ETF읽어주는남자 : 이읽남",
+      "channel_id": "UCd_oHZ2cthBnyLnp-vslOhQ"
     }
   ],
   "coin": [
@@ -329,6 +333,14 @@
     {
       "name": "스카이이대표",
       "channel_id": "UCQ0MeVQ6DgNa3HCGP7HjZZg"
+    },
+    {
+      "name": "블루웨일 - 비트코인 및 알트코인 분석 채널",
+      "channel_id": "UC46mQIDcPW54gH9rz3grdjw"
+    },
+    {
+      "name": "차슐랭ㅣ비트코인 분석",
+      "channel_id": "UCvP4YNon2tfOY_1WltiTKlw"
     }
   ],
   "real_estate": [
@@ -455,6 +467,14 @@
     {
       "name": "미라클 뷰 _ 연봉만드는 부동산 경매",
       "channel_id": "UCBjwPDUtn9m8ehOhyl9m0sQ"
+    },
+    {
+      "name": "부동산경매PT",
+      "channel_id": "UC-DffRmxLhLm1WcdNSevpcg"
+    },
+    {
+      "name": "재개발 대표채널ㅣ로켓TV",
+      "channel_id": "UCTyZ66ZtleXZiUU_1JuMPaQ"
     }
   ],
   "economy": [

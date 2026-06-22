@@ -447,6 +447,22 @@
     {
       "name": "슬기로윤 : 기록하고 성장하기",
       "blog_id": "nanmoyadi"
+    },
+    {
+      "name": "Life with Diversity",
+      "blog_id": "milkysteel"
+    },
+    {
+      "name": "디앤디웍스, ETF 수사, 유용한 정보 제공",
+      "blog_id": "yong4079"
+    },
+    {
+      "name": "따블대디의 투자루틴",
+      "blog_id": "kihyun113"
+    },
+    {
+      "name": "비즈니스 인사이트 랩 (Biz-Insight Lab) 경제",
+      "blog_id": "s_ys"
     }
   ],
   "coin": [
@@ -605,6 +621,18 @@
     {
       "name": "블록체인 | 금융의 미래",
       "blog_id": "bc_co_kr"
+    },
+    {
+      "name": "물에서 살고싶다",
+      "blog_id": "marr96"
+    },
+    {
+      "name": "1",
+      "blog_id": "anpfnddl"
+    },
+    {
+      "name": "독서하는코인",
+      "blog_id": "dokco_official"
     }
   ],
   "real_estate": [
@@ -1707,6 +1735,66 @@
     {
       "name": "경제적 자유로 향하는 여정",
       "blog_id": "kmj7944m"
+    },
+    {
+      "name": "유니콘",
+      "blog_id": "propertynote"
+    },
+    {
+      "name": "부동산 임장머신",
+      "blog_id": "goldrib"
+    },
+    {
+      "name": "여주 한솔부동산",
+      "blog_id": "ds2fkr1"
+    },
+    {
+      "name": "젠틀송과 함께하는 부동산클래스",
+      "blog_id": "money_storytelling"
+    },
+    {
+      "name": "☑️노팀장의 내집마련",
+      "blog_id": "jh3699c"
+    },
+    {
+      "name": "포항솔로몬부동산",
+      "blog_id": "dobra"
+    },
+    {
+      "name": "판교1번지공인중개사무소",
+      "blog_id": "gun257"
+    },
+    {
+      "name": "사랑이 많은 아이",
+      "blog_id": "move4655a"
+    },
+    {
+      "name": "임장가다, 맛집발견",
+      "blog_id": "yejini5"
+    },
+    {
+      "name": "MBA 부동산 전문가 홍정기 _ 젠틀홍",
+      "blog_id": "zentlehong"
+    },
+    {
+      "name": "JnE x SNP 경공매 컨설팅",
+      "blog_id": "jnerealestate"
+    },
+    {
+      "name": "부동산 인사이트",
+      "blog_id": "79dap"
+    },
+    {
+      "name": "서랑 후랑",
+      "blog_id": "ha1004zi"
+    },
+    {
+      "name": "해가뜨는땅",
+      "blog_id": "kyo1004-"
+    },
+    {
+      "name": "성남재개발 더스카이 공인중개",
+      "blog_id": "greathomefinder"
     }
   ],
   "economy": [
