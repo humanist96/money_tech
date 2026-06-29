@@ -211,6 +211,18 @@
     {
       "name": "ETF읽어주는남자 : 이읽남",
       "channel_id": "UCd_oHZ2cthBnyLnp-vslOhQ"
+    },
+    {
+      "name": "배당투자하는 남자",
+      "channel_id": "UCnkP07DjOlZaiGrT3EYuGOw"
+    },
+    {
+      "name": "경제사냥꾼",
+      "channel_id": "UC7usMJDHmtbs_oegmzQKKMA"
+    },
+    {
+      "name": "한국주식연구소",
+      "channel_id": "UCqUDZeaNL9fdDeqadjS8G5Q"
     }
   ],
   "coin": [
@@ -475,6 +487,10 @@
     {
       "name": "재개발 대표채널ㅣ로켓TV",
       "channel_id": "UCTyZ66ZtleXZiUU_1JuMPaQ"
+    },
+    {
+      "name": "땅땅이의 부동산경매",
+      "channel_id": "UC3a5QZ8RprTz5tDWsUdbcPA"
     }
   ],
   "economy": [

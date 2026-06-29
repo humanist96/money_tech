@@ -463,6 +463,22 @@
     {
       "name": "비즈니스 인사이트 랩 (Biz-Insight Lab) 경제",
       "blog_id": "s_ys"
+    },
+    {
+      "name": "경제정책연구소",
+      "blog_id": "eunleeda"
+    },
+    {
+      "name": "머니 큐레이터",
+      "blog_id": "start4wish"
+    },
+    {
+      "name": "트리키의 행복한 라이프로그",
+      "blog_id": "swifty_7"
+    },
+    {
+      "name": "날카로운시선 소드킴",
+      "blog_id": "kjn811"
     }
   ],
   "coin": [
@@ -1795,6 +1811,34 @@
     {
       "name": "성남재개발 더스카이 공인중개",
       "blog_id": "greathomefinder"
+    },
+    {
+      "name": "리링의 내집마블",
+      "blog_id": "uri3785"
+    },
+    {
+      "name": "명인리얼티부동산중개법인",
+      "blog_id": "96roql"
+    },
+    {
+      "name": "매일아침또박또박님의블로그",
+      "blog_id": "billio6"
+    },
+    {
+      "name": "장그래 투자노트",
+      "blog_id": "nadia828"
+    },
+    {
+      "name": "더청담공인중개사무소",
+      "blog_id": "pizza8230"
+    },
+    {
+      "name": "부동산하는 시골청년",
+      "blog_id": "cd-ks"
+    },
+    {
+      "name": "분양왕 정박사의 부동산 투자",
+      "blog_id": "byking426"
     }
   ],
   "economy": [

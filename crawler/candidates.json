@@ -1,220 +1,196 @@
 {
-  "discovered_at": "2026-06-22T08:57:15.469740+00:00",
+  "discovered_at": "2026-06-29T08:11:20.871449+00:00",
   "youtube_candidates": [
     {
-      "channel_id": "UC46mQIDcPW54gH9rz3grdjw",
-      "name": "블루웨일 - 비트코인 및 알트코인 분석 채널",
-      "category": "coin",
-      "subscriber_count": 17500,
-      "video_count": 396,
-      "score": {
-        "total": 92.7,
-        "activity": 100.0,
-        "scale": 70.7,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 17500
-      },
-      "recent_titles": [
-        "비트코인 청산주의보 지금은 \"여기\"만 볼 겁니다.",
-        "비트코인 반등? 오름 숏 대기자리입니다.",
-        "비트코인 반등? 한번 더 하락합니다 (대응 전략)",
-        "비트코인하락, 마지막 하락이 남았다 (대응전략 공개)",
-        "비트코인 2차 청산랠리, 큰 거 한방 남았다."
-      ]
-    },
-    {
-      "channel_id": "UCvP4YNon2tfOY_1WltiTKlw",
-      "name": "차슐랭ㅣ비트코인 분석",
-      "category": "coin",
-      "subscriber_count": 11300,
-      "video_count": 341,
-      "score": {
-        "total": 91.9,
-        "activity": 100.0,
-        "scale": 67.6,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 11300
-      },
-      "recent_titles": [
-        "비트코인 가격, 이 구간 뚫으면 갑니다",
-        "비트코인 트레이딩 하는 법",
-        "비트코인 진짜 폭락은 아직 안 나왔습니다",
-        "비트코인 폭락이 곧 기회를 줄 겁니다",
-        "비트코인 트레이딩, 새로운 프로젝트를 시작합니다"
-      ]
-    },
-    {
-      "channel_id": "UCd_oHZ2cthBnyLnp-vslOhQ",
-      "name": "ETF읽어주는남자 : 이읽남",
+      "channel_id": "UCnkP07DjOlZaiGrT3EYuGOw",
+      "name": "배당투자하는 남자",
       "category": "stock",
-      "subscriber_count": 115000,
-      "video_count": 315,
+      "subscriber_count": 33700,
+      "video_count": 2174,
       "score": {
-        "total": 91.6,
+        "total": 93.9,
         "activity": 100.0,
-        "scale": 84.3,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 115000
-      },
-      "recent_titles": [
-        "50·60대 퇴직연금 추천 ETF｜은퇴 준비 끝! 안전자산 30% 이렇게 담으세요",
-        "30·40대 퇴직연금 추천 ETF｜현금 방치 절대 금지! 안전자산 30% 이렇게 채우세요",
-        "S&P500만으로 부족하다?! 평생 모아야 할 미국 성장주 ETF 3종목",
-        "스페이스X 급등, 우주항공 ETF는 왜 부진할까?｜ACE 미국우주테크액티브 관련 사과 말씀드립니다",
-        "월배당 ETF 분배금, 한 달에 2번 나눠 받으세요｜꽂히는 현금이 달라집니다"
-      ]
-    },
-    {
-      "channel_id": "UC-DffRmxLhLm1WcdNSevpcg",
-      "name": "부동산경매PT",
-      "category": "real_estate",
-      "subscriber_count": 8760,
-      "video_count": 466,
-      "score": {
-        "total": 91.4,
-        "activity": 100.0,
-        "scale": 65.7,
+        "scale": 75.5,
         "relevance": 100.0,
         "consistency": 100.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 8760
+        "subscriber_count": 33700
       },
       "recent_titles": [
-        "남들 경매낙찰 기다릴 때 고수들이 NPL 뒷문으로 5억 벌고 들어가는 이유",
-        "▶  교육문의 010-2028-1825   강제집행 쉽게 끝내는 방법  #다가구경매 #소액단타 #아파트경매 #주식 #부동산경매",
-        "부동산경매PT 수요일 유튜브 라이브",
-        "▶  교육문의 010-2028-1825   강제집행 내 계획대로 끝내기  #다가구경매 #소액단타 #아파트경매 #주식 #부동산경매",
-        "▶  교육문의 010-2028-1825   NPL + 경매낙찰 일석이조 다가구경매  #다가구경매 #다가구대출 #NPL #NPL경매 #신탁대출  #부동산"
+        "올릭스 상승 이유 및 전망 로레알이 또 밀어준 진짜 이유  - 배당투자하는 남자",
+        "씨어스 상승 이유 및 전망 오늘 씨어스 주가 왜 급등했나 - 배당투자하는 남자",
+        "씨어스 상승 이유 및 전망 오늘 씨어스 주가 왜 급등했나 - 배당투자하는 남자",
+        "한올바이오파마 상승 이유 및 전망 오늘 20% 폭등한 진짜 이유- 배당투자하는 남자",
+        "한올바이오파마 상승 이유 및 전망 오늘 20% 폭등한 진짜 이유- 배당투자하는 남자"
       ]
     },
     {
-      "channel_id": "UCTyZ66ZtleXZiUU_1JuMPaQ",
-      "name": "재개발 대표채널ㅣ로켓TV",
+      "channel_id": "UC3a5QZ8RprTz5tDWsUdbcPA",
+      "name": "땅땅이의 부동산경매",
       "category": "real_estate",
-      "subscriber_count": 67700,
-      "video_count": 513,
+      "subscriber_count": 26200,
+      "video_count": 515,
       "score": {
-        "total": 90.6,
+        "total": 93.4,
         "activity": 100.0,
-        "scale": 80.5,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 67700
-      },
-      "recent_titles": [
-        "용산 주택수 제외되는 재개발 빌라 TOP 1",
-        "마포 한강변 재개발 \"현금 3억대 무더기 방출?\"...현지 중개사들도 \"처음 본 일\" (주택수 제외)",
-        "광진구 재개발 현금 2억대 '이곳' 공개합니다 (주택수 제외)",
-        "마포재개발 3억 급매 떴습니다. 그리고 주택수 제외까지 가능합니다.",
-        "마포+한강변 한번에! 주택수 제외 현금 3억대 재개발 급매"
-      ]
-    },
-    {
-      "channel_id": "UCGuahdzy-Cjx98cZmaLE7Dg",
-      "name": "대산경제분석",
-      "category": "economy",
-      "subscriber_count": 39300,
-      "video_count": 6587,
-      "score": {
-        "total": 89.6,
-        "activity": 100.0,
-        "scale": 76.6,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 39300
-      },
-      "recent_titles": [
-        "한국금리. 삼성전자 대세하락,코스피저항 지지, 코스피사상최악버블. 거래량분석. 코스피저항. 코스피 대세하락. 바닥찾기시작. 코스피슈퍼버블붕괴시작. 코스피전환점 .",
-        "올버블붕괴신호. 코주부채 차트 위기. 국채붕괴. 위험자산 2차폭락. 실물금은뿐. 위험자산폭락. 신호 하이일드. 올버블붕괴. 국가부도 유럽 일본",
-        "경기선행지수. 대형 주식붕괴,. 두바이유 현물가. 반도체 버블 . 모든원인 유가급등.  주식붕괴.금 은 대세상승. 실업 금리 주식폭락.  골드 반도체 엔화. 미 일 국채 10년.",
-        "코스피 시스코, 대형 주식붕괴,. 두바이유 현물가. 반도체 버블 . 모든원인 유가급등.  주식붕괴.금 은 대세상승. 실업 금리 주식폭락.  골드 반도체 엔화. 미 일 국채 10년.",
-        "금은달러. 주식붕괴. 물가 유가,스태그플레이션. 제2대공황. 금은시대활짝. 주식시대몰락시작.  금역사이유.  반도체 엔달러 하락.  금은대세상승.  올버블붕괴. 닷컴버블 데쟈뷰."
-      ]
-    },
-    {
-      "channel_id": "UCbaM1lblMDlbDkzIS2lpW4Q",
-      "name": "주식 최강 리포트",
-      "category": "stock",
-      "subscriber_count": 1170,
-      "video_count": 61,
-      "score": {
-        "total": 87.8,
-        "activity": 100.0,
-        "scale": 51.1,
+        "scale": 73.6,
         "relevance": 100.0,
         "consistency": 100.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 1170
+        "subscriber_count": 26200
       },
       "recent_titles": [
-        "삼성전자 100만원, 장난같죠? #삼성전자 #sk하이닉스 #코스피",
-        "삼성전자 투자자 반드시 시청 #삼성전자 #sk하이닉스 #코스피",
-        "삼성전자 보유자 청심환 준비 #삼성전자 #sk하이닉스 #코스피",
-        "삼성전자, 이거 모르면 진짜 큰일 납니다 #삼성전자 #sk하이닉스 #코스피",
-        "삼성전자 보유자 전원 '준비'하세요 #삼성전자 #sk하이닉스 #코스피"
-      ]
-    },
-    {
-      "channel_id": "UCV2GBVK-nta4hVELLsMpAhg",
-      "name": "브리핑각",
-      "category": "real_estate",
-      "subscriber_count": 8440,
-      "video_count": 589,
-      "score": {
-        "total": 86.9,
-        "activity": 100.0,
-        "scale": 65.4,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 8440
-      },
-      "recent_titles": [
-        "무려 잠실인데 3억이라고? 오피스텔이 아파트보다 낫네 #송파구 #잠실 #오피스텔 #아파텔",
-        "강남구 아파트 보다 나은 전세 오피스텔 10곳 공개합니다",
-        "광주 남구 집값 고점 대비 46% 폭락... 가장 처참하게 무너진 단지 10곳",
-        "인천 부평구 아파트 매수 고민 중이라면? 무조건 피해야 할 하락 단지 10곳",
-        "경기 오산시 아파트 사기 전에 확인하세요, 가격이 크게 빠진 단지 10곳"
+        "[제주도경매] 문을열고 ~ 실제현장영상 (2025타경 2092-1#)",
+        "낮과 밤은 다르다!!!  #경매공부 #경매초보 #부동산경매 #제주도경매 #제주도경매수업 #제주도부동산 #땅땅이",
+        "[26.06.20 라이브영상] 애월, 안덕 단독주택  매각분석 & 경매임장 비법 ~~(2025타경 1327 / 2025타경 1680)",
+        "[제주도경매]  눈길이...실제현장영상 (2024타경 13137)",
+        "[제주도경매] 속이 궁금한!! 실제현장영상 (2025타경 8389)"
       ]
     },
     {
       "channel_id": "UC7usMJDHmtbs_oegmzQKKMA",
       "name": "경제사냥꾼",
       "category": "stock",
-      "subscriber_count": 618000,
-      "video_count": 2126,
+      "subscriber_count": 623000,
+      "video_count": 2175,
       "score": {
-        "total": 85.6,
+        "total": 90.1,
         "activity": 100.0,
-        "scale": 96.5,
+        "scale": 96.6,
+        "relevance": 80.0,
+        "consistency": 80.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 623000
+      },
+      "recent_titles": [
+        "지금 투자자들이 '삼성전자+하이닉스'에서 봐야 하는 진짜 포인트",
+        "6월 29일 오늘 투자자들이 꼭 알아야 하는 투자 포인트",
+        "현시점 월가가 '엔비디아'보다 먼저 봐야 한다는 'AI 종목' 정체",
+        "최근 '코스닥'이 끝도없이 폭락하는 진짜 이유",
+        "경제사냥꾼 구독자 전용 종목 분석  SK스퀘어"
+      ]
+    },
+    {
+      "channel_id": "UCqUDZeaNL9fdDeqadjS8G5Q",
+      "name": "한국주식연구소",
+      "category": "stock",
+      "subscriber_count": 49800,
+      "video_count": 892,
+      "score": {
+        "total": 90.1,
+        "activity": 100.0,
+        "scale": 78.3,
+        "relevance": 90.0,
+        "consistency": 90.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 49800
+      },
+      "recent_titles": [
+        "대한광통신, [주식] 대한광통신 현재가 13,330원 6월30일 이후 '여기'까지 갑니다 반드시 주목하세요! (목표가) (주식) (주식전망) (주가전망) (손절가)",
+        "[성호전자 주가전망] 채널걸고 감히 예언합니다. 오늘 미리 '체크' 하세요! 6월29일 이후 주가는 '이렇게' 됩니다! #성호전자주가전망 (주식,주가전망,목표가,손절가)",
+        "삼성전자, [주식]  삼성전자 목표가 6월30일 이후 '여기'까지 갑니다 반드시 주목하세요! (목표가) (주식) (주식전망) (주가전망) (전망) (목표가) (손절가)",
+        "LG전자 주가전망 , 세력 들어왔습니다60일선 수상하지않아요?",
+        "원익IPS 주가전망 입니다. 이번주 '필수' 체크하세요!'6/29일' 부터 이렇게만 대응하시면 됩니다! #원익IPS주가전망 (목표가,손절가,주가전망, 차트분석,)"
+      ]
+    },
+    {
+      "channel_id": "UC_TXMwAyP4D2IS0k4QVs_6g",
+      "name": "하루짱 배당투자",
+      "category": "stock",
+      "subscriber_count": 1700,
+      "video_count": 272,
+      "score": {
+        "total": 88.5,
+        "activity": 100.0,
+        "scale": 53.8,
+        "relevance": 100.0,
+        "consistency": 100.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 1700
+      },
+      "recent_titles": [
+        "CR홀딩스 약263억 원 자사주 소각 기대감!!! 고배당주, 반기배당주, 오랜만에 거래량 터졌죠!!! #배당주투자 ##고배당주 #실전투자",
+        "한온시스템 임원 추매!!! 현대차 레버리지 ETF 홍콩, 미국 상장 예정!!! 한국은 언제? #배당주투자 ##고배당주 #실전투자",
+        "한온시스템 대차잔고수량에 주목할 때!!! 공매도의 먹이감은 되지 말자!!! #배당주투자 #고배당주 #실전투자",
+        "자사주 소각 계획서 시행!!! 자사주 소각 의무화!!!  주주가치제고!!! #배당주투자 #고배당주 #실전투자",
+        "자사주소각 의무화 핵심정리!!! 자사주 처분 계획서 26년6월30일 시행!!! #배당주투자 #고배당주 #실전투자"
+      ]
+    },
+    {
+      "channel_id": "UCcQ9V6nEYVMSRWWOrvHQqLg",
+      "name": "우리은행",
+      "category": "economy",
+      "subscriber_count": 435000,
+      "video_count": 947,
+      "score": {
+        "total": 85.0,
+        "activity": 100.0,
+        "scale": 94.0,
         "relevance": 70.0,
         "consistency": 70.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 618000
+        "subscriber_count": 435000
       },
       "recent_titles": [
-        "국민연금이 코스피 9000에서 주식을 팔아치운 '진짜 이유'",
-        "6월 22일 오늘 투자자들이 꼭 알아야 하는 투자 포인트",
-        "지금 '코스닥 주도주'로 새롭게 떠오르고 있다는 '종목' 정체",
-        "월가에서 '삼성전자' 가장 쌀 때 매수하는 방법",
-        "'스페이스X + 테슬라' 합병, 투자자들이 반드시 알아야 할 이유"
+        "미래의 우리는? 첫번째 시리즈 연금의참견 5060편",
+        "[모닝경제Plus]  3대 메가 프로젝트! 연준 정책금리 전망",
+        "[모닝경제Plus]  6월 FOMC 주요 내용! 과묵해진 연준 의장?",
+        "💰청년미래적금 가입 가능 여부, 만기 예상금액, 취급은행까지 한번에 확인!👀",
+        "[모닝경제Plus]  선진국 중앙은행 긴축 전환! 도미노 금리 인상 우려?"
+      ]
+    },
+    {
+      "channel_id": "UCxG-WFQqKbV49KIs5S9T0wA",
+      "name": "한국인의연금_한국투자증권",
+      "category": "economy",
+      "subscriber_count": 28200,
+      "video_count": 318,
+      "score": {
+        "total": 84.5,
+        "activity": 100.0,
+        "scale": 74.2,
+        "relevance": 80.0,
+        "consistency": 80.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 28200
+      },
+      "recent_titles": [
+        "절세 계좌 공부는 이 영상 하나로 끝내세요. ISA, 연금저축, IRP 핵심 정리 ㅣ문쌤의 머니클래스 5화",
+        "퇴직금 vs 퇴직연금, 퇴직급여제도 완벽정리",
+        "해외 주식 투자자 필수 시청! 세금 확 줄이는 절세 포인트 ✅",
+        "돈 모으고 싶다면 '세금'부터 줄이세요!🔥",
+        "수익률 1%보다 세금 1% 아끼는 더 좋다? 국내·해외 주식 세금 총정리! (배당소득세, 증여세 면제 한도) l 문쌤의 머니클래스 4화"
+      ]
+    },
+    {
+      "channel_id": "UCO8tX-tvkJmN70sALNmXhCg",
+      "name": "친절한 재승씨",
+      "category": "stock",
+      "subscriber_count": 249000,
+      "video_count": 515,
+      "score": {
+        "total": 84.0,
+        "activity": 100.0,
+        "scale": 89.9,
+        "relevance": 70.0,
+        "consistency": 70.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 4,
+        "subscriber_count": 249000
+      },
+      "recent_titles": [
+        "[핵심 특강 3-1편] 나만 불안한 걸까, 시장 전체가 불안한 걸까? | 심리지표 총정리",
+        "[핵심 특강 2편] 모르면 손해 보는 미국 주식 환전 핵심 정리",
+        "[핵심 특강 1편] 삼성전자가 영향을 받는 것은 따로 있다?",
+        "[책 증정 이벤트] 처음 배우는 미국 주식 투자",
+        "왕초보도 쉽게 따라하는 바이낸스 가입방법 2026년 최신편"
       ]
     },
     {
@@ -222,7 +198,7 @@
       "name": "키다리상남자",
       "category": "real_estate",
       "subscriber_count": 21200,
-      "video_count": 656,
+      "video_count": 661,
       "score": {
         "total": 84.0,
         "activity": 100.0,
@@ -234,18 +210,90 @@
         "subscriber_count": 21200
       },
       "recent_titles": [
-        "이 지하상가는 사야 합니다 | 1기 신도시 일산",
-        "초보자라면  공실 걱정 없는 100점짜리 투자처",
-        "이 상가에 엘리베이터가  희귀 매물의 가치",
-        "이 상가에 '파리바게트'가  투자의 확신!",
-        "소액투자로 월세 58만원 받는 법"
+        "지하상가는 절대 사지 마세요 근데 이건 다릅니다",
+        "제가 '지하 상가' 투자를 절대 안 하는 이유",
+        "이 동네에선 '대형 평수'가 오히려 귀합니다",
+        "월세 450만원, 비싼 게 아니라고",
+        "상가 투자, 1기 신도시가 정답인 이유"
+      ]
+    },
+    {
+      "channel_id": "UCisI76sCtqpz_S6pKfvAXPQ",
+      "name": "퀀트는 게만아 | 파이썬 자동매매",
+      "category": "stock",
+      "subscriber_count": 16900,
+      "video_count": 757,
+      "score": {
+        "total": 83.6,
+        "activity": 100.0,
+        "scale": 70.5,
+        "relevance": 80.0,
+        "consistency": 80.0,
+        "ad_ratio": 0.1,
+        "recent_30d_count": 10,
+        "subscriber_count": 16900
+      },
+      "recent_titles": [
+        "주식 자동매매 초당 거래건수 오류 대응",
+        "AI 바이브 코딩 주식 자동매매가 계속 실패하는 이유",
+        "바이브 코딩 주식 자동매매 가장 빠르게 완성하는 길",
+        "DB증권 LS증권 매수수수료 저렴하게 협의 방법",
+        "키움증권 토스증권 Open API 자동매매 알려드림"
+      ]
+    },
+    {
+      "channel_id": "UCzXtaeY4EfSnSB9_3gYnqdw",
+      "name": "미분양 줍줍TV",
+      "category": "real_estate",
+      "subscriber_count": 165000,
+      "video_count": 1618,
+      "score": {
+        "total": 83.2,
+        "activity": 100.0,
+        "scale": 87.0,
+        "relevance": 70.0,
+        "consistency": 70.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 165000
+      },
+      "recent_titles": [
+        "서울 신축 아파트 토허제 미적용 1분 초역세권 계약해지분 줍줍",
+        "입주전까지는 무조건 0원, 2천세대 힐스테이트 마지막 줍줍",
+        "겸손한 분양가 4억대 아파트, 부천역에피트어바닉",
+        "서울역 도보역세권 1군브랜드 롯데캐슬 후분양",
+        "서울 성동구에서 나온 3억중반대 신축 복층, 비규제 적용 줍줍"
+      ]
+    },
+    {
+      "channel_id": "UC4qm-3Ro1OfwkWtpymZF_QQ",
+      "name": "부동산 머니로드",
+      "category": "economy",
+      "subscriber_count": 11100,
+      "video_count": 191,
+      "score": {
+        "total": 82.9,
+        "activity": 100.0,
+        "scale": 67.4,
+        "relevance": 80.0,
+        "consistency": 80.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 9,
+        "subscriber_count": 11100
+      },
+      "recent_titles": [
+        "7월, 금리가 오르면 여기부터 흔들립니다",
+        "미국 PCE 발표! 미국은 버티는데 한국은 왜 인상을 고려하나?",
+        "소비심리는 올랐는데.. 금리 인상 전망이 급등한 이유입니다.",
+        "한국은행 7월 금통위, 금리 인상 카드가 강해진 이유",
+        "연준 금리동결, 매파적 점도표 발표"
       ]
     },
     {
       "channel_id": "UC9Qalq_Mh1GLKv5W2W3_n-A",
       "name": "주식쇼퍼 - 투자도 쇼핑처럼",
       "category": "stock",
-      "subscriber_count": 95300,
+      "subscriber_count": 95200,
       "video_count": 213,
       "score": {
         "total": 82.2,
@@ -254,8 +302,8 @@
         "relevance": 70.0,
         "consistency": 70.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 5,
-        "subscriber_count": 95300
+        "recent_30d_count": 4,
+        "subscriber_count": 95200
       },
       "recent_titles": [
         "\"7월 결과가 나오기 전에\" 올리브영에 투자하는 유일한 방법",
@@ -266,27 +314,27 @@
       ]
     },
     {
-      "channel_id": "UCqUDZeaNL9fdDeqadjS8G5Q",
-      "name": "한국주식연구소",
+      "channel_id": "UCYKyIZzWvgWMQntYm0XcSfg",
+      "name": "차트분석 워나기",
       "category": "stock",
-      "subscriber_count": 49700,
-      "video_count": 843,
+      "subscriber_count": 4600,
+      "video_count": 312,
       "score": {
-        "total": 81.1,
+        "total": 81.3,
         "activity": 100.0,
-        "scale": 78.3,
-        "relevance": 70.0,
-        "consistency": 70.0,
-        "ad_ratio": 0.0,
+        "scale": 61.0,
+        "relevance": 80.0,
+        "consistency": 80.0,
+        "ad_ratio": 0.1,
         "recent_30d_count": 10,
-        "subscriber_count": 49700
+        "subscriber_count": 4600
       },
       "recent_titles": [
-        "빛과전자, [주식] 빛과전자 채널걸고 감히 예언합니다 6월22일 부터 '이렇게' 됩니다! 반드시 주목하세요! (목표가) (주식) (주식전망) (주가전망)(주식 전망) (주가 전망)",
-        "[HPSP 주가전망] 20일선 위험합니다 이번주 미리 '체크' 하세요! 6월22일 이후 주가는 '이렇게' 됩니다! #HPSP주가전망 (주식,주가전망,목표가,손절가)",
-        "대한광통신 주가전망 입니다. 오늘 '필수' 체크하세요!'6/23일' 부터 이렇게만 대응하시면 됩니다! #대한광통신주가전망 (목표가,손절가,주가전망, 차트분석,)",
-        "성호전자, [주식] 성호전자 채널걸고 감히 예언합니다 6월23일 이후 '여기'까지 갑니다 반드시 주목하세요! (목표가) (주식) (주식전망) (주가전망) (주식 전망)",
-        "[스피어 주가전망] 채널걸고 감히 예언합니다. 이번주 미리 '체크' 하세요! 6월22일 이후 주가는 '이렇게' 됩니다! #스피어주가전망 (주식,주가전망,목표가,손절가)"
+        "코스피선물 실전 차트복기",
+        "코스피전용 보조지표 #코스피 #코스피선물 #차트분석 #차트 #코스피선물매매법",
+        "그저그런 AI차트분석기가 아닙니다 #ai차트분석",
+        "26년 6월 26일 나스닥 차트분석",
+        "AI차트분석 https://youtu.be/Rt6iWokv-Vg?si=KprouqAG-Laz-NoB #차트분석 #ai투자 #ai활용 #쳇GPT활용 #GPT #GPT분석 #제미나이"
       ]
     },
     {
@@ -314,99 +362,123 @@
       ]
     },
     {
-      "channel_id": "UCcQ9V6nEYVMSRWWOrvHQqLg",
-      "name": "우리은행",
-      "category": "economy",
-      "subscriber_count": 433000,
-      "video_count": 945,
+      "channel_id": "UClCqSWhwSCNd7jUUwg41pUQ",
+      "name": "차트분석남 - 20년 내공 고퀄 차트분석",
+      "category": "stock",
+      "subscriber_count": 32500,
+      "video_count": 1180,
       "score": {
-        "total": 80.5,
+        "total": 80.3,
         "activity": 100.0,
-        "scale": 93.9,
-        "relevance": 60.0,
-        "consistency": 60.0,
+        "scale": 75.2,
+        "relevance": 70.0,
+        "consistency": 70.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 433000
+        "subscriber_count": 32500
       },
       "recent_titles": [
-        "[모닝경제Plus]  6월 FOMC 주요 내용! 과묵해진 연준 의장?",
-        "💰청년미래적금 가입 가능 여부, 만기 예상금액, 취급은행까지 한번에 확인!👀",
-        "[모닝경제Plus]  선진국 중앙은행 긴축 전환! 도미노 금리 인상 우려?",
-        "청년이라면 지금이 기회! 청년미래적금으로 미래 준비하기💙",
-        "[모닝경제Plus]  6월 FOMC 관전포인트! 주식시장에 미칠 영향은?"
+        "없다면 하지말기! 돌파 눌림목 매매 위한 전제 조건들 #신세계",
+        "물리던 전고점 돌파매매에서 승률 다이나믹하게 끌어올리기!",
+        "돌파매매 눌림목매매 승률 팍팍 끌어올리기 위한 전제 그리고 타점!",
+        "급등 앞둔 종목이 소리 소문 없이 만드는 차트모습 #SK네트웍스",
+        "터지기 직전! 분위기 파악을 해야 대상승을 먹는다 #신세계"
       ]
     },
     {
-      "channel_id": "UCKxumOAB95UQ5U2OGe1byeg",
-      "name": "미리보는부동산TV - 수익형 부동산의 모든것",
+      "channel_id": "UC9B7eURL4sMwoG1NWjUeQ7g",
+      "name": "서영창 교수의 토지개발의 모든것",
       "category": "real_estate",
-      "subscriber_count": 2070,
-      "video_count": 130,
+      "subscriber_count": 27600,
+      "video_count": 716,
       "score": {
-        "total": 79.8,
+        "total": 80.0,
         "activity": 100.0,
-        "scale": 55.3,
-        "relevance": 80.0,
-        "consistency": 80.0,
+        "scale": 74.0,
+        "relevance": 70.0,
+        "consistency": 70.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 2070
+        "subscriber_count": 27600
       },
       "recent_titles": [
-        "4차선 대로변에 다가구 허가 / 산업단지 도보권 / 10억 초반 매물 / 주변 만실 운영중 / 테크노폴리스와 산업단지 품은 청주 다가구주택 매매",
-        "만실 상가건물 #청주상가건물 #꼬마빌딩매매",
-        "충북대에서 제일 좋은 집 #shorts #청주상가주택 #복대동상가주택",
-        "청주 5층 #상가주택 #shorts #부동산#투자",
-        "[율량동 빌딩 매매] 불황에도 만실 이뉴는!? 스타필드 바로 옆! 9,300세대 독점 학원가 상가건"
+        "심화 #14 자연녹지 내의 보전산지를 개발하는 방법, 토지유의81, 맹지탈출",
+        "경지정리지구 내 농로로 공장허가가 불허되었다! #토지 #부동산스터디",
+        "심화 #13 공유도로를 과반 지분권자가 출입방법을 단독결정 할 수 있나, 토지유의80, 맹지탈출",
+        "건축법 도로 없이 허가될 수 있다는 대표사례(하상도로 접도의무 예외) #토지 #부동산스터디",
+        "심화 #12 지구단위계획구역의 보차혼용통로는 모두 공로이다, 용어해설84, 맹지탈출"
       ]
     },
     {
       "channel_id": "UCFYWJbiN-NtgHfXS111yOHw",
       "name": "새가슴재테크",
       "category": "economy",
-      "subscriber_count": 1790,
-      "video_count": 161,
+      "subscriber_count": 1970,
+      "video_count": 169,
       "score": {
-        "total": 79.6,
+        "total": 79.7,
         "activity": 100.0,
-        "scale": 54.2,
+        "scale": 54.9,
         "relevance": 80.0,
         "consistency": 80.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 1790
+        "subscriber_count": 1970
       },
       "recent_titles": [
-        "수익 30% 내는 새가슴재테크가  50% 수익을 낼 수 있는 전략을 발견했습니다",
-        "[새가슴재테크] 커버드콜 수량 모아가기 그 이유를 알아야 승리 한다",
-        "나의 인생 삶의 분위기를 변화시키는 커버드콜 ETF 분배금 투자",
-        "새가슴재테크의 투자 이야기(1) - 저축은행 이자 따먹기 하던 내가 ....",
-        "[계좌 공개] 1300만원 6개월 투자로 월분배 27만원과 수익 235만원 공개"
+        "새가슴재테크가 월요일 하락장을 겪으면서 수익전환 아이디어와 개미가 모르는 주식장의 비밀을 찾았다.",
+        "새가슴재테크 투자 이야기(3)  대폭락 후 수익 현재 24%만든 커버드콜ETF 보유종목과 하락에 대한 대비책",
+        "(2) 대폭락 어게인 ! 나는 전략을 바꿔 기회로 만든다. 다음은 ?",
+        "(1) 금요일 상승 기대로 들떠 있었는데... 대폭락을 맞은 새가슴재테크",
+        "새가슴제테크의 새로운 전략 - 반도체 ETF 폭락장에서 매수 - 수익 극대화 도전"
       ]
     },
     {
-      "channel_id": "UC_TXMwAyP4D2IS0k4QVs_6g",
-      "name": "하루짱 배당투자",
-      "category": "stock",
-      "subscriber_count": 1700,
-      "video_count": 260,
+      "channel_id": "UCHOPWa8g36QPHB00JmdZluw",
+      "name": "채널 제네시스박",
+      "category": "real_estate",
+      "subscriber_count": 225000,
+      "video_count": 2256,
       "score": {
-        "total": 79.5,
+        "total": 79.3,
         "activity": 100.0,
-        "scale": 53.8,
-        "relevance": 80.0,
-        "consistency": 80.0,
+        "scale": 89.2,
+        "relevance": 60.0,
+        "consistency": 60.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 1700
+        "subscriber_count": 225000
       },
       "recent_titles": [
-        "코스닥 시총 300억 원 미만!!! 27년부터 상폐 주의보!!! #배당주투자 #고배당주 #실전투자",
-        "코스피 시총 300억 원 미만!!! 27년부터 상폐 주의보!!! #배당주투자 #고배당주 #실전투자",
-        "26년 7월 1일 상장폐지 요건!!! #배당주투자 #고배당주 #전업투자자",
-        "BMW ix3에 한온시스템 HICE 최초 적용!!! 초소형 통합 냉매 모듈 탑재!!! #배당주투자 #고배당주 #실전투자",
-        "곱버스를 타봤어요. 구독자님이 6월 19일을 어필하시길래... 결과는? 그리고 추매한 종목은? 한온시스템"
+        "아파트값 급상승! 동탄을 살펴봅시다!",
+        "갭투자의 정석? 앞으로 전세가율을 확인하세요!",
+        "동탄 아파트값 급상승! 왜 이렇게 올랐을까?",
+        "오피스텔 세대분리 잘못했다가 세금 8억 | 채널 제네시스박",
+        "보유세 부담되니 매각? 그렇다면 ‘이때’ 매각하세요! (막간 라이브)"
+      ]
+    },
+    {
+      "channel_id": "UCblw2a-kVYB5rMDBqrpC7Cw",
+      "name": "누구나부동산",
+      "category": "real_estate",
+      "subscriber_count": 18400,
+      "video_count": 137,
+      "score": {
+        "total": 79.3,
+        "activity": 100.0,
+        "scale": 71.1,
+        "relevance": 70.0,
+        "consistency": 70.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 18400
+      },
+      "recent_titles": [
+        "\"내 돈으로 작은 빌라 사겠다는데 자식들이 반대합니다\" 🛑 (자식 설득하는 법) #노후대비 #시니어고민 #누구나부동산",
+        "자식들이 반대합니다... 🙏노후에 작은 빌라로 이사 가면 안 되나요? #은퇴후 ##노후대비 #부동산다운사이징 #시니어고민 #자식설득법 #작은집이사 #누구나부동산 #서울빌라급매",
+        "#서울빌라급매🌈1억 6,500만 원! 전용 15평 넓은 2️⃣룸, 탁 트인 전망에 통베란다까지 완벽한 화곡동 급매물 (즉시입주) #강서구빌라 #295이스트",
+        "#서울빌라급매✨#서울빌라급매 화곡역세권 투룸이 1억 중반?! ✨ #부동산 #신축빌라 #강서구빌라 #295이스 #누구나부동산 #부동산 #295이스트",
+        "#서울빌라급매 🏫화곡초 바로 앞집! 역세권 5분에 계단 적은 꿀2층이 2억 초반대라고?! 👴 [NO.293 혜성] #서울빌라 #빌라매매 #전세 #강서구빌"
       ]
     },
     {
@@ -414,7 +486,7 @@
       "name": "하꿈부 - 하베의 재건축 재개발 투자비법",
       "category": "real_estate",
       "subscriber_count": 1460,
-      "video_count": 135,
+      "video_count": 137,
       "score": {
         "total": 79.2,
         "activity": 100.0,
@@ -426,275 +498,59 @@
         "subscriber_count": 1460
       },
       "recent_titles": [
+        "하꿈부 하베는 누구인가? 부동산이 제일 쉬웠어요 (ft. 20대에 강남 아파트 싹쓸이 한 썰)",
         "6월 1일 전에 사야 할까, 팔아야 할까? (부동산 세금 폭탄 피하는 타이밍)",
         "\"남편 평생 퇴직금, 묻지도 말고 청담동 아파트 사라고 했습니다\" 그 후 벌어진 소름 돋는 실화 (ft. 현금 캐리어)",
         "분양권 오래 들고 있어도 세금 60% 뜯깁니다. 양도세 0원 만드는 유일한 방법 💸",
-        "강남 최고 입지 '대치동' 버리고 잠실 미성크로바 선택했던 이유 (재건축은 무조건 '이것'입니다)",
-        "내 집이 12억 넘는다면 '이때' 사야 합니다 (재건축 양도세 폭탄 피하는 법)"
+        "강남 최고 입지 '대치동' 버리고 잠실 미성크로바 선택했던 이유 (재건축은 무조건 '이것'입니다)"
       ]
     },
     {
-      "channel_id": "UCisI76sCtqpz_S6pKfvAXPQ",
-      "name": "퀀트는 게만아 | 파이썬 자동매매",
+      "channel_id": "UCkApuEELZAEFq2SKTaAcs-w",
+      "name": "배당핥기",
       "category": "stock",
-      "subscriber_count": 16800,
-      "video_count": 750,
+      "subscriber_count": 23600,
+      "video_count": 48,
       "score": {
-        "total": 79.1,
-        "activity": 100.0,
-        "scale": 70.4,
-        "relevance": 70.0,
-        "consistency": 70.0,
-        "ad_ratio": 0.3,
-        "recent_30d_count": 10,
-        "subscriber_count": 16800
-      },
-      "recent_titles": [
-        "REST API가 중요한 이유, 토스증권,한투,DB,LS,키움 증권 제공",
-        "9개월간 계좌를 공개하면 파이썬 자동매매 검증해보니..",
-        "주식 투자 매수할까 매도할까 고민할 필요가 없는 이유.. 이렇게만 하면 됩니다",
-        "증권사 Open API REST API 한 번에 알려드림",
-        "주식 자동매매 REST API 제공 증권사 모두 공개"
-      ]
-    },
-    {
-      "channel_id": "UCbqptsEqXykrNqIU5zBxQHw",
-      "name": "코인흥신소",
-      "category": "coin",
-      "subscriber_count": 14500,
-      "video_count": 2644,
-      "score": {
-        "total": 78.8,
-        "activity": 100.0,
-        "scale": 69.4,
-        "relevance": 70.0,
-        "consistency": 70.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 14500
-      },
-      "recent_titles": [
-        "의도적인 횡보?  #비트코인 #이더리움 #etf",
-        "다시 2021",
-        "STRC 우선주의 구조  #비트코인 #이더리움 #STRC",
-        "엑시인피니티 #비트코인 #이더리움 #엑시인피니티",
-        "상품이 된 비트코인  #비트코인 #이더리움 #etf"
-      ]
-    },
-    {
-      "channel_id": "UCMmsxwDlFZ9MpzPvobmTgig",
-      "name": "오르다_비트코인자동매매",
-      "category": "coin",
-      "subscriber_count": 28200,
-      "video_count": 357,
-      "score": {
-        "total": 78.5,
+        "total": 78.2,
         "activity": 50.0,
-        "scale": 74.2,
+        "scale": 72.9,
         "relevance": 100.0,
         "consistency": 100.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 2,
-        "subscriber_count": 28200
+        "subscriber_count": 23600
       },
       "recent_titles": [
-        "오르다 회원님 릴레이 수익 5월 총결산!  #비트코인 #비트코인자동매매 #코인자동매매 #코인선물",
-        "오르다 회원님 릴레이 수익 5월 총결산!  #비트코인 #비트코인자동매매 #코인자동매매 #코인선물",
-        "오르다 회원님 릴레이 수익 4월 총결산!  #비트코인 #비트코인자동매매 #코인자동매매 #코인선물",
-        "오르다 회원님 릴레이 수익 4월 총결산!  #비트코인 #비트코인자동매매 #코인자동매매 #코인선물",
-        "(실제 리뷰) \"올해 최고의 선택\" 오르다 회원님 리얼후기 5편#오르다 비트코인 자동매매"
+        "고환율시대..이번 달 살까 말까 고민된다면 꼭 보세요 l 미국 배당 투자",
+        "환율 1550원에 배당주 사면 위험할까?｜고환율 시대 배당투자법",
+        "SCHD+JEPQ에 4000만원 넣으면? 실제 배당금 공개합니다 (계좌인증)",
+        "주식, 똑똑한 사람일수록 돈 못 버는 이유(+배당에 올인한 이유)",
+        "배당 ETF 일드맥스, 이게 사과냐 독약이냐? (초고배당의 진실)"
       ]
     },
     {
-      "channel_id": "UCam-_pnyMx_BZKCjWqrmxBA",
-      "name": "주식분석",
-      "category": "stock",
-      "subscriber_count": 7090,
-      "video_count": 3299,
+      "channel_id": "UChnltwbkzYZdyXdhpOAhXpw",
+      "name": "OREX",
+      "category": "coin",
+      "subscriber_count": 10300,
+      "video_count": 1199,
       "score": {
-        "total": 77.5,
+        "total": 78.2,
         "activity": 100.0,
-        "scale": 64.2,
+        "scale": 66.9,
         "relevance": 70.0,
         "consistency": 70.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 7,
-        "subscriber_count": 7090
+        "recent_30d_count": 4,
+        "subscriber_count": 10300
       },
       "recent_titles": [
-        "코스닥 1000포인트 깨질까 ?? 계좌손실 6~7억 수준 ... 대응책은 ?? ( 6월 2일 실시간 )",
-        "주식시장 양극화 극대화 !! 계좌는 6억 5000만원이상 단기에 폭락중 !! ( 6월 1일 실시간 )",
-        "코스피 8000인데 계좌손실은 6억 !! 포모에 괴롭다 !! 앞으로 대응법 ??",
-        "중소형주에만 배팅해서 계좌가 6억정도 폭락중 !! ( 5월 29일 실시간 )",
-        "코스피가 8000을 돌파했지만 반대매매는 역대급으로 터지는 중 !! 우리의 상황은 ?? 전략은 ?? ( 5월 28일 실시간 )"
-      ]
-    },
-    {
-      "channel_id": "UCoROtLOzsB4pAMarab00ANQ",
-      "name": "라이트하우스",
-      "category": "real_estate",
-      "subscriber_count": 456000,
-      "video_count": 5261,
-      "score": {
-        "total": 76.1,
-        "activity": 100.0,
-        "scale": 94.3,
-        "relevance": 50.0,
-        "consistency": 50.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 456000
-      },
-      "recent_titles": [
-        "종부세 폭탄 - 피바람 분다",
-        "카뱅·케뱅·토뱅 - 대출 큰일났다",
-        "공급부족 사태 - 전세 큰일났다",
-        "라이트하우스 - 공개 스트리밍 (26.06.19 금)",
-        "동탄 아파트 - 대폭등 징조"
-      ]
-    },
-    {
-      "channel_id": "UCt9m3iBPn0e0z0B_t-Va7sw",
-      "name": "미키피디아",
-      "category": "stock",
-      "subscriber_count": 356000,
-      "video_count": 165,
-      "score": {
-        "total": 75.6,
-        "activity": 100.0,
-        "scale": 92.5,
-        "relevance": 50.0,
-        "consistency": 50.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 8,
-        "subscriber_count": 356000
-      },
-      "recent_titles": [
-        "🔮2026 하반기 세상과 돈의 흐름 대예측! 하반기 투자 전략은?",
-        "📈100년 데이터로 분석한 주식은 그냥 계속 사야하는 이유?",
-        "🔥역대급 불장, 이럴 때 잡아야하는 멘탈과 기억해야 할 점들",
-        "스페이스 X가 상장하면 테슬라랑 합병할까?",
-        "🚀스페이스X 상장! 살까요, 말까요?"
-      ]
-    },
-    {
-      "channel_id": "UC9B7eURL4sMwoG1NWjUeQ7g",
-      "name": "서영창 교수의 토지개발의 모든것",
-      "category": "real_estate",
-      "subscriber_count": 27600,
-      "video_count": 714,
-      "score": {
-        "total": 75.5,
-        "activity": 100.0,
-        "scale": 74.0,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 27600
-      },
-      "recent_titles": [
-        "심화 #13 공유도로를 과반 지분권자가 출입방법을 단독결정 할 수 있나, 토지유의80, 맹지탈출",
-        "건축법 도로 없이 허가될 수 있다는 대표사례(하상도로 접도의무 예외) #토지 #부동산스터디",
-        "심화 #12 지구단위계획구역의 보차혼용통로는 모두 공로이다, 용어해설84, 맹지탈출",
-        "개발제한구역에는 건축법 도로가 없었다",
-        "심화 #11 개발제한구역GB에서 주택의 진입로를 소유자가 막을 수 있나, 토지유의79, 맹지탈출"
-      ]
-    },
-    {
-      "channel_id": "UCj1ScQIvUDGR2mcczKn2ZBg",
-      "name": "FOR YOU 환율연구소",
-      "category": "economy",
-      "subscriber_count": 2110,
-      "video_count": 1140,
-      "score": {
-        "total": 75.4,
-        "activity": 100.0,
-        "scale": 55.4,
-        "relevance": 70.0,
-        "consistency": 70.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 7,
-        "subscriber_count": 2110
-      },
-      "recent_titles": [
-        "축구 경기와 주식시장 공통점 많지만,  감독과 전문가 역할이 대단히 중요.",
-        "워시 강력한 물가안정 의지 밝혀. # 자산시장에 금리보다 중요한 것은 물가 # 연준의 물가 안정의지는 경기선행 지표 역활",
-        "한국 증시 외국인 투자자에게 엄청난 기회. #국내  증권 전문가들과 완전히 다른 투자전략으로 접근",
-        "환율 상승 주범은 누구, 외국인 증권 투자자 ? 아니면 증권 전문가 ?  정부 외환시장 개입 성공할까 ?",
-        "클래러티 법안이 오히려 코인 시장에 악재 아닌지...# 큰 손(고래)들은 왜 동 법안 통과 이전  비트코인을 매수하지 않고 매도했을까 ?"
-      ]
-    },
-    {
-      "channel_id": "UCHOPWa8g36QPHB00JmdZluw",
-      "name": "채널 제네시스박",
-      "category": "real_estate",
-      "subscriber_count": 225000,
-      "video_count": 2241,
-      "score": {
-        "total": 74.8,
-        "activity": 100.0,
-        "scale": 89.2,
-        "relevance": 50.0,
-        "consistency": 50.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 225000
-      },
-      "recent_titles": [
-        "7월 세제개편 예고! 일단 보유세부터 올립니다! (또 뭐가 더 나올까요) [데일리뉴스 787]",
-        "주식 팔아서 부동산 사면 패가망신? + 부동산 즉문즉답!",
-        "집 팔기 전에 꼭 봐야 할 양도세 절세 5가지 | 채널 제네시스박",
-        "1%만 양보하세요. 취득세 수 천 만원을 아낄 수 있습니다!",
-        "자금조달계획서, 이렇게 작성하시면 세무조사 받습니다! (상승세무회계 안준혁 세무사)"
-      ]
-    },
-    {
-      "channel_id": "UC9OdxrtKsOxQCXpjNmaRMsw",
-      "name": "한국증권TV",
-      "category": "stock",
-      "subscriber_count": 196000,
-      "video_count": 8932,
-      "score": {
-        "total": 74.6,
-        "activity": 100.0,
-        "scale": 88.2,
-        "relevance": 50.0,
-        "consistency": 50.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 196000
-      },
-      "recent_titles": [
-        "SK하이닉스 시총 1위? 잠깐입니다.. 삼성전자, 이제 시작인 이유ㅣ레몬리서치 김민수 대표/위즈웨이브 이권희 대표ㅣ꼭 봐야하는 주도주 투자전략#반도체#바이오",
-        "삼성전자 주가, 곧 터진다! '여기까지'는 반드시 끌고 가세요ㅣ레몬리서치 김민수 대표/위즈웨이브 이권희 대표ㅣ꼭 봐야하는 주도주 투자전략#반도체#바이오",
-        "(풀버전)삼성전자 곧 폭발한다! '이 구간' 마지막 탑승 기회입니다ㅣ위즈웨이브 이권희 대표ㅣ예민수의 경제TALK",
-        "(풀버전)삼성전자 지금이라도? 고민이라면 반드시 '이렇게' 하세요ㅣ레몬리서치 김민수 대표ㅣ예민수의 경제TALK",
-        "현대차 조정 걱정할 이유 없습니다. 조선주 '이 종목'만 보면 됩니다ㅣ이지스탁 이지은 대표/기업공시연구소 변영인 대표ㅣ꼭 봐야하는 주도주 투자전략#반도체#2차전지"
-      ]
-    },
-    {
-      "channel_id": "UCWszmQybNJzkw3J7HRMZPYQ",
-      "name": "도나쓰의 내집마련TV",
-      "category": "real_estate",
-      "subscriber_count": 10700,
-      "video_count": 223,
-      "score": {
-        "total": 73.8,
-        "activity": 100.0,
-        "scale": 67.2,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 5,
-        "subscriber_count": 10700
-      },
-      "recent_titles": [
-        "3기 신도시 자족용지는 어떻게 되나",
-        "동탄2 c27 청약전 확인 포인트는?",
-        "왕숙2,창릉 일반청약결과가 의미하는 것은?",
-        "창릉 S1 왕숙2 A1,A3 일반공급 커트라인은?",
-        "흑석뉴타운 써밋더힐이 아크로 리버스카이보다 좋나요?"
+        "비트코인 펏지펭귄 두 번째 바닥, 크립토 시장 상황",
+        "SpaceX 트레이딩 하는 법 : 적정 가격",
+        "휴머니티 급락한 이유, 비트코인 바닥 전망, 주식 시장 상황",
+        "비트코인 바닥은 아직입니다.",
+        "투자 초보가 꼭 알아야 할 3가지 @OKX VIP 파티 🎉 주식 코인 부동산"
       ]
     },
     {
@@ -702,71 +558,119 @@
       "name": "배당연금술사",
       "category": "stock",
       "subscriber_count": 86200,
-      "video_count": 135,
+      "video_count": 136,
       "score": {
-        "total": 73.1,
+        "total": 77.6,
         "activity": 100.0,
         "scale": 82.3,
-        "relevance": 50.0,
-        "consistency": 50.0,
+        "relevance": 60.0,
+        "consistency": 60.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 4,
         "subscriber_count": 86200
       },
       "recent_titles": [
+        "ISA계좌 배당금, 과연 생활비로 꺼내 쓸 수 있을까?",
         "시장이 흔들려도 제 배당연금은 커집니다 | 10억 포트폴리오 리밸런싱 결과 공개",
         "10종목 중 9종목이 소외된 이상한 시장 | 지금 우리가 해야 할 일!",
         "ISA계좌 활용법 | '커버드콜+레버리지 ETF' 투자 전략",
-        "버블장 시작? 그래도 저는 수비 강화합니다.",
-        "모든 꽃이 봄에 피는 건 아니니, 급할 필요 없습니다!"
+        "버블장 시작? 그래도 저는 수비 강화합니다."
       ]
     },
     {
-      "channel_id": "UCgRx2xB2zewKwwnSjeCvIVg",
-      "name": "토지투자 · 디벨로퍼, 토지병장 TV",
+      "channel_id": "UC6Q9ucT3ybuxNF1tLRvB6YA",
+      "name": "법원경매정보 옥션원TV",
       "category": "real_estate",
-      "subscriber_count": 6030,
-      "video_count": 262,
+      "subscriber_count": 14800,
+      "video_count": 193,
       "score": {
-        "total": 71.3,
+        "total": 77.4,
         "activity": 50.0,
-        "scale": 63.0,
-        "relevance": 90.0,
-        "consistency": 90.0,
+        "scale": 69.5,
+        "relevance": 100.0,
+        "consistency": 100.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 2,
-        "subscriber_count": 6030
+        "subscriber_count": 14800
       },
       "recent_titles": [
-        "📢 토지투자 대화의 시작이 토지 고수되는 지름길이다 📌 47기 토지투자연구반 정규과정, 6월7일 개강!!",
-        "📢 2026년 6월의 토지투자 · 토지경매 추천물건!!..  라이브 실전투자 완전 분석, 토계서&사례분석",
-        "✔️ [업글합니다] 최상의 투자인사이트, 토계서&사례분석.. 토투클럽반.. 또 한번 성장합니다. 최고의 기회!!",
-        "📢 나도 토지고수!!  토계서&사례분석, 6개월 무제한 수강 + 도시기본계획, 토지경매 추천물건",
-        "📢 토지투자의 익숙함, 쉽게 시작하는 투자언어 토지기초과정.. 무료 수강 지원합니다"
+        "집주인이 실거주를 사유로 허위로 내보낸 뒤 더 높은 금액으로 새 세입자와 전세 계약을 체결했다면 어떻게 법적 대응할 수 있나요? [고현종 변호사의 법률 클리닉⑧] #법률상담",
+        "[옥션원 X 부자친구들] 경매 투자 아직도 감으로 하고 있다면 '이렇게' 접근해야 돈 벌 수 있습니다 (기술적 트레이딩 노하우)",
+        "[옥션원 X 부자해커] 뉴스에서 집값 오른다고 할 때 경매 고수들이 하는 일",
+        "[옥션원 X 김종율아카데미] 토지 투자 막연하다고요? 실전 투자자가 부동산 뉴스를 볼 때 '제대로' 읽는 법을 자신의 낙찰 사례로 알려드립니다",
+        "법원경매, 어디서 보느냐가 중요합니다"
       ]
     },
     {
-      "channel_id": "UCxG-WFQqKbV49KIs5S9T0wA",
-      "name": "한국인의연금_한국투자증권",
+      "channel_id": "UCGuahdzy-Cjx98cZmaLE7Dg",
+      "name": "대산경제분석",
       "category": "economy",
-      "subscriber_count": 27500,
-      "video_count": 315,
+      "subscriber_count": 39300,
+      "video_count": 6607,
       "score": {
-        "total": 71.0,
+        "total": 76.1,
         "activity": 100.0,
-        "scale": 74.0,
+        "scale": 76.6,
+        "relevance": 60.0,
+        "consistency": 60.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 39300
+      },
+      "recent_titles": [
+        "코스피 삼성전자 -20%룰. 코스피붕괴시작. 삼성전자 대세하락,코스피저항 지지, 코스피사상최악버블. 거래량분석. 코스피저항. 코스피 대세하락.",
+        "올버블붕괴신호. 코주부채 차트 위기. 국채붕괴. 위험자산 2차폭락. 실물금은뿐. 위험자산폭락. 신호 하이일드. 올버블붕괴. 국가부도 유럽 일본",
+        "소비자심리지수. 대형 주식붕괴,. 두바이유 현물가. 반도체 버블 . 모든원인 유가급등.  주식붕괴.금 은 대세상승. 실업 금리 주식폭락.  골드 반도체 엔화. 미 일 국채 10년.",
+        "버블붕괴시작. 물가 유가,스태그플레이션. 제2대공황. 금은시대활짝. 주식시대몰락시작.  금역사이유.  반도체 엔달러 하락.  금은대세상승.  올버블붕괴. 닷컴버블 데쟈뷰.",
+        "코스피 -20%, 대형 주식붕괴,. 두바이유 현물가. 반도체 버블 . 모든원인 유가급등.  주식붕괴.금 은 대세상승. 실업"
+      ]
+    },
+    {
+      "channel_id": "UCt9m3iBPn0e0z0B_t-Va7sw",
+      "name": "미키피디아",
+      "category": "stock",
+      "subscriber_count": 359000,
+      "video_count": 165,
+      "score": {
+        "total": 75.6,
+        "activity": 100.0,
+        "scale": 92.6,
         "relevance": 50.0,
         "consistency": 50.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 27500
+        "recent_30d_count": 6,
+        "subscriber_count": 359000
       },
       "recent_titles": [
-        "돈 모으고 싶다면 '세금'부터 줄이세요!🔥",
-        "수익률 1%보다 세금 1% 아끼는 더 좋다? 국내·해외 주식 세금 총정리! (배당소득세, 증여세 면제 한도) l 문쌤의 머니클래스 4화",
-        "N잡러 필수 시청! 세금 감면받으려면 '이것'부터 하세요",
-        "소득이 증가하면 얼마나 세금을 내야 할까?🧐",
-        "프리랜서·N잡러 필수 시청! 문쌤이 알려주는 5월 세금 신고 치트키"
+        "🔮2026 하반기 세상과 돈의 흐름 대예측! 하반기 투자 전략은?",
+        "📈100년 데이터로 분석한 주식은 그냥 계속 사야하는 이유?",
+        "🔥흔들리는 역대급 불장, 이럴 때 잡아야하는 멘탈과 기억해야 할 점들",
+        "스페이스 X가 상장하면 테슬라랑 합병할까?",
+        "🚀스페이스X 상장! 살까요, 말까요?"
+      ]
+    },
+    {
+      "channel_id": "UCKxumOAB95UQ5U2OGe1byeg",
+      "name": "미리보는부동산TV - 수익형 부동산의 모든것",
+      "category": "real_estate",
+      "subscriber_count": 2120,
+      "video_count": 132,
+      "score": {
+        "total": 75.4,
+        "activity": 100.0,
+        "scale": 55.4,
+        "relevance": 70.0,
+        "consistency": 70.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 2120
+      },
+      "recent_titles": [
+        "[청주 원룸 매매] 서원대.청주교대 더블 수요 독점! 월 순수입 1,200 만원 층고 4.4m 역대급 주인세대 청주상가주택매매",
+        "10억대 다가구주택 #shorts #청주다가구주택 #봉명동",
+        "4차선 대로변에 다가구 허가 / 산업단지 도보권 / 10억 초반 매물 / 주변 만실 운영중 / 테크노폴리스와 산업단지 품은 청주 다가구주택 매매",
+        "만실 상가건물 #청주상가건물 #꼬마빌딩매매",
+        "충북대에서 제일 좋은 집 #shorts #청주상가주택 #복대동상가주택"
       ]
     },
     {
@@ -774,23 +678,119 @@
       "name": "[이현철] 아파트사이클연구소",
       "category": "real_estate",
       "subscriber_count": 243000,
-      "video_count": 1186,
+      "video_count": 1193,
       "score": {
-        "total": 70.4,
+        "total": 74.9,
         "activity": 100.0,
         "scale": 89.8,
-        "relevance": 40.0,
-        "consistency": 40.0,
+        "relevance": 50.0,
+        "consistency": 50.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
         "subscriber_count": 243000
       },
       "recent_titles": [
-        "금값 초토화 시킬 정책 떴습니다. 이때는 가진 금 싹 다 파세요 | 조규원 대표 풀버전",
-        "\"부동산 붕괴 시나리오 떴습니다\" 언론은 쉬쉬하고 있어요. 현실은 완전히 정반대입니다 | 이현철 소장 3부",
-        "“은행도 충격받았다” 영끌족 줄파산 시작됐어요. 난리난 부동산 현장 분위기 | [특집] 박기태 변호사, 이서영 변호사",
-        "\"부동산 시장 곧 붕괴된다?\" 무주택자는 제발 정신 차리세요. 앞으로 집값보다 더 무서운게 옵니다 | 이현철 소장 2부",
-        "올해 초대형 폭락 온다? 이때는 가진 금 싹 다 파세요. 무시무시한 일 벌어질 겁니다 | 조규원 대표 4부"
+        "\"연금공단은 쉬쉬하고 있어요\" 국민연금 65세에 덜컥 받으면 이제 정말 큰일납니다 | 이영주 대표 3부",
+        "\"부동산 시장 초토화 코앞이다\" 지금 집 사면 무조건 후회합니다. 앞으로 4년 간 집 절대 사지마세요 | 이현철 소장 4부",
+        "\"50대 자산격차 심각하다\" 앞으로 3억 있으면 빈곤층이다? 이정도 있어야 노후 평균입니다 | 이영주 대표 2부",
+        "\"국회 통과 했다\" 앞으로 부동산 시장 송두리째 뒤집어질 법안 또 나왔습니다 | 이현철 소장 3부",
+        "\"이때 코스피 발 뺀다?\" 국민연금공단에서 숨기는 진실. 주식 싹 다 폭락할 겁니다 | 이영주 대표 1부"
+      ]
+    },
+    {
+      "channel_id": "UCQ-3tVPpV_4VdmeuJmLz9dQ",
+      "name": "미래에셋 투자와연금TV",
+      "category": "economy",
+      "subscriber_count": 193000,
+      "video_count": 714,
+      "score": {
+        "total": 74.5,
+        "activity": 100.0,
+        "scale": 88.1,
+        "relevance": 50.0,
+        "consistency": 50.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 6,
+        "subscriber_count": 193000
+      },
+      "recent_titles": [
+        "연금저축계좌 여러 개 있으면 더 좋나요?",
+        "ISA 계좌, 비과세만 좋은 줄 알았더니",
+        "자녀명의 연금저축 중간에 빼 쓰면 불이익 없을까?",
+        "내가 불려서 물려주는 것보다 아이 계좌 만들어 투자하는 게 나은 이유 3",
+        "이래서 언금투자는 일찍 시작해야 합니다"
+      ]
+    },
+    {
+      "channel_id": "UCXRlkKtaSUSAiZXQrpOFwaA",
+      "name": "연금이야기",
+      "category": "economy",
+      "subscriber_count": 160000,
+      "video_count": 257,
+      "score": {
+        "total": 74.2,
+        "activity": 100.0,
+        "scale": 86.7,
+        "relevance": 50.0,
+        "consistency": 50.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 4,
+        "subscriber_count": 160000
+      },
+      "recent_titles": [
+        "연금저축, IRP, ISA 핵심정보만 요약해 드립니다(적립)",
+        "2029년~ 정년연장/1973년생 65세 정년 공무원연금 공백은?",
+        "S&P500 37개 중 어떤 걸 담을까?",
+        "ISA 3년 되면 ①찾는다 ② 연금전환한다 ③ ISA에 다시 납부한다",
+        "연금저축,IRP vs 노란우산, 공제회 /나에게 어떤게 유리?"
+      ]
+    },
+    {
+      "channel_id": "UCXujtwzt8nlEuVhqQlcJ-Ng",
+      "name": "S-REPORT | 시장 리포트",
+      "category": "stock",
+      "subscriber_count": 110000,
+      "video_count": 3199,
+      "score": {
+        "total": 73.5,
+        "activity": 100.0,
+        "scale": 84.0,
+        "relevance": 50.0,
+        "consistency": 50.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 9,
+        "subscriber_count": 110000
+      },
+      "recent_titles": [
+        "31% 증발 전세 대란! 수도권 덮친 패닉바잉",
+        "5년 만의 전세 대재앙 | 매매가 폭등의 도화선",
+        "[S리포트] \"성장률 역대급이라고?\" 근데 내 지갑은 텅텅! 반도체 착시가 숨긴 한국 경제의 진짜 현실",
+        "전세 살던 사람들 날벼락 / 월세 267만 원 시대 열렸다!",
+        "[S리포트] 12년만 최악 전세폭등 ｜ 집값 대폭발 시작됐다!"
+      ]
+    },
+    {
+      "channel_id": "UCd2Cr0gCg7TkgoPK9ekgvkQ",
+      "name": "드리머의 주식기초강의",
+      "category": "stock",
+      "subscriber_count": 2880,
+      "video_count": 1141,
+      "score": {
+        "total": 71.4,
+        "activity": 100.0,
+        "scale": 57.7,
+        "relevance": 60.0,
+        "consistency": 60.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 2880
+      },
+      "recent_titles": [
+        "주식시장에서 가장 위험한 '탐욕'",
+        "변동성 장세를 이기는 투자!",
+        "[긴급] 하이닉스 단기 꼭지 이번 주? 다음 주? 기관/외인 대량 매도의 의미",
+        "하이닉스 꼭지는 이때입니다!",
+        "\"주식으로 떼돈 벌었다는 뉴스, 다 믿지 마세요\" 투자를 평생의 무기로 만드는 멘탈 관리법"
       ]
     },
     {
@@ -818,99 +818,51 @@
       ]
     },
     {
-      "channel_id": "UCzGUaygjUeV-Zm_DRuFS0pA",
-      "name": "오태민의 지혜의족보",
+      "channel_id": "UCwn8vUp8T8kqSxPJVGBEFtw",
+      "name": "이장우의 비트코인 머니플랜",
       "category": "coin",
-      "subscriber_count": 208000,
-      "video_count": 374,
+      "subscriber_count": 15300,
+      "video_count": 101,
       "score": {
-        "total": 70.2,
+        "total": 69.9,
         "activity": 100.0,
-        "scale": 88.6,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 208000
-      },
-      "recent_titles": [
-        "비트코인 투자전략 6만 불 횡보장의 비밀 (오태민)",
-        "전 세계 부의 이동이 시작된다. 미국이 설계한 거대한 판 (오태민)",
-        "2026년 모든 판이 뒤집힙니다. 미국이 구축한 새로운 질서 (오태민)",
-        "달러의 역설",
-        "미국이 '금' 대신 '비트코인'에 주목할 수밖에 없는 이유 (오태민)"
-      ]
-    },
-    {
-      "channel_id": "UCd7cldJelUP_HWuTDCTf_-A",
-      "name": "레오대출연구소",
-      "category": "real_estate",
-      "subscriber_count": 17000,
-      "video_count": 118,
-      "score": {
-        "total": 70.1,
-        "activity": 100.0,
-        "scale": 70.5,
+        "scale": 69.7,
         "relevance": 50.0,
         "consistency": 50.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 5,
-        "subscriber_count": 17000
+        "recent_30d_count": 10,
+        "subscriber_count": 15300
       },
       "recent_titles": [
-        "은행이 왜 애매하게 말할까?😉가장 큰 이유는 바로 민원 때문입니다. . 결국 은행은 정보만 줄 뿐, .그렇다면 고정과 변동, 도대체 뭘 선택해야 할까요?대출 종류와 기간에 따라 답",
-        "주거래은행만 가면 손해 볼 수 있습니다.저는 상담할 때전국은행연합회 대출금리 비교공시를 먼저 확인하고 같은 은행도 전자계약, 급여이체, 카드사용, 자녀수에 따라 다릅니다.",
-        "법원 경매로 싸게 산 집, 잔금 못 치르면 어떻게 될까요?입찰 보증금 전액 몰수! 💸",
-        "돈 없어서 경매 못 한다고요? 대출 구조를 알아야 합니다.",
-        "시중은행에서 서울도 ltv70%된다고요?"
+        "비트코인  세금 폭탄 막는 비밀",
+        "비트코인 투자 3가지 원칙",
+        "삼성생명 20년 전문가 연금 대신 비트코인?",
+        "2026 하반기, 데이터가 말해주는 역대급 코인 매집 구간?",
+        "모으는 속도 2배로 늘리는 적립식 투자법"
       ]
     },
     {
-      "channel_id": "UCQ-3tVPpV_4VdmeuJmLz9dQ",
-      "name": "미래에셋 투자와연금TV",
-      "category": "economy",
-      "subscriber_count": 190000,
-      "video_count": 713,
+      "channel_id": "UCbqptsEqXykrNqIU5zBxQHw",
+      "name": "코인흥신소",
+      "category": "coin",
+      "subscriber_count": 14500,
+      "video_count": 2668,
       "score": {
-        "total": 70.0,
+        "total": 69.8,
         "activity": 100.0,
-        "scale": 88.0,
-        "relevance": 40.0,
-        "consistency": 40.0,
+        "scale": 69.4,
+        "relevance": 50.0,
+        "consistency": 50.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 8,
-        "subscriber_count": 190000
+        "recent_30d_count": 10,
+        "subscriber_count": 14500
       },
       "recent_titles": [
-        "ISA 계좌, 비과세만 좋은 줄 알았더니",
-        "자녀명의 연금저축 중간에 빼 쓰면 불이익 없을까?",
-        "내가 불려서 물려주는 것보다 아이 계좌 만들어 투자하는 게 나은 이유 3",
-        "이래서 언금투자는 일찍 시작해야 합니다",
-        "가난해도 부자처럼 투자해야 하는 진짜 이유"
-      ]
-    },
-    {
-      "channel_id": "UC6Q9ucT3ybuxNF1tLRvB6YA",
-      "name": "법원경매정보 옥션원TV",
-      "category": "real_estate",
-      "subscriber_count": 14800,
-      "video_count": 192,
-      "score": {
-        "total": 69.9,
-        "activity": 25.0,
-        "scale": 69.5,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 1,
-        "subscriber_count": 14800
-      },
-      "recent_titles": [
-        "[옥션원 X 부자친구들] 경매 투자 아직도 감으로 하고 있다면 '이렇게' 접근해야 돈 벌 수 있습니다 (기술적 트레이딩 노하우)",
-        "[옥션원 X 부자해커] 뉴스에서 집값 오른다고 할 때 경매 고수들이 하는 일",
-        "[옥션원 X 김종율아카데미] 토지 투자 막연하다고요? 실전 투자자가 부동산 뉴스를 볼 때 '제대로' 읽는 법을 자신의 낙찰 사례로 알려드립니다",
-        "법원경매, 어디서 보느냐가 중요합니다",
-        "[옥션원 X 양재이션] 직장 다니면서 부업으로 경매 단타하기 힘드시다고요? 시간이 부족해 고민인 분들 꼭 보세요!"
+        "횡보가 끝나면 경우의 수 #경우의수",
+        "안심은 금물 #비트코인 #이더리움",
+        "지지인가 신저점인가",
+        "현물 ETF 1조원 순유출  #비트코인 #이더리움 #etf",
+        "코인 악재들 속에서 피어난 희망"
       ]
     },
     {
@@ -918,7 +870,7 @@
       "name": "세상에서 제일쉬운 무료 경매강의-세무경",
       "category": "real_estate",
       "subscriber_count": 14500,
-      "video_count": 93,
+      "video_count": 92,
       "score": {
         "total": 69.8,
         "activity": 25.0,
@@ -938,339 +890,51 @@
       ]
     },
     {
-      "channel_id": "UCPmI5ygQuHcDsb_HZDxBhWA",
-      "name": "청약홈TV",
-      "category": "real_estate",
-      "subscriber_count": 76200,
-      "video_count": 457,
-      "score": {
-        "total": 69.8,
-        "activity": 75.0,
-        "scale": 81.4,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 3,
-        "subscriber_count": 76200
-      },
-      "recent_titles": [
-        "노량진뉴타운 세번째 분양 ‘드파인 아르티아’ 분양가는 두둥",
-        "6억원대 분양가 낙생 신희타 ‘e편한세상 분당 퍼스트빌리지’",
-        "누가 퐁탄이라 했던가...20억 돌파 동탄2신도시(동탄역 롯데캐슬)",
-        "반포보다 비싼 노량진? 아크로 리버스카이",
-        "고양 창릉 우미 린, 그레니티 왕숙 아테라 당첨되면 3억 로또"
-      ]
-    },
-    {
-      "channel_id": "UCXRlkKtaSUSAiZXQrpOFwaA",
-      "name": "연금이야기",
-      "category": "economy",
-      "subscriber_count": 159000,
-      "video_count": 256,
+      "channel_id": "UCOJMIJ2lK5zuBFs8b6zgMMA",
+      "name": "블록체인투데이",
+      "category": "coin",
+      "subscriber_count": 31300,
+      "video_count": 324,
       "score": {
         "total": 69.7,
-        "activity": 100.0,
-        "scale": 86.7,
-        "relevance": 40.0,
-        "consistency": 40.0,
+        "activity": 50.0,
+        "scale": 74.9,
+        "relevance": 80.0,
+        "consistency": 80.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 4,
-        "subscriber_count": 159000
+        "recent_30d_count": 2,
+        "subscriber_count": 31300
       },
       "recent_titles": [
-        "2029년~ 정년연장/1973년생 65세 정년 공무원연금 공백은?",
-        "S&P500 37개 중 어떤 걸 담을까?",
-        "ISA 3년 되면 ①찾는다 ② 연금전환한다 ③ ISA에 다시 납부한다",
-        "연금저축,IRP vs 노란우산, 공제회 /나에게 어떤게 유리?",
-        "나스닥 100ETF 1억→ 18억되었다. 나스닥 100 어떤 걸 담을까"
+        "비트코인과 디지털자산의 미래 | 백훈종 스메시파이CEO",
+        "제 33회 Data AI 출판기념회 및 AI 정책포럼",
+        "토큰증권 법제화 이후 자본시장의 구조 변화와 제도적 과제, KBIPA 국회 입법 정책 세미나(3월 26일 국회의원회관)",
+        "은행은 이제 끝났다 새로운 돈의 정체 #가상화폐 #핀테크 #금융시스템 #금융혁신 #소비자보호 #통화주권 #디지털자산",
+        "아직도 은행법 타령? 이러다 기술 다 뺏깁니다 #스테이블코인 #기술혁신 #글로벌규제 #은행법 #블록체인 #핀테크 #디지털자산 #이노베이션"
       ]
     },
     {
-      "channel_id": "UCkLVKNpfwwaovHwavw1Au_g",
-      "name": "유근용의 투자공부",
+      "channel_id": "UCWszmQybNJzkw3J7HRMZPYQ",
+      "name": "도나쓰의 내집마련TV",
       "category": "real_estate",
-      "subscriber_count": 155000,
-      "video_count": 794,
+      "subscriber_count": 10700,
+      "video_count": 224,
       "score": {
-        "total": 69.6,
+        "total": 69.3,
         "activity": 100.0,
-        "scale": 86.5,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 155000
-      },
-      "recent_titles": [
-        "‘1,000만 원’으로 아파트 사서 '1억' 벌고 탈출합니다! 행신동 아파트 매도 잔금 현장 (+매도한 집 내부까지 싹 다 공개)",
-        "🔥 돈 없는 건 이해하는데, 집은 도대체 무슨 죄냐? 🤬",
-        "잘못은 그 사람이 했는데 왜 당신이 포기합니까? 억울하게 평생 당하고만 살 겁니까?",
-        "“피해자가 아무 말도 못하는 더러운 세상?” 🤬 빌라 붕괴 나몰라라 집주인들 & 고시원 야반도주범 ‘셀프 소송’으로 참교육하는 법",
-        "변호사 비용 쓰지 마세요 🙅‍♂️ 내 돈 안 들이고 양아치 임차인 털어버리는 치트키"
-      ]
-    },
-    {
-      "channel_id": "UC8XEbWW6qgJRf8fbIO5GfEg",
-      "name": "나스닥 패밀리",
-      "category": "stock",
-      "subscriber_count": 121000,
-      "video_count": 1138,
-      "score": {
-        "total": 69.2,
-        "activity": 100.0,
-        "scale": 84.7,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 121000
-      },
-      "recent_titles": [
-        "[아이온큐 주가전망] 이미 5년전 부터 준비해온 계획, 대량양산 준비 완료!",
-        "[아이온큐 분석]  경쟁사 콴티넘의 충격 고백! 레이저 버리고 전자 제어 택한 아이온큐가 양자 패권 쥐는 진짜 이유",
-        "[아이온큐 주가분석] 주말속보) 양자가속기 무조건 필요. 그 자체로 엄청난 가치 젠슨황 감탄!! #양자컴퓨팅주식 #아이온큐주가",
-        "[ 아이온큐 분석 ] 다음주 50달러 마지막 눌림목! 공매도15% 비중 계속 줄이는 이유! 신고가 곧 찍습니다!",
-        "[아이온큐 주가전망] 주말 인터뷰 옵션 100달러 계약 터졌다! 다음주 대박났다."
-      ]
-    },
-    {
-      "channel_id": "UCjiWkkzvO8C4VzFIjXEdM6Q",
-      "name": "부동산전망하는남자",
-      "category": "real_estate",
-      "subscriber_count": 5660,
-      "video_count": 1990,
-      "score": {
-        "total": 68.1,
-        "activity": 100.0,
-        "scale": 62.5,
+        "scale": 67.2,
         "relevance": 50.0,
         "consistency": 50.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 5660
+        "recent_30d_count": 4,
+        "subscriber_count": 10700
       },
       "recent_titles": [
-        "월세 2배 폭증! 탁상공론의 피해자는 서민",
-        "라이벌일본 대승 과 대비되는 한국축구. 선수네임벨류 앞서지만 결국차이는 감독 역량 차이 !",
-        "GTX 개통되면... 서울만 더 폭등한다! (입지 차별화)",
-        "전세 때문에 집값 폭등? 그럼 지방엔 전세 없습니까?  부동산동향 진단.",
-        "모로 가도 서울로 가면 손해 보지 않았다 [부동산 판세 읽기]"
-      ]
-    },
-    {
-      "channel_id": "UCMdelfAk05Tp2MAadXHQSJw",
-      "name": "오일전문가",
-      "category": "stock",
-      "subscriber_count": 51600,
-      "video_count": 160,
-      "score": {
-        "total": 67.6,
-        "activity": 25.0,
-        "scale": 78.5,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 1,
-        "subscriber_count": 51600
-      },
-      "recent_titles": [
-        "오일전문가 주식 현황ㅣ2026년 5월 마지막 주ㅣ정제마진 현황",
-        "오일전문가 주식 현황ㅣ2026년 4월 마지막 주ㅣ정제마진 현황",
-        "2026년 4월 11일 우리 가족 일상",
-        "오일전문가 주식 현황ㅣ2026년 3월 마지막 주ㅣ정제마진 현황",
-        "오일전문가 주식 현황ㅣ2026년 2월 마지막 주ㅣ정제마진 현황"
-      ]
-    },
-    {
-      "channel_id": "UCdEtDJZiZCJyUSr1oNJ1jqw",
-      "name": "아인의 주식투자",
-      "category": "stock",
-      "subscriber_count": 38300,
-      "video_count": 2467,
-      "score": {
-        "total": 67.1,
-        "activity": 100.0,
-        "scale": 76.4,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 38300
-      },
-      "recent_titles": [
-        "FOMC 금리동결. 美연준 ‘워시체제’ 시작.",
-        "나스닥 폭등장이 온다. 시장은 이미 움직이고 있다. SOXL, AMD, 마이크론, 샌디스크, 하이퍼스케일데이터, SK하이닉스, KORU, 레드와이어, 코어위브.",
-        "코스피 장중 9,000포인트 돌파. KORU 한국 3배 ETF 폭등.",
-        "골드 3배 레버리지 GDXU 시세분출",
-        "뉴욕증시 초강세장. SOXL 매도목표가 500불. 스페이스X, 엔비디아, 마이크론, 골드, GDXU, KORU, 레드캣홀딩스."
-      ]
-    },
-    {
-      "channel_id": "UCEkkV8RGI_jIDzeQLyFDDzw",
-      "name": "절세미남_세무사tv이성호",
-      "category": "economy",
-      "subscriber_count": 35900,
-      "video_count": 255,
-      "score": {
-        "total": 67.0,
-        "activity": 100.0,
-        "scale": 75.9,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 35900
-      },
-      "recent_titles": [
-        "노후빈곤 : 죽지못해 산다｜상속전문 세무사가 상담하며 느낀 소득절벽·고령화·자식문제의 현실#상속세 #노후빈곤 #소득절벽 #상속분쟁 #노후준비",
-        "합격해도 갈 곳이 없다 | 전문직도 예외 없는 충격적인 결과 #합격해도취업불가 #모라벡의역설 #AI시대직업 #AI전문직대체 #AI일자리",
-        "유튜브가 당신을 속였다 | 생활비 송금·가족 차용증·엄마카드.. 국세청이 직접 반박한 상속·증여세 오해 5가지#상속세 #증여세 #절세꿀팁 #국세청 #세무조사 #생활비",
-        "6월까지 해외금융계좌 신고하세요｜과태료 최대 10억, 명단공개까지#해외계좌신고 #해외주식 #미국주식 #가상자산 #코인세금",
-        "12년 만에 위반건축물 양성화법 통과｜불법건축물 양성화법 총정리#위반건축물 #불법건축물 #건물양성화 #이행강제금"
-      ]
-    },
-    {
-      "channel_id": "UClCqSWhwSCNd7jUUwg41pUQ",
-      "name": "차트분석남 - 20년 내공 고퀄 차트분석",
-      "category": "stock",
-      "subscriber_count": 32500,
-      "video_count": 1173,
-      "score": {
-        "total": 66.8,
-        "activity": 100.0,
-        "scale": 75.2,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 9,
-        "subscriber_count": 32500
-      },
-      "recent_titles": [
-        "눌림목 매매의 시작은 전제 만족의 철칙부터!",
-        "세계 탑 트레이더의 이평선 세팅과 매수 가능 구역 #마크미너비니",
-        "탑 트레이더가 유일하게 매수하는 2단계 구간의 조건! #마크미너비니",
-        "현 시대 투자의 신. 마크 미너비니의 차트세팅과 차트해석법 그리고 국장에 접목",
-        "계단이 대놓고 보이는 진정한 계단식 지표 #매트릭스트렌드"
-      ]
-    },
-    {
-      "channel_id": "UCQIyAcoLsO3L0RMFQk7YMYA",
-      "name": "김영익의 경제스쿨",
-      "category": "economy",
-      "subscriber_count": 338000,
-      "video_count": 412,
-      "score": {
-        "total": 66.5,
-        "activity": 100.0,
-        "scale": 92.1,
-        "relevance": 30.0,
-        "consistency": 30.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 338000
-      },
-      "recent_titles": [
-        "증시도 수출도 좋은데, 환율은 왜 오를까? | 김영익의 경제스쿨",
-        "[속보] 6월 FOMC, 진짜 핵심은 ‘금리동결’이 아닙니다 | 김영익의 경제스쿨",
-        "다음 방향을 준비할 때입니다. 지금 시장이 보내는 신호 | 소현철 박사 & 김영익 교수",
-        "돈의 흐름을 보면 투자 기회가 보입니다 | 소현철 박사 & 김영익 교수",
-        "아직 초입인 슈퍼사이클, 지금이 잡아야 할 기회일까? | 엄경아 연구위원 & 김영익 교수"
-      ]
-    },
-    {
-      "channel_id": "UCkApuEELZAEFq2SKTaAcs-w",
-      "name": "배당핥기",
-      "category": "stock",
-      "subscriber_count": 23600,
-      "video_count": 47,
-      "score": {
-        "total": 66.2,
-        "activity": 25.0,
-        "scale": 72.9,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 1,
-        "subscriber_count": 23600
-      },
-      "recent_titles": [
-        "환율 1550원에 배당주 사면 위험할까?｜고환율 시대 배당투자법",
-        "SCHD+JEPQ에 4000만원 넣으면? 실제 배당금 공개합니다 (계좌인증)",
-        "주식, 똑똑한 사람일수록 돈 못 버는 이유(+배당에 올인한 이유)",
-        "배당 ETF 일드맥스, 이게 사과냐 독약이냐? (초고배당의 진실)",
-        "SCHD+JEPQ 3700만원 배당금 공개(+실계좌)"
-      ]
-    },
-    {
-      "channel_id": "UCGnLYxgV_OcQfthx-nSLAsw",
-      "name": "엉금야금 - Slow but Steady",
-      "category": "stock",
-      "subscriber_count": 19900,
-      "video_count": 161,
-      "score": {
-        "total": 65.9,
-        "activity": 25.0,
-        "scale": 71.6,
-        "relevance": 90.0,
-        "consistency": 90.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 1,
-        "subscriber_count": 19900
-      },
-      "recent_titles": [
-        "[평균의 투자] (6화) 투자자에게는 세 개의 바구니가 있다",
-        "[평균의 투자] (5화) 수익률보다 중요한 것이 있다",
-        "[평균의 투자] (4화) 3월은 나에게도 고통스러운 한 달이었다",
-        "[평균의 투자] (3화) 위기와 기회는 같은 사건을 다르게 부르는 것뿐이다",
-        "31화~50화 몰아보기 (미공개 영상 포함)"
-      ]
-    },
-    {
-      "channel_id": "UCQyhwrJjNju5sq5gA45Ppww",
-      "name": "킴스 미국주식",
-      "category": "stock",
-      "subscriber_count": 181000,
-      "video_count": 986,
-      "score": {
-        "total": 65.4,
-        "activity": 100.0,
-        "scale": 87.6,
-        "relevance": 30.0,
-        "consistency": 30.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 9,
-        "subscriber_count": 181000
-      },
-      "recent_titles": [
-        "인생 역전할 마지막 기회 , SOXL 스페이스X 테슬라 엔비디아",
-        "저점 한번 또 잡아봅시다 (SOXL 테슬라 엔비디아 마이크로소프트 오라클 마이크론 샌디스크...",
-        "지금이라도 초 집중하셔야 (마이크론테크놀로지 SOXL 테슬라 엔비디아 아이온큐",
-        "이번 기회 놓치고 싶으면 그냥 지나가셔도 됩니다. (SOXL 마이크론테크놀로지 엔비디아 테슬라 아이온큐 샌디스크",
-        "이번 하락 후, 이때 잡아야 인생기회 (엔비디아 테슬라 브로드컴 SOXL 팔란티어테크 마이크로소프트 마이크론 샌디스크"
-      ]
-    },
-    {
-      "channel_id": "UCWH84aWz5KzzuT0LS31YX7g",
-      "name": "아스하프 주식일지",
-      "category": "stock",
-      "subscriber_count": 1140,
-      "video_count": 171,
-      "score": {
-        "total": 65.2,
-        "activity": 25.0,
-        "scale": 50.9,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 1,
-        "subscriber_count": 1140
-      },
-      "recent_titles": [
-        "주식 당일매매 일지",
-        "주식 당일매매 일지",
-        "주식 당일매매 일지",
-        "주식 당일매매 일지",
-        "주식 당일매매 일지"
+        "드파인아르티아 소규모인데 괜찮나요",
+        "3기 신도시 자족용지는 어떻게 되나",
+        "동탄2 c27 청약전 확인 포인트는?",
+        "왕숙2,창릉 일반청약결과가 의미하는 것은?",
+        "창릉 S1 왕숙2 A1,A3 일반공급 커트라인은?"
       ]
     },
     {
@@ -1278,71 +942,335 @@
       "name": "분양 포인트 정보",
       "category": "real_estate",
       "subscriber_count": 1120,
-      "video_count": 195,
+      "video_count": 196,
       "score": {
-        "total": 65.2,
-        "activity": 25.0,
+        "total": 68.2,
+        "activity": 50.0,
         "scale": 50.8,
-        "relevance": 100.0,
-        "consistency": 100.0,
+        "relevance": 90.0,
+        "consistency": 90.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 1,
+        "recent_30d_count": 2,
         "subscriber_count": 1120
       },
       "recent_titles": [
+        "풍무역세권 수자인 그라센트 2차 모델하우스 선착순",
         "인천 작전 에피트(한라비발디) 계양구 작전동 신축 아파트 #인천아파트 #인천작전한라비발디 #인천부동산 #인천부평구아파트 #인천계양구아파트",
         "인천 작전 에피트(작전 한라비발디) 5억초반 아파트 작전역세권 작전동 즉시입주(잔금유예) 신축 분양 아파트",
         "청주 테크노폴리스, sk하이닉스 수혜! 마지막 3억대 청주 테크노 레이원시티 민간임대 아파트 #청주아파트 #청주부동산 #청주레이원시티 #청주테크노폴리스 #청주전세",
-        "청주 테크노 레이원시티 sk하이닉스 최대수혜, 테크노폴리스 바로 옆 송절지구 송절동 민간임대 아파트",
-        "대전 용전 마루힐 스카이46 선착순 대전 용전동 10년 전세 민간임대아파트 #대전아파트 #용전동마루힐 #용전마루힐 #대전부동산 #대전분양 #대전트램2호선"
+        "청주 테크노 레이원시티 sk하이닉스 최대수혜, 테크노폴리스 바로 옆 송절지구 송절동 민간임대 아파트"
       ]
     },
     {
-      "channel_id": "UCZah5yWyAW_3UGTF1gWFNlg",
-      "name": "정호쌤TV_[분양]아파트분석",
+      "channel_id": "UCMdelfAk05Tp2MAadXHQSJw",
+      "name": "오일전문가",
+      "category": "stock",
+      "subscriber_count": 51900,
+      "video_count": 161,
+      "score": {
+        "total": 67.6,
+        "activity": 25.0,
+        "scale": 78.6,
+        "relevance": 90.0,
+        "consistency": 90.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 1,
+        "subscriber_count": 51900
+      },
+      "recent_titles": [
+        "오일전문가 주식 현황ㅣ2026년 6월 마지막 주ㅣ정제마진 현황",
+        "오일전문가 주식 현황ㅣ2026년 5월 마지막 주ㅣ정제마진 현황",
+        "오일전문가 주식 현황ㅣ2026년 4월 마지막 주ㅣ정제마진 현황",
+        "2026년 4월 11일 우리 가족 일상",
+        "오일전문가 주식 현황ㅣ2026년 3월 마지막 주ㅣ정제마진 현황"
+      ]
+    },
+    {
+      "channel_id": "UC3pfEoxaRDT6hvZZjpHu7Tg",
+      "name": "경제 읽어주는 남자(김광석TV)",
+      "category": "economy",
+      "subscriber_count": 498000,
+      "video_count": 3002,
+      "score": {
+        "total": 67.2,
+        "activity": 100.0,
+        "scale": 95.0,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 498000
+      },
+      "recent_titles": [
+        "원화 가치 폭락의 '진짜 배경'은? 국민연금의 리벨런싱이 가져올 쇼크 [즉시분석]",
+        "🚨국민보고회 먼저보기🚨 실현가능성, 파급효과 및 주식시장 영향 [즉시분석]",
+        "[LIVE] (1)환율 이상신호 '진짜 이유' (2)3대 메가 프로젝트 국민보고회 [즉시분석]",
+        "[풀버전] “고통의 시간이 더 길어질 수 있습니다” 비트코인 투자자가 봐야 할 변수 | 경읽남과 토론합시다 | 김상윤 교수",
+        "[풀버전] 중국 걱정할 때가 아닙니다, 한국 반도체가 위험합니다 | 김광석의 북리뷰 | 중국이 분석한 미국 침몰 시나리오"
+      ]
+    },
+    {
+      "channel_id": "UCJWJKzDNS4byD-9e6lk4g-w",
+      "name": "신현식 이슈 리포트",
+      "category": "stock",
+      "subscriber_count": 30500,
+      "video_count": 1521,
+      "score": {
+        "total": 66.7,
+        "activity": 100.0,
+        "scale": 74.7,
+        "relevance": 40.0,
+        "consistency": 40.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 30500
+      },
+      "recent_titles": [
+        "검은금요일 끝 삼성전자 90조 자사주 반격 시작되나ㅣ신현식",
+        "마이크론 사상 최대 실적 코스피 9000 재돌ㅣ신현식",
+        "신규 회원 오리엔테이션 [신현식의 이슈리포트]",
+        "미국 관세 폭탄? 오히려 기회입니다 #신현식의신신당부",
+        "현금 비중 90%, 오늘 어디에 담나ㅣ신현식"
+      ]
+    },
+    {
+      "channel_id": "UCQIyAcoLsO3L0RMFQk7YMYA",
+      "name": "김영익의 경제스쿨",
+      "category": "economy",
+      "subscriber_count": 339000,
+      "video_count": 415,
+      "score": {
+        "total": 66.5,
+        "activity": 100.0,
+        "scale": 92.2,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 339000
+      },
+      "recent_titles": [
+        "현대차, 기대만큼 주가가 안 움직이는 이유 | 우수연 기자 & 김영익 교수",
+        "모두가 다시 현대차를 주목하는 이유 | 우수연 기자 & 김영익 교수",
+        "지금 달러가 강한 이유, 꼭 알아야 합니다 | 김영익의 경제스쿨",
+        "증시도 수출도 좋은데, 환율은 왜 오를까? | 김영익의 경제스쿨",
+        "[속보] 6월 FOMC, 진짜 핵심은 ‘금리동결’이 아닙니다 | 김영익의 경제스쿨"
+      ]
+    },
+    {
+      "channel_id": "UCj1ScQIvUDGR2mcczKn2ZBg",
+      "name": "FOR YOU 환율연구소",
+      "category": "economy",
+      "subscriber_count": 2110,
+      "video_count": 1142,
+      "score": {
+        "total": 66.4,
+        "activity": 100.0,
+        "scale": 55.4,
+        "relevance": 50.0,
+        "consistency": 50.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 8,
+        "subscriber_count": 2110
+      },
+      "recent_titles": [
+        "3분기 한 미 증시 모두 거품 심각  # 얼마나 조정 받을까 ?",
+        "동전주식만 위험할까 ? 관련 기업은 600개 이상으로 추정.  # 거품은 발생하면 반드시 붕괴된다.  전기 전자 업종 하락 폭은 고점 대비 최대 80% 이상 추정",
+        "축구 경기와 주식시장 공통점 많지만,  감독과 전문가 역할이 대단히 중요.",
+        "워시 강력한 물가안정 의지 밝혀. # 자산시장에 금리보다 중요한 것은 물가 # 연준의 물가 안정의지는 경기선행 지표 역활",
+        "한국 증시 외국인 투자자에게 엄청난 기회. #국내  증권 전문가들과 완전히 다른 투자전략으로 접근"
+      ]
+    },
+    {
+      "channel_id": "UCD9vzSxZ69pjcnf8hgCQXVQ",
+      "name": "채부심 - 채상욱의 부동산 심부름센터",
       "category": "real_estate",
-      "subscriber_count": 2470,
-      "video_count": 104,
+      "subscriber_count": 288000,
+      "video_count": 1039,
+      "score": {
+        "total": 66.2,
+        "activity": 100.0,
+        "scale": 91.0,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 288000
+      },
+      "recent_titles": [
+        "출산율이 오르더니만 제도가 바뀝니다.",
+        "코스피 9천, 자산 시장은 이미 계급화 되고 있다",
+        "친한 친구가 또 경제적 자유를 이뤘습니다. 그런데 1년만에?...",
+        "대출 막혀도 집 살 돈 많다. 코스피 1만 시대의 부동산은?",
+        "어느날 PD가 집을 물어왔다..."
+      ]
+    },
+    {
+      "channel_id": "UCccudhsZ9QI0S6-ckWF2k5w",
+      "name": "강남아파트 투자연구소 [부태희TV]",
+      "category": "real_estate",
+      "subscriber_count": 1570,
+      "video_count": 280,
+      "score": {
+        "total": 65.8,
+        "activity": 100.0,
+        "scale": 53.3,
+        "relevance": 50.0,
+        "consistency": 50.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 1570
+      },
+      "recent_titles": [
+        "디에이치자이개포, 층보다 시점이 가격을 만든다 -디자개 실거래가분석",
+        "Shorts 대출 규제 이후, 시장의 승자가 바뀝니다",
+        "동탄 22억인데, 강남은 왜 멈춰있을까요? #동탄아파트 #강남아파트",
+        "멈춘 단지 말고, 움직이는 강남 재건축 3곳",
+        "Shorts 요즘 현금 부자들이 조용히 보는 곳"
+      ]
+    },
+    {
+      "channel_id": "UCzGUaygjUeV-Zm_DRuFS0pA",
+      "name": "오태민의 지혜의족보",
+      "category": "coin",
+      "subscriber_count": 208000,
+      "video_count": 377,
+      "score": {
+        "total": 65.7,
+        "activity": 100.0,
+        "scale": 88.6,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 208000
+      },
+      "recent_titles": [
+        "”화폐의 질서가 바뀐다” 모든 것이 '토큰'으로 바뀌는 이유 (오태민)",
+        "부의 이동이 시작 됩니다. 왜 미국은 자산 토큰화를 서두르는가? (오태민)",
+        "한국생산성본부대구강연",
+        "비트코인 투자전략 6만 불 횡보장의 비밀 (오태민)",
+        "전 세계 부의 이동이 시작된다. 미국이 설계한 거대한 판 (오태민)"
+      ]
+    },
+    {
+      "channel_id": "UCthu-_a9wfLCyy7Onv9fHyg",
+      "name": "코부기 - 비트코인 주식 경제 NO.1전문트레이더",
+      "category": "coin",
+      "subscriber_count": 201000,
+      "video_count": 2863,
+      "score": {
+        "total": 65.6,
+        "activity": 100.0,
+        "scale": 88.4,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 201000
+      },
+      "recent_titles": [
+        "비트코인 역사적 바닥 #shorts",
+        "비트코인 찐반인가? #shorts",
+        "삼성전자 많이 빠지는데 지금이라도 사야할까요? #shorts",
+        "비트코인 고점 세력시그널 #shorts",
+        "달러가 심상치 않습니다. #shorts"
+      ]
+    },
+    {
+      "channel_id": "UCd7cldJelUP_HWuTDCTf_-A",
+      "name": "레오대출연구소",
+      "category": "real_estate",
+      "subscriber_count": 17100,
+      "video_count": 119,
+      "score": {
+        "total": 65.6,
+        "activity": 100.0,
+        "scale": 70.5,
+        "relevance": 40.0,
+        "consistency": 40.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 5,
+        "subscriber_count": 17100
+      },
+      "recent_titles": [
+        "은행문 닫히고 있습니다 .( 6.26일 대출시황 )",
+        "은행이 왜 애매하게 말할까?😉가장 큰 이유는 바로 민원 때문입니다. . 결국 은행은 정보만 줄 뿐, .그렇다면 고정과 변동, 도대체 뭘 선택해야 할까요?대출 종류와 기간에 따라 답",
+        "주거래은행만 가면 손해 볼 수 있습니다.저는 상담할 때전국은행연합회 대출금리 비교공시를 먼저 확인하고 같은 은행도 전자계약, 급여이체, 카드사용, 자녀수에 따라 다릅니다.",
+        "법원 경매로 싸게 산 집, 잔금 못 치르면 어떻게 될까요?입찰 보증금 전액 몰수! 💸",
+        "돈 없어서 경매 못 한다고요? 대출 구조를 알아야 합니다."
+      ]
+    },
+    {
+      "channel_id": "UCQyhwrJjNju5sq5gA45Ppww",
+      "name": "킴스 미국주식",
+      "category": "stock",
+      "subscriber_count": 181000,
+      "video_count": 989,
+      "score": {
+        "total": 65.4,
+        "activity": 100.0,
+        "scale": 87.6,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10,
+        "subscriber_count": 181000
+      },
+      "recent_titles": [
+        "바닥 나온 걸까? 이 신호만 보세요",
+        "SOXL 54% 상승  #soxl #비트코인 #tqqq #주식 #엔비디아  #테슬라",
+        "세력들의 비밀 매매법 (SOXL 테슬라 엔비디아 아이온큐 마이크론 주가, 샌디스크",
+        "급등주 놓쳐도 되면 안보셔도 됩니다. (마이크론 SOXL 테슬라 엔비디아...",
+        "인생 역전할 마지막 기회 , SOXL 스페이스X 테슬라 엔비디아"
+      ]
+    },
+    {
+      "channel_id": "UCPmI5ygQuHcDsb_HZDxBhWA",
+      "name": "청약홈TV",
+      "category": "real_estate",
+      "subscriber_count": 76200,
+      "video_count": 458,
+      "score": {
+        "total": 65.3,
+        "activity": 75.0,
+        "scale": 81.4,
+        "relevance": 50.0,
+        "consistency": 50.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 3,
+        "subscriber_count": 76200
+      },
+      "recent_titles": [
+        "강북에서 17억? 장위 푸르지오 마크원 입주자 모집공고 분석!",
+        "노량진뉴타운 세번째 분양 ‘드파인 아르티아’ 분양가는 두둥",
+        "6억원대 분양가 낙생 신희타 ‘e편한세상 분당 퍼스트빌리지’",
+        "누가 퐁탄이라 했던가...20억 돌파 동탄2신도시(동탄역 롯데캐슬)",
+        "반포보다 비싼 노량진? 아크로 리버스카이"
+      ]
+    },
+    {
+      "channel_id": "UCkLVKNpfwwaovHwavw1Au_g",
+      "name": "유근용의 투자공부",
+      "category": "real_estate",
+      "subscriber_count": 155000,
+      "video_count": 796,
       "score": {
         "total": 65.1,
-        "activity": 50.0,
-        "scale": 56.5,
-        "relevance": 80.0,
-        "consistency": 80.0,
+        "activity": 100.0,
+        "scale": 86.5,
+        "relevance": 30.0,
+        "consistency": 30.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 2,
-        "subscriber_count": 2470
+        "recent_30d_count": 10,
+        "subscriber_count": 155000
       },
       "recent_titles": [
-        "알티에로광안 58평~72평 총정리! 분양가·조망·입지 완벽분석",
-        "당첨되면 2-3억! 레이카운티 부적격 분양 청약이 시작되다!",
-        "해운대 마티안 디 에디션 완벽 분석｜주차포함 총정리",
-        "부산 사상구 분양 ‘엄궁역 트라비스 하늘채’ 총정리(분양가·입지·청약 분석)",
-        "부산 분양, 당리 포레나 청약 해도 될까? 입지 vs 분양가 완벽 분석"
-      ]
-    },
-    {
-      "channel_id": "UCnouY8u6rL8SxAtXPuAah6A",
-      "name": "미래에셋자산운용",
-      "category": "economy",
-      "subscriber_count": 235000,
-      "video_count": 780,
-      "score": {
-        "total": 64.4,
-        "activity": 50.0,
-        "scale": 89.5,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 2,
-        "subscriber_count": 235000
-      },
-      "recent_titles": [
-        "6월 연금 포트폴리오 투자 전략",
-        "코스닥 핵심 섹터에 집중 투자! TIGER 코스닥액티브 ETF 신규 상장  / To U LIVE📺",
-        "은퇴 시점에 가장 중요한 건 ‘이것’",
-        "연금, 은퇴 후가 더 중요합니다",
-        "연금도 자율주행 된다!? 은퇴라는 목적지를 향한 TDF 여행 / 연금 자율주행하다, 미래에셋 TDF"
+        "외벽 무너지자 잠수 타더니, 소장 날리니까 협박죄로 고발하겠다고?",
+        "2등이랑 딱 500만 원 차이로 짜릿한 낙찰 경쟁 승리💥1억대로 서울 입주권 무조건 나오는 동의율 70% 폭발한 모아타운 현장!",
+        "‘1,000만 원’으로 아파트 사서 '1억' 벌고 탈출합니다! 행신동 아파트 매도 잔금 현장 (+매도한 집 내부까지 싹 다 공개)",
+        "🔥 돈 없는 건 이해하는데, 집은 도대체 무슨 죄냐? 🤬",
+        "잘못은 그 사람이 했는데 왜 당신이 포기합니까? 억울하게 평생 당하고만 살 겁니까?"
       ]
     },
     {
@@ -1350,7 +1278,7 @@
       "name": "주식전망TV",
       "category": "stock",
       "subscriber_count": 4100000,
-      "video_count": 1825,
+      "video_count": 2133,
       "score": {
         "total": 64.0,
         "activity": 100.0,
@@ -1362,35 +1290,11 @@
         "subscriber_count": 4100000
       },
       "recent_titles": [
-        "[아주IB투자 주가 전망] 70% 폭락 아주IB투자, 블록딜 끝나야 바닥 나온다? #아주IB투자",
-        "[스피어 주가 전망] 제발좀 더 늦지 않게 대응하세요!! #스피어 #스피어주가 #스피어주가전망",
-        "[스피어 주가 전망] 추가 하락 시작.. 마지막 탈출 기회는? 놓치면 끝 #스피어주가전망 #스피어목표가 #스피어",
-        "[포스코홀딩스 주가 전망] 지금 이자리 중요합니다! 3분만 투자하세요! #포스코홀딩스주가전망 #포스코홀딩스목표가 #포스코홀딩스",
-        "[포스코홀딩스 주가 전망] 345,000원이 최후 보루? 포스코홀딩스 최대 매집층 종가 분수령 #포스코홀딩스"
-      ]
-    },
-    {
-      "channel_id": "UCe7UHG-1REH1r0Da7cgmTwg",
-      "name": "1분 재테크 교실",
-      "category": "economy",
-      "subscriber_count": 6240,
-      "video_count": 149,
-      "score": {
-        "total": 63.8,
-        "activity": 100.0,
-        "scale": 63.3,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 6240
-      },
-      "recent_titles": [
-        "50대 퇴직 후 매달 150만원으로 10억 만드는 가장 현실적인 방법 연금저축펀드나스닥100",
-        "주식으로 돈버는 상위2가 반드시 지키는 3가지 투자원칙",
-        "2026년 국민연금 개혁안 총정리 조기수령후 건보료 폭탄 피하고 SP 500 ETF으로 노후 월급 만드는 법",
-        "2026 ISA 3억 시대 온다  ISA연금저축IRP 납입 황금 순서 완벽 정리",
-        "국민연금 조기수령 vs 연기연금 언제받는게 이득일까"
+        "[LG이노텍 주가 전망] 역대급 하락 시나리오 대응 하시려면 꼭 아셔야 합니다! #lg이노텍주가전망 #lg이노텍목표가 #lg이노텍",
+        "[한미반도체 주가 전망] 지금 상황 속지 마세요.. 당분간 \"여기\"까지 하락 봅니다.. 대응은? #한미반도체주가전망 #한미반도체목표가 #한미반도체",
+        "[한미반도체 주가 전망] 폭락 신호 25만원? 무너지면 끝 #한미반도체주가전망 #한미반도체목표가 #한미반도체",
+        "[아주IB투자 주가 전망] 물린 분들 꼭 보세요, 아주IB투자 4,200원 깨지면 끝 #아주IB투자",
+        "[제주반도체 주가 전망] 물타기? 멈추세요! #제주반도체 #제주반도체주가 #제주반도체주가전망"
       ]
     },
     {
@@ -1418,27 +1322,75 @@
       ]
     },
     {
-      "channel_id": "UC3pfEoxaRDT6hvZZjpHu7Tg",
-      "name": "경제 읽어주는 남자(김광석TV)",
-      "category": "economy",
-      "subscriber_count": 494000,
-      "video_count": 2979,
+      "channel_id": "UCfowKp3VfkBEfbvavEIrQ5g",
+      "name": "담백한 대출",
+      "category": "real_estate",
+      "subscriber_count": 5380,
+      "video_count": 197,
       "score": {
-        "total": 62.7,
+        "total": 63.5,
         "activity": 100.0,
-        "scale": 94.9,
-        "relevance": 20.0,
-        "consistency": 20.0,
+        "scale": 62.2,
+        "relevance": 40.0,
+        "consistency": 40.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 494000
+        "subscriber_count": 5380
       },
       "recent_titles": [
-        "반도체 다음은 전력? AI 데이터센터가 만드는 진짜 병목 | 경읽남과 토론합시다 | 손현정 연구원 [1편]",
-        "[LIVE] 코스피 1만시대 진입할까? 케빈워시 금리인상 단행할까? 매의 탈을 쓴 비둘기 [즉시분석]",
-        "[풀버전] “좋은 기업이 좋은 주식은 아니다\" 삼성전자·SK하이닉스 지금 사야 할까? | 경읽남과 토론합시다 | 김현준 대표님",
-        "[모아보기] 상장 직후 시총 2조 2000억 달러, 미국 증시 6위. 스페이스X의 큰 그림",
-        "워런 버핏이 경고한 최악의 시나리오, 비트코인이 답일까? | 경읽남과 토론합시다 | 이장우x박종한 [4편]"
+        "주택담보대출 추가대출 받는법 시세의 90%까지 가능합니다.",
+        "아파트 담보 대출 갈아타기, 중도상환 수수료 내고도 매년 2,000만원 아낄 수 있는 대환의 기술",
+        "사업자담보대출 고금리 대환대출법. (일반인 99%가 모르는 가용자금 만들며, 저금리 대환하는 대출상담사 실전 노하우!)",
+        "다주택자 대출 방법, 담보대출 LTV0% 해결 방법. 대출 가능한 방법이 있습니다.",
+        "1주택자 추가 대출법, 주택담보대출 최대한도 이 방법으로 가능합니다."
+      ]
+    },
+    {
+      "channel_id": "UClPKWb7hD2zBjkpuaBChTPw",
+      "name": "크립토 스나이퍼 (Crypto Sniper)",
+      "category": "coin",
+      "subscriber_count": 47600,
+      "video_count": 844,
+      "score": {
+        "total": 63.0,
+        "activity": 100.0,
+        "scale": 78.0,
+        "relevance": 30.0,
+        "consistency": 30.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 9,
+        "subscriber_count": 47600
+      },
+      "recent_titles": [
+        "🚨 6만불 붕괴! 비트·XRP 폭락 원인 총정리, 상승은 곧 다시 시작,솔라나 & 하이퍼리퀴드 업데이트",
+        "[시황] 비트코인·리플(XRP) 바닥 다지기? 반드시 확인해야 할 유동성 핵심 일정",
+        "🚨[긴급] 클래리티 법안의 나비효과: 리플·비트코인 향방은? (feat. 스페이스X)",
+        "✅리플 RSI 매수 승률 확인,일본 금리 인상 뒤 25% 하락,비트,스텔라,월드,이더 업데이트",
+        "🟣【이슈 핵심】 비트 매수 타이밍, 리플 업데이트, 6월 16일 일본 금리 인상 체크"
+      ]
+    },
+    {
+      "channel_id": "UCam-_pnyMx_BZKCjWqrmxBA",
+      "name": "주식분석",
+      "category": "stock",
+      "subscriber_count": 7090,
+      "video_count": 3310,
+      "score": {
+        "total": 62.5,
+        "activity": 50.0,
+        "scale": 64.2,
+        "relevance": 70.0,
+        "consistency": 70.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 2,
+        "subscriber_count": 7090
+      },
+      "recent_titles": [
+        "코스닥 1000포인트 깨질까 ?? 계좌손실 6~7억 수준 ... 대응책은 ?? ( 6월 2일 실시간 )",
+        "주식시장 양극화 극대화 !! 계좌는 6억 5000만원이상 단기에 폭락중 !! ( 6월 1일 실시간 )",
+        "코스피 8000인데 계좌손실은 6억 !! 포모에 괴롭다 !! 앞으로 대응법 ??",
+        "중소형주에만 배팅해서 계좌가 6억정도 폭락중 !! ( 5월 29일 실시간 )",
+        "코스피가 8000을 돌파했지만 반대매매는 역대급으로 터지는 중 !! 우리의 상황은 ?? 전략은 ?? ( 5월 28일 실시간 )"
       ]
     },
     {
@@ -1446,7 +1398,7 @@
       "name": "가치투자101",
       "category": "stock",
       "subscriber_count": 14600,
-      "video_count": 420,
+      "video_count": 422,
       "score": {
         "total": 62.4,
         "activity": 0.0,
@@ -1463,54 +1415,6 @@
         "[가치투자101] 광란의 시기에 투자하는 법",
         "[가치투자101] 내 주식은 왜 이 모양인가?",
         "[가치투자101] 후회없는 인생을 사는 법"
-      ]
-    },
-    {
-      "channel_id": "UCd2Cr0gCg7TkgoPK9ekgvkQ",
-      "name": "드리머의 주식기초강의",
-      "category": "stock",
-      "subscriber_count": 2890,
-      "video_count": 1129,
-      "score": {
-        "total": 62.4,
-        "activity": 100.0,
-        "scale": 57.7,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 2890
-      },
-      "recent_titles": [
-        "앙드레 코스톨라니의 투자 철학을 배우자",
-        "멘탈 관리하는 매매 관리 방법!",
-        "큰돈이 코스닥 올린다!",
-        "이란휴전에 급등한다!",
-        "\"공부해도 계좌는 박살?\" 폭락장에 멘탈 나간 4050 개미들이 반드시 봐야 할 영상"
-      ]
-    },
-    {
-      "channel_id": "UCOJMIJ2lK5zuBFs8b6zgMMA",
-      "name": "블록체인투데이",
-      "category": "coin",
-      "subscriber_count": 31300,
-      "video_count": 374,
-      "score": {
-        "total": 62.2,
-        "activity": 25.0,
-        "scale": 74.9,
-        "relevance": 80.0,
-        "consistency": 80.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 1,
-        "subscriber_count": 31300
-      },
-      "recent_titles": [
-        "제 33회 Data AI 출판기념회 및 AI 정책포럼",
-        "리플(XRP),거품 빠졌다... 2024년 이후 '역대급'   #가상자산 #비트코인 #암호화폐 #투자전략 #리플 #XRP",
-        "토큰증권 법제화 이후 자본시장의 구조 변화와 제도적 과제, KBIPA 국회 입법 정책 세미나(3월 26일 국회의원회관)",
-        "리플(XRP) 폭발 전야? XRP 소각량 313% 역대급  #암호화폐 #비트코인 #이더리움 #가상자산 #bitcoin #리플",
-        "3월 30일, 세 번째 알트코인 시즌 예언   #암호화폐 #가상자산 #이더리움 #투자전략 #bitcoin #리플"
       ]
     },
     {
@@ -1538,99 +1442,27 @@
       ]
     },
     {
-      "channel_id": "UCCf_AUAtLzOM9Zp5aIvFZtw",
-      "name": "안종현 경매AI센터",
-      "category": "real_estate",
-      "subscriber_count": 11800,
-      "video_count": 1116,
-      "score": {
-        "total": 62.0,
-        "activity": 0.0,
-        "scale": 67.9,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 0,
-        "subscriber_count": 11800
-      },
-      "recent_titles": [
-        "[3기 31강] 경매물건에서 이해관계인이 대위변제했을 경우 낙찰자가 빠져 나오는 방법 | 前소유자가 現임차인인 경우 대항력 및 배당순위 #경매강의 #경매라방 #내집마련 #지분경매",
-        "[3기 30강 2부] 선순위 임차인이 있는 경매물건에 근로자 임금채권이 있고, 이들이 채권계산서를 제출했으나, 안전한 경매물건 유형분석 #경매강의 #경매라방 #내집마련 #지분경매",
-        "[3기 30강 1부] 근로자 임금채권에 대한 채권계산서가 배당요구종기일 이후에 제출된 경우 임금채권의 배당참여 여부 #경매강의 #경매라방 #내집마련 #지분경매",
-        "[3기 30강] 대항력있는 임차인 또는 없는 임차인의 권리신고 및 배당요구신청과 근로자 임금채권, 그리고 낙찰자와의 관계 #경매강의 #경매라방 #내집마련 #지분경매",
-        "[3기 29강 2부] 근로자 임금채권이 신고된 경매물건에 대한 분석으로서, 어떠한 부분을 점검해야 하는지에 대한 내용입니다. #경매강의 #경매라방 #내집마련 #지분경매"
-      ]
-    },
-    {
-      "channel_id": "UCthu-_a9wfLCyy7Onv9fHyg",
-      "name": "코부기 - 비트코인 주식 경제 NO.1전문트레이더",
-      "category": "coin",
-      "subscriber_count": 201000,
-      "video_count": 2852,
+      "channel_id": "UC9OdxrtKsOxQCXpjNmaRMsw",
+      "name": "한국증권TV",
+      "category": "stock",
+      "subscriber_count": 197000,
+      "video_count": 8969,
       "score": {
         "total": 61.1,
         "activity": 100.0,
-        "scale": 88.4,
+        "scale": 88.2,
         "relevance": 20.0,
         "consistency": 20.0,
         "ad_ratio": 0.0,
         "recent_30d_count": 10,
-        "subscriber_count": 201000
+        "subscriber_count": 197000
       },
       "recent_titles": [
-        "삼전 하이닉스 빅바겐 세일 온다? #shorts",
-        "부자되는 사람 공통점 #shorts",
-        "하이닉스 '이때' 고점입니다. 정답은 댓글에 #shorts",
-        "FOMC 케빈워시의 연임기간 동안 전략 #shorts",
-        "탈모테마 대장주 JW신약 #shorts"
-      ]
-    },
-    {
-      "channel_id": "UCwn8vUp8T8kqSxPJVGBEFtw",
-      "name": "이장우의 비트코인 머니플랜",
-      "category": "coin",
-      "subscriber_count": 15000,
-      "video_count": 89,
-      "score": {
-        "total": 60.9,
-        "activity": 100.0,
-        "scale": 69.6,
-        "relevance": 30.0,
-        "consistency": 30.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 15000
-      },
-      "recent_titles": [
-        "비트코인, 신뢰의 새로운 표준!",
-        "비트코인, 지금 매수하세요! 고점 물려도 적립이면 +85%",
-        "비트코인 지금 매수? 질문부터 틀렸다!",
-        "비트코인 지금 매도하면 0원, 버티면 2 5억!",
-        "비트코인, 은퇴까지 몇 개 필요할까"
-      ]
-    },
-    {
-      "channel_id": "UCvrOll07bwpNzGhBHRB5_yw",
-      "name": "웅덩이매매법 디벨롭몽 - 미국주식",
-      "category": "stock",
-      "subscriber_count": 165000,
-      "video_count": 1142,
-      "score": {
-        "total": 60.7,
-        "activity": 100.0,
-        "scale": 87.0,
-        "relevance": 20.0,
-        "consistency": 20.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10,
-        "subscriber_count": 165000
-      },
-      "recent_titles": [
-        "⚠️ 케빈 워시의 매파 배신, 그럼에도 쫄지 말고 웅줍으로 활용하세요",
-        "🔥 이제 다시 얕은 웅덩이에서도 매수합니다. 그 이유 영상으로 꼭 확인하세요",
-        "🔥 전쟁 협상으로 골디락스 가능성 올라갑니다. 마지막 기회 아직 있으니 얼른 잡으세요",
-        "🔥 미국-이란 양해각서 체결 임박 소식 떴습니다. 불확실성 해소로 관점이 바뀌었습니다. 영상 꼭 보세요",
-        "⚠️ 나스닥 웅덩이, 다음주까지 각오해야하는 이유"
+        "오른 건 없는데 빠질 때는 더 빠진다..2차전지 이대로 끝인가?ㅣ네모경제 손열호 본부장/KR리서치 김대준 대표ㅣ꼭 봐야하는 주도주 투자전략#반도체#바이오",
+        "SK하이닉스의 독주! 삼성전자는? '숨겨둔 패' 폭발합니다!ㅣ네모경제 손열호 본부장/KR리서치 김대준 대표ㅣ꼭 봐야하는 주도주 투자전략#반도체#바이오",
+        "(풀버전)삼성전자 · SK하이닉스 역대급 변동성, '이것' 알면 전혀 걱정 없습니다ㅣ네모경제 손열호 본부장ㅣ예민수의 경제TALK",
+        "삼성전자·SK하이닉스 피크? 아직 멀었다! 2차전지 로봇주 '이렇게' 전략 짜세요  ㅣKR리서치 김대준 대표ㅣ예민수의 경제TALK",
+        "전고체 배터리, 더 이상 꿈이 아니다!(손열호 본부장)"
       ]
     },
     {
@@ -1658,35 +1490,59 @@
       ]
     },
     {
-      "channel_id": "UCiyUpzlQ4UVo3LFc8UllqHg",
-      "name": "퀀트투자전략TV",
+      "channel_id": "UC8XEbWW6qgJRf8fbIO5GfEg",
+      "name": "나스닥 패밀리",
       "category": "stock",
-      "subscriber_count": 12300,
-      "video_count": 510,
+      "subscriber_count": 121000,
+      "video_count": 1170,
       "score": {
-        "total": 60.5,
+        "total": 60.2,
         "activity": 100.0,
-        "scale": 68.2,
-        "relevance": 30.0,
-        "consistency": 30.0,
+        "scale": 84.7,
+        "relevance": 20.0,
+        "consistency": 20.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 4,
-        "subscriber_count": 12300
+        "recent_30d_count": 10,
+        "subscriber_count": 121000
       },
       "recent_titles": [
-        "[삼성전자 주가전망] 내가 여기키워드 다씹어먹어줄게 진짜 조만간이다",
-        "[삼성전자 주가전망] 그대는~ 삼성전자 어떻게생각하는가!!!",
-        "[SK하이닉스 주가전망] 쿵쾅거리는층간소음!!! 더이상은 멈추세요! #sk하이닉스",
-        "[SK하이닉스 주가전망] 퀀트의 모든것을 제대로 알려드립니다 !!!",
-        "[우리로 주가전망] 전일비 +0.77% 장중 윗꼬리 흔들기 절대 속지 마세요, 30분봉 차트 분석을 통한 세력의 단기 추세 전환 지점 완벽 분석!"
+        "[아이온큐 분석] 공매도 세력 물량 빼는이유! 7월 여기서 숏커버링 터집니다! 물량 뺏기지 마세요!",
+        "[아이온큐 분석] 제약 공장 전격 투입! 돈 쏟아지는 의약품 제조 시장 장악한 아이온큐의 위력 #ionq",
+        "[아이온큐 주가전망] 우주 지배력 커졌다. 40달러 기회 왔네요",
+        "[아이온큐 분석] 주말 6700만주 거래량 폭증한 이유! 러셀지수 패시브 자금 돈 들어왔다! 7월 신고가 찍겠네요!",
+        "[아이온큐 주가분석] 주말속보) 월가 보고서 단독 입수. 다음주 분수령 80달러 콜옵션 풀매수!! #양자컴퓨팅주식 #아이온큐주가"
+      ]
+    },
+    {
+      "channel_id": "UCuH_oq_C4FOq5c9aTFy46hw",
+      "name": "여기어때 아파트투자",
+      "category": "real_estate",
+      "subscriber_count": 3880,
+      "video_count": 32,
+      "score": {
+        "total": 60.0,
+        "activity": 0.0,
+        "scale": 59.8,
+        "relevance": 100.0,
+        "consistency": 100.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 0,
+        "subscriber_count": 3880
+      },
+      "recent_titles": [
+        "전세보다 싸다… 부산 30평대 1억 초반 아파트 TOP12",
+        "버티던 호가 붕괴! 30평대 준신축 대단지 부산 인기 아파트 TOP13",
+        "버티던 호가 붕괴! 울산 30평대 2억 초반! 실거주 가성비 아파트 TOP 8",
+        "대전 아파트 시세｜1억대 가성비 끝판왕 아파트 TOP10 공개",
+        "버티던 호가 붕괴! 양산 1억대 아파트 인기 단지 TOP 13"
       ]
     }
   ],
   "blog_candidates": [
     {
-      "blog_id": "marr96",
-      "name": "물에서 살고싶다",
-      "category": "coin",
+      "blog_id": "eunleeda",
+      "name": "경제정책연구소",
+      "category": "stock",
       "score": {
         "total": 100.0,
         "activity": 100.0,
@@ -1697,58 +1553,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "MEXC 코인거래소 해외거래소중 익숙함 그자체!",
-        "지티엑스코인 전망, 코인거래소 비교 추천, 65년 10배 가능성 있지?!",
-        "이더리움 코인. 시세 전망 상승한다고?",
-        "비토르토큰 코인 출금 방법 그리고 전망 파악",
-        "코빗 코인거래소 입금 이벤트 참여 방법과 출금방법"
+        "[배당 투자] 배당 투자 복리 효과 30년 시뮬레이션",
+        "[테마주] 반도체 소부장 장비 소재 부품 투자 분석",
+        "[ETF 투자] 글로벌 섹터 ETF 경기 사이클 투자 방법",
+        "[공모주] 공모주 배정 취소 방법과 청약 철회 방법",
+        "[종목 분석] NAVER 클라우드 AI 전환 주식 투자 분석"
       ]
     },
     {
-      "blog_id": "anpfnddl",
-      "name": "1",
-      "category": "coin",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "비트겟 선물거래방법 알아야하는 선물거래 용어 알려드려요",
-        "솔라나코인(SOL COIN) 시세 전망, 이더리움 코인 제끼는 이유는?",
-        "비트코인 전망 2026년, 3억 원 가능? 트럼프 리스크와 미국법안 코인거래소 미래는?",
-        "빗썸 거래소 레버리지 방법 빛 거래 적용 하는법",
-        "okx 코인거래소 수수료 페이백 확인방법 및 수수료 줄이는법"
-      ]
-    },
-    {
-      "blog_id": "dokco_official",
-      "name": "독서하는코인",
-      "category": "coin",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "타이코 해킹 사건 유의 및 알파쿼크 코인 떡상",
-        "비트코인 상대적 약세장 지속 및 솔스티스 코인 떡상",
-        "알트코인 잡코인 순환매 장세 및 메테오라 코인 떡",
-        "비트코인 약세 지속 및 리 코인 원화상장",
-        "FOMC 매파적 발언 시장분위기 악화 및 메가이더 코인 떡상"
-      ]
-    },
-    {
-      "blog_id": "propertynote",
-      "name": "유니콘",
+      "blog_id": "uri3785",
+      "name": "리링의 내집마블",
       "category": "real_estate",
       "score": {
         "total": 100.0,
@@ -1760,121 +1574,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "울산 신복역 비스타 메트로 모델하우스 분양가 브랜드 아파트",
-        "재건축 안전진단 기준, 오래됐다고 모두 재건축이 가능한 것은 아닙니다",
-        "조합원 분담금 계산, 재개발·재건축에서 가장 궁금한 돈의 흐름",
-        "관리처분인가 뜻, 재개발·재건축에서 가장 중요한 단계인 이유",
-        "입주권과 분양권 차이, 같은 신축 아파트라도 취득 과정부터 세금까지 다릅니다"
+        "GTX 호재 아파트, 지금 사도 될까? 수혜지역보다 중요한 3가지",
+        "드파인 아르티아 84타입 27억대, 그래도 흥행할까? 청약 전 필수 확인",
+        "장위 푸르지오 마크원 청약, 84타입 17억대 분양가에도 완판될까?",
+        "청년이라면 모르면 손해, 2026 월세지원·전세대출·청약 혜택 총정리",
+        "오산 84타입 6억 후반, 북오산자이 드포레 청약 분양가 분석"
       ]
     },
     {
-      "blog_id": "goldrib",
-      "name": "부동산 임장머신",
-      "category": "real_estate",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "검단 센트레빌 에듀시티 모델하우스 분양정보",
-        "의정부역 센트럴 아이파크 모델하우스 분양정보",
-        "울산 선암호수공원 힐스테이트 모델하우스 분양조건",
-        "인천시청역 포레나더샵 모델하우스 분양조건",
-        "수익형부동산 개념 알아두기"
-      ]
-    },
-    {
-      "blog_id": "ds2fkr1",
-      "name": "여주 한솔부동산",
-      "category": "real_estate",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "[여주상가임대] 여주터미널 대로변 메디컬빌딩 2층 상가 임대 (병의원·사무실·운동시설 추천)",
-        "조정대상지역 쉽게 이해하기, 대출·세금·청약 영향 총정리",
-        "농지 팔지 말고 연금 받으세요! 농지연금 조건과 수령액",
-        "[여주토지매매] 여주 현암동 계획관리지역 토지 242평 매매 (대지/나대지, 전원주택 부지)",
-        "여주 농지 투자 시 주의할 점 3가지, 이것만은 꼭 확인하세요"
-      ]
-    },
-    {
-      "blog_id": "money_storytelling",
-      "name": "젠틀송과 함께하는 부동산클래스",
-      "category": "real_estate",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "“14억도 비싸다더니 이젠 18억?” 강북 국평 84㎡가 여기까지 오른 이유",
-        "강동 전세 16%·송파 전세 15% 상승, 2026년 서울 전세시장의 진짜 의미",
-        "서울 부동산 전망 주식 매각대금 1조가 강남3구에만 집중됐다",
-        "반포1동 재개발 빌라가 신축으로 바뀌어 갈 반포 상급지 갈아타기의 교과서",
-        "반포 재개발 강남대로 프리미엄을 품은 마지막 저층저밀 지역이 신축 아파트로!"
-      ]
-    },
-    {
-      "blog_id": "jh3699c",
-      "name": "☑️노팀장의 내집마련",
-      "category": "real_estate",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "용인 이안 플렉시티 분양 반도체 호재로 완판되겠네",
-        "전주 아파트 공급물량 부족으로 상승세 지속",
-        "익산 중흥s클래스 신축 입주아파트 매매 소식",
-        "봉동 한양립스 모델하우스 현장 주변 환경 정보",
-        "군산 벽산블루밍 미룡동 10년 전세 분석"
-      ]
-    },
-    {
-      "blog_id": "dobra",
-      "name": "포항솔로몬부동산",
-      "category": "real_estate",
-      "score": {
-        "total": 100.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 100.0,
-        "consistency": 100.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "포항 죽도동 중심가 임대 \" 대명그랜드맨션1차\"",
-        "포항 죽도동 즉시 입주 가능한 실속형 \"광장맨션\"",
-        "무주택자가 꼭 알아야 할 청약 전략",
-        "청약 가점 낮아도 당첨되는 방법 있을까?",
-        "월세가 전세보다 유리한 경우는 언제일까?"
-      ]
-    },
-    {
-      "blog_id": "milkysteel",
-      "name": "Life with Diversity",
+      "blog_id": "start4wish",
+      "name": "머니 큐레이터",
       "category": "stock",
       "score": {
         "total": 97.0,
@@ -1886,16 +1595,37 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "리스크 관리를 통한 국내선물 거래 전략",
-        "나스닥과 미국 경제: 하락 국면에서의 투자 전략 분석",
-        "초보자도 쉬운 국내선물 거래 최신 입문 가이드",
-        "해외선물 재테크 지표 종합 분석, 나만의 투자 전략 세우기",
-        "하락장에서 기회 찾기: 나스닥 투자 시 알아야 할 것들"
+        "삼성전자 보통주 vs 우선주 차이 비교, 지금 삼전우 매수가 더 유리한 이유 3가지",
+        "QQQ 대신 QQQM 사야 하는 명확한 이유 3가지 장기투자자 필수 필독!",
+        "월배당 ETF 투자 전략: 500만 원 현금흐름 포트폴리오 실전 가이드",
+        "은퇴 후 4억으로 월 200만원 만드는 ETF 배당 포트폴리오 전략",
+        "연금저축 계좌 QLD JEPQ 투자 가능 여부와 똑똑한 대체 방법"
       ]
     },
     {
-      "blog_id": "gun257",
-      "name": "판교1번지공인중개사무소",
+      "blog_id": "96roql",
+      "name": "명인리얼티부동산중개법인",
+      "category": "real_estate",
+      "score": {
+        "total": 97.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 93.3,
+        "consistency": 93.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 14
+      },
+      "recent_titles": [
+        "동탄 아파트 값 상승로 보는 서울부동산 전망(매도자는 어디로?)",
+        "재개발 지역에서 장사하는 상가세입자의 보상은 어떻게 받나?",
+        "자양3동 A구역 신속통합기획 자양동 227-147 추정비례율은?",
+        "광진구 자양동 구의동 모아타운 추진절차 및 투기방지대책",
+        "2026년 코리아트랜드 부의흐름 - 부동산편"
+      ]
+    },
+    {
+      "blog_id": "billio6",
+      "name": "매일아침또박또박님의블로그",
       "category": "real_estate",
       "score": {
         "total": 97.0,
@@ -1907,16 +1637,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "경매 낙찰 후 잔금 납부부터 셀프 등기까지, 실전 과정 완벽 정리",
-        "아파트 잔금 치르고 입주하기 전 반드시 확인해야 할 체크리스트",
-        "아파트 사전점검 필수 체크리스트: 하자 없는 내 집 만드는 법",
-        "무주택자 전세대출 조건 및 저금리 상품 이용 가이드",
-        "1주택자 전세대출 가능 조건과 한도 완벽 정리"
+        "부산 사업자아파트담보대출 자금난 벗어난 후기",
+        "전남 전세보증금반환대출 한도 후순위 넉넉한 후기",
+        "아파트 빌라 임대인 전세퇴거자금대출 극복 후기",
+        "전업주부의 오피스텔 전세퇴거자금대출 극적 대처 방법은?",
+        "서울 수도권 부동산 담보대출 자금난 대처 방법은?"
       ]
     },
     {
-      "blog_id": "move4655a",
-      "name": "사랑이 많은 아이",
+      "blog_id": "nadia828",
+      "name": "장그래 투자노트",
       "category": "real_estate",
       "score": {
         "total": 97.0,
@@ -1925,19 +1655,19 @@
         "relevance": 93.3,
         "consistency": 93.3,
         "ad_ratio": 0.0,
-        "recent_30d_count": 15
+        "recent_30d_count": 13
       },
       "recent_titles": [
-        "철저한 준비 없이 도전했다가는 부적격 처리라는 낭패를 보기 십상입니다.",
-        "시선을 사로잡는 부동산 홈페이지 제작을 위해 웹 에이전시 선택 시 따져봐야 할 필수 요건",
-        "위기가 기회로 변하는 순간 미분양 아파트 시장의 숨은 진실",
-        "불황 속 기회를 잡는 똑똑한 내 집 마련 할인 분양 선택의 기준",
-        "부동산 시장의 흐름을 바꾸는 새로운 주거 패러다임 분석"
+        "분당(시범,샛별,목련) 사업시행자 지정/양도시 주의사항",
+        "정비사업(재건축/재개발)의 모든것!",
+        "부동산 투자단계(주택투자 단계)",
+        "방배 13구역 입주권 투자포인트",
+        "26년5월 주택 가격동향(출처 : 한국부동산원)"
       ]
     },
     {
-      "blog_id": "yong4079",
-      "name": "디앤디웍스, ETF 수사, 유용한 정보 제공",
+      "blog_id": "swifty_7",
+      "name": "트리키의 행복한 라이프로그",
       "category": "stock",
       "score": {
         "total": 94.0,
@@ -1949,17 +1679,17 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "한화에어로스페이스(KB증권 인사이트) / 기준일 - 2026.06.19(금)",
-        "260622 Daishin Strategy Weekly",
-        "모두가 어렵다고 한 0~200% 매운짜장 역대급 반응ㅋㅋ 무한리필 중국집 짜장면 8그릇 먹방",
-        "[sub] 성시경의 먹을텐데 l 부산 만우장",
-        "iM금융지주(KB증권 인사이트) / 기준일 - 2026.06.19(금)"
+        "지난 일상 조각 모음, 나누고 싶었는데 못 나눈 음악",
+        "포스코홀딩스 주가 '도대체 뭘 봐야하나', 답답한 진짜 이유는 따로 있다는데",
+        "한화오션 주가 왜 이렇게까지 빠졌나, 실적보다 무서운 '기막힌' 변수",
+        "\"배당주의 아이콘\" 리얼티인컴 1억 투자하면 매달 배당금 이만큼 받는다",
+        "\"자사주까지 태웠는데\" LG 주가 반토막, 시장이 아직 못 믿는 진짜 이유"
       ]
     },
     {
-      "blog_id": "yejini5",
-      "name": "임장가다, 맛집발견",
-      "category": "real_estate",
+      "blog_id": "kjn811",
+      "name": "날카로운시선 소드킴",
+      "category": "stock",
       "score": {
         "total": 94.0,
         "activity": 100.0,
@@ -1970,16 +1700,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "[인도명령 명도소송 차이] 결론은 잔금 날 '이것' 신청에 답이 있습니다 (신청 기간, 가처분 필수 이유)",
-        "[일물일권주의 뜻] 결론은 집 한 채에 '이것' 여러 개 안 된다는 법의 대원칙입니다 (부동산 경매 실전 분석)",
-        "[유치권 깨는법] 결론은 인도명령과 '이 3가지' 서류에 답이 있습니다",
-        "유치권 깨질까? 결론은 '이 4가지' 성질에 답이 있습니다 (부종성·수반성·불가분성·물상대위성)",
-        "완충녹지 지정된 내 땅, 무조건 맹지일까?"
+        "코스닥 2차전지 대장 에코프로 주가 '지금 꼭 봐야하는 이유'",
+        "청년미래적금 청년도약계좌 비교 갈아타기 마지막 기회",
+        "\"SK하이닉스 주가 500만 원\" 가는거 아니었어? 충격적 사실",
+        "\"현대차 주가 70만 원\"에 아내 몰래 3억 넣은 남편 근황",
+        "\"검은 월요일\" SK하이닉스 주가 팔면 부자될 기회 놓칩니다"
       ]
     },
     {
-      "blog_id": "zentlehong",
-      "name": "MBA 부동산 전문가 홍정기 _ 젠틀홍",
+      "blog_id": "pizza8230",
+      "name": "더청담공인중개사무소",
       "category": "real_estate",
       "score": {
         "total": 94.0,
@@ -1987,20 +1717,20 @@
         "scale": 100,
         "relevance": 86.7,
         "consistency": 86.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
+        "ad_ratio": 0.07,
+        "recent_30d_count": 11
       },
       "recent_titles": [
-        "7월 세제개편 주택 보유세 어디까지 오르나 1주택자도 안심 못 하는 까닭",
-        "연신내 재개발 소액으로 대단지 신축 옆자리 미리 차지하는 선점 전략",
-        "갈현동 재개발 대단지 입주 전 1억미만으로 초기재개발 지역 선점 전략은?",
-        "동탄 규제지역 지정 요건 이미 넘었다는데 5월 통계가 가를 분수령",
-        "이수역 재개발 부촌 방배동을 3억 이하 실투자금으로 노리는 초기 진입 포인트"
+        "[전국적인 전세 품귀현장 우리동네지역] 전국 전세난 심화: 강남 전세가 상승, '눌러앉기' 현상 속출",
+        "[잠실주공5단지] 잠실주공5단지 재건축 2.0 시대: 70층 초고층 단지, 사업시행인가 '초읽기'",
+        "[강남 지역 아파트 시세 전망] 강남 아파트 시세, 올여름 진짜 오를까요?",
+        "[역삼동 지역분석] 역삼역 상권 분석: 숨겨진 투자 가치와 최신 트렌드를 더청담공인중개사무소에서!",
+        "[강남 지역별 특화 분석] 6월 강남 부동산, 압구정·대치동 핵심 분석!"
       ]
     },
     {
-      "blog_id": "jnerealestate",
-      "name": "JnE x SNP 경공매 컨설팅",
+      "blog_id": "cd-ks",
+      "name": "부동산하는 시골청년",
       "category": "real_estate",
       "score": {
         "total": 92.5,
@@ -2009,145 +1739,61 @@
         "relevance": 100.0,
         "consistency": 100.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 7
+        "recent_30d_count": 4
       },
       "recent_titles": [
-        "'우선변제권 뜻'과 확정일자, '전세보증금' 지키는 권리분석의 핵심 정리",
-        "등기부등본 소유자와 채무자가 다르다면? 물상보증 뜻과 권리분석 완벽 정리",
-        "저당과 근저당 차이 쉽게 이해하기, 채권최고액까지 한 번에 정리 (경매권리분석 기초)",
-        "부동산 등기부등본 보는 법, 갑구와 을구 차이 경매권리분석 완벽 정리 (경매 초보 필독)",
-        "온비드 공매란? 초보자를 위한 온비드공매 입찰 방법과 절차 총정리"
+        "청도토지매매 - 농사용 창고가 설치된 580평 급매토지 투자분석",
+        "청도 매전면 토지매매 저수지뷰 펜션, 전원주택지 추천 476평",
+        "청도읍성 구축 모텔매매 펜션, 숙박업소 추천(구.여관)",
+        "청도펜션매매 독채 한옥스테이",
+        "청도주택매매 군청인근 대로변 주택"
       ]
     },
     {
-      "blog_id": "kihyun113",
-      "name": "따블대디의 투자루틴",
-      "category": "stock",
-      "score": {
-        "total": 91.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 80.0,
-        "consistency": 80.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "\"HBM ETF\" 미국과 한국 대장주를 모두 한꺼번에 다 잡는 방법 공개",
-        "주식 고수가 알려주는 SK하이닉스 1주 비쌀 때 대처하는 방법/꿀팁",
-        "[미국 주식 리포트] 한글로 월스트리트 고급 자료를 공짜로 보는 법",
-        "[바이낸스 가입방법] 초보자도 쉽게 따라할 수 있는 완벽 가이드",
-        "(최종) 청년미래적금 신청 6/22일 시작! \"연19.4%\" 무조건 가입해야 하는 이유~"
-      ]
-    },
-    {
-      "blog_id": "s_ys",
-      "name": "비즈니스 인사이트 랩 (Biz-Insight Lab) 경제",
-      "category": "stock",
-      "score": {
-        "total": 91.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 80.0,
-        "consistency": 80.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "로봇주 투자 전 꼭 봐야 할 5개 기업 (황금pick)",
-        "주식 투자 필승 전략, 2026년 5월 수출입 동향으로 본 주도 섹터 분석 (황금pick)",
-        "3대질병보험 추천 3대질병진단비보험 준비할 때 꼼꼼히 살펴본 후기",
-        "반도체 대형주만 보셨나요? 숨은 소부장 우량주 5개 (황금pick)",
-        "SK하이닉스 주가 전망, 280만닉스 돌파, 이제 300만원도 갈까? (황금pick)"
-      ]
-    },
-    {
-      "blog_id": "79dap",
-      "name": "부동산 인사이트",
+      "blog_id": "byking426",
+      "name": "분양왕 정박사의 부동산 투자",
       "category": "real_estate",
       "score": {
-        "total": 91.0,
+        "total": 92.5,
         "activity": 100.0,
-        "scale": 100,
-        "relevance": 80.0,
-        "consistency": 80.0,
+        "scale": 70,
+        "relevance": 100.0,
+        "consistency": 100.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 15
+        "recent_30d_count": 5
       },
       "recent_titles": [
-        "인천 포레나 더샵 분양 모델하우스 분양가 입지 교통망 총정리",
-        "힐스테이트 모델하우스, 구월아트파크 분양 계약 조건",
-        "운정 다율동 안경점에 다녀왔어요.",
-        "서울 강서구 화곡역세권 장기전세주택 도시정비형 재개발 사업 분석 및 전망",
-        "검단신도시 더샵 검단레이크파크 분양가 청약일정 모델하우스 정보"
+        "지방 투자에서 대전이 갖는 파워 경쟁력 3가지!",
+        "지방 부동산 투자의 장점 세 가지",
+        "대전 분양권 투자의 장점",
+        "대전 동구의 변화 주목하기",
+        "대전 부동산 투자에서 특히 주의할 점 세 가지"
       ]
     },
     {
-      "blog_id": "ha1004zi",
-      "name": "서랑 후랑",
+      "blog_id": "hook6353",
+      "name": "♣ 행복한중개업,길부동산",
       "category": "real_estate",
       "score": {
-        "total": 91.0,
+        "total": 89.5,
         "activity": 100.0,
-        "scale": 100,
-        "relevance": 80.0,
-        "consistency": 80.0,
+        "scale": 70,
+        "relevance": 93.3,
+        "consistency": 93.3,
         "ad_ratio": 0.0,
-        "recent_30d_count": 15
+        "recent_30d_count": 6
       },
       "recent_titles": [
-        "스타벅스, 다이소, 투썸플레이스가 모두 모여있는 가평군 신천리 부동산 상권이 각광받는 이유!",
-        "가평군 설악IC 개통 이후 가장 많이 오른 땅은 어디일까?",
-        "가평 설악IC 개통 이후 10년, 앞으로 10년은 어떻게 달라질까? 건국대학교 대학원 부동산학 전공자가 바라본 가평 설악면 부동산의 미래!!!",
-        "법학 학사가 알려주는 외지인 가평 부동산중에 임야 투자 시 기획부동산 피하는 법",
-        "테헤란로, 왜 대한민국 기업들은 이곳을 떠나지 못하는가"
+        "\"이천 농지 소유자 필독! 2026 농지전수조사 핵심 정리와 대응법",
+        "[이천 급매] 호법면 안평리 계획관리지역 602평 토지 매매, 4차선 확장 도로 접한 최고의 공장·창고·식당 부지",
+        "이천 부발역 인근 소형 임야 매매, 1억 원으로 선점하는 준보전산지보전관리 토지 투자 분석",
+        "이천 현진 에비빌 매매 로얄층남서향 뷰 좋고 채광 가득한 14층 관리 최상 실제 후기와 장점 분석",
+        "층간소음 걱정 없는 탁 트인 탑층 급매물 이천 삼익아파트의 모든 것"
       ]
     },
     {
-      "blog_id": "kyo1004-",
-      "name": "해가뜨는땅",
-      "category": "real_estate",
-      "score": {
-        "total": 91.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 80.0,
-        "consistency": 80.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 8
-      },
-      "recent_titles": [
-        "신분당선 향남ㆍ우정까지 연장, 왜 투자자들은 화성 우정·향남을 주목할까?",
-        "대기업 반도체 클러스터 배후지, 100만 원대 시세의 용인 토지를 30만 원대에 잡는 법",
-        "맹지인 줄 알았던 공매 토지, 5천만원 투자로 50일 만에 8억 원을 벌다",
-        "일론 머스크가 '실물 자산'의 중요성을 끊임없이 강조하는 이유",
-        "기획부동산에 속아도 결국 땅 산 사람이 이긴다? 한 방송인이 증명한 토지 투자의 법칙"
-      ]
-    },
-    {
-      "blog_id": "greathomefinder",
-      "name": "성남재개발 더스카이 공인중개",
-      "category": "real_estate",
-      "score": {
-        "total": 91.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 80.0,
-        "consistency": 80.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "신흥1구역 프리미엄 3.80억 진입 기회 잡을까? 성남재개발 최저 매물 정밀비교",
-        "실투자금 6.40억으로 성남 신흥1구역 84타입 선점, 가성비 매물 매수 기회일까?",
-        "수진1구역 최종매수가 9억 대 가성비 매물 선점할까? 핵심 10개 매물 완벽 서술비교",
-        "초기투자금 7.00억으로 성남 신흥1구역 매수막차 탈까? 핵심 10개 매물 완벽비교",
-        "수진1구역 관리처분계획인가, 1주택+1입주권 비과세 특례는 꼭 파악하세요."
-      ]
-    },
-    {
-      "blog_id": "nadia828",
-      "name": "장그래 투자노트",
+      "blog_id": "bbkjs792",
+      "name": "푸른하늘의 하남창고 이야기",
       "category": "real_estate",
       "score": {
         "total": 88.0,
@@ -2159,11 +1805,11 @@
         "recent_30d_count": 12
       },
       "recent_titles": [
-        "방배 13구역 입주권 투자포인트",
-        "26년5월 주택 가격동향(출처 : 한국부동산원)",
-        "부동산에서 민도와 균질성에 대한소고.",
-        "인간관계 정규분포(손절이 필요한이유)",
-        "급지별 수도권 부동산 시장상황(26년2Q)"
+        "푸른하늘의 하남창고 이야기~감북동 \"농지급매\"하남농지 752평 매매(매매가-19억8천5백),농지투자,감북동농지,하남토지매매",
+        "푸른하늘의 하남창고 이야기~감북동\"소형창고\"하남창고(정식창고)39평 임대(보1천5백-월140만),감북동창고,하남물류창고,소형창고40평",
+        "푸른하늘의 하남창고 이야기~창우동\"소형창고\"하남창고(축사창고)부지 135평 매매(매매가-8억)",
+        "푸른하늘의 하남창고 이야기~감북동\"서하남ic가까운\"하남창고(축사창고)100평임대(보4천-월350만),감북동창고,축사창고100평,물류창고100평",
+        "푸른하늘의 하남창고 이야기~양평군 강상면\"전원주택\"매매(매매가-3억7천),양평전원주택,깨끗한 전원주택"
       ]
     },
     {
@@ -2188,29 +1834,29 @@
       ]
     },
     {
-      "blog_id": "mrscoco-",
-      "name": "하이헬로우",
-      "category": "economy",
+      "blog_id": "djlee118",
+      "name": "부자되는 매직TV",
+      "category": "stock",
       "score": {
-        "total": 88.0,
+        "total": 85.0,
         "activity": 100.0,
         "scale": 100,
-        "relevance": 73.3,
-        "consistency": 73.3,
+        "relevance": 66.7,
+        "consistency": 66.7,
         "ad_ratio": 0.0,
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "✈️ [직장인 부업] 초보자를 위한 해외 구매대행 사업 기초 프로세스 및 장단점 총정리",
-        "️ [직장인 부업] 무자본 창업의 시작, 네이버 스마트스토어 개설 절차 및 겸업 주의사항",
-        "[거시경제 심화] 기준금리 동결 vs 인하, 경제에 어떤 신호일까? (시장 시그널 완벽 해석)",
-        "[거시경제 기초] 인플레이션과 금리 인상이 내 자산에 미치는 영향과 직장인 생존 전략",
-        "[연말정산 꿀팁] 10만 원 내면 13만 원으로 돌아오는 '고향사랑기부제' 참여 방법, 답례품, 세액공제 혜택 총정리"
+        "부의 추월차선에 올라타기 위해 우리가 세계 최고에게 배워야 할 '진짜' 자본주의 마인드",
+        "자본주의에서 진짜 부자가 되는 법: 당신이 매일 공짜로 받는 '이 자본'을 투자하라",
+        "[한국사 핵심정리] 궁예의 몰락과 왕건의 고려 건국, 사심관 제도 완벽 이해",
+        "[부동산 투자] 인서울 10억대 재건축 대어! 노원구 '미미삼' 몸테크가 30대에게 뜨는 이유",
+        "[리플 전망] 브래드 갈링하우스의 일침! 마이클 세일러의 '비트코인 올인' 전략 실패 지적과 XRP의 미래"
       ]
     },
     {
-      "blog_id": "djlee118",
-      "name": "부자되는 매직TV",
+      "blog_id": "rec1820",
+      "name": "JC`Enjoy the Life",
       "category": "stock",
       "score": {
         "total": 85.0,
@@ -2222,53 +1868,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "[부동산 투자 분석] 고양은평선·서부선 직결 및 식사역 연장, 고양 서북부 부동산 지도가 바뀐다!",
-        "삼성전자, 반도체 말고 '이것'으로도 초대박? 인도 프리미엄 시장 평정 소식",
-        "[한국사 핵심 정리] 삼국 간섭부터 대한제국 수립까지! 고종의 험난했던 황제 즉위기 완벽 이해하기",
-        "[자본주의 내집마련 가이드] 출산 예정이라면 무조건 필독! 6월 15일 시행 ‘민영주택 신생아 특별공급’으로 부동산 계급 점프하는 법",
-        "[자본주의 생존법] 정부가 푼 1조 원의 마중물! 부동산 PF 위기 속 '개발앵커리츠'가 수도권 집값에 미칠 영향 (완벽 분석)"
-      ]
-    },
-    {
-      "blog_id": "start4wish",
-      "name": "머니 큐레이터",
-      "category": "stock",
-      "score": {
-        "total": 85.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 66.7,
-        "consistency": 66.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "AI·로봇 대격변! 2026년 삼성전기 주가 전망과 현대차 로봇 관련주, 우주항공주 완벽 분석",
-        "2026년 일반 예금 4배 이자! 대한민국 누구나 8.5% 받는 통장으로 3년 만에 1억 모으기",
-        "청년미래적금 갈아타기 신청 기간 5부제 요일 및 도약계좌 해지 순서 주의사항 (2026년 최신)",
-        "\"주식으로 번 돈 부동산 못 넣는다?\" 2026 부동산 세제 개편과 자산 배분 생존 전략",
-        "100년의 주식 데이터가 증명했다, 하락장 '이 행동'이 자산을 갉아먹는 이유"
-      ]
-    },
-    {
-      "blog_id": "seeker3270",
-      "name": "seeker3270님의 블로그",
-      "category": "coin",
-      "score": {
-        "total": 85.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 66.7,
-        "consistency": 66.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "FOMC 매파 신호에 비트코인 6만4000달러대 하락, 핵심 정리",
-        "RWA 매매일지 6일차 — 스페이스X 숏 치고 1,500불 날린 이야기",
-        "코인 공포·탐욕 지수, 숫자 하나로 시장 심리 읽는 법",
-        "DEX란 무엇입니까? 내 지갑에서 직접 거래하는 블록체인 거래소 입문 가이드",
-        "RWA 매매일지 5일차: -80%에서 -60%까지, 인플렉션 롱 포지션 회복기"
+        "현대차 주가 왜 빠졌나…하반기 실적·로봇 기대감 다시 살아날까",
+        "코스닥 소외가 심상치 않다… 삼전닉스만 오르는 국내증시",
+        "금값 하락 경고한 월가 전망…오늘의 금시세 보니 지금 팔아야 할까",
+        "주식 사이드카 뜻과 기준…5분 멈춤이 주가에 미치는 영향",
+        "냉방지원금 40만 원, 자립준비청년 냉방비 절약과 생활비 줄이는 법"
       ]
     },
     {
@@ -2285,74 +1889,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "홍은동 제5주택 604세대 재건축 - 2028년 착공, 2032년 준공·입주를 목표",
-        "내자·필운구역 2-1지구 : 용적률 431%, 분양가 20억대 예상",
-        "동부간선도로 지하화 월릉램프 공사",
-        "‘19.4% 금리효과’ 청년미래적금 출시…은행권 이벤트도 개시",
-        "미아동 재개발, 지금 어디쯤 왔나?-더블 역세권 + 2,670세대 + 비례율 104%"
-      ]
-    },
-    {
-      "blog_id": "hoonchan",
-      "name": "복돌이의 부동산 산책",
-      "category": "real_estate",
-      "score": {
-        "total": 85.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 66.7,
-        "consistency": 66.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 8
-      },
-      "recent_titles": [
-        "[경매 검증] (2025타경1125) 겉만 번지르르한 증평 공장, 태양광 적합성 검토 실패작",
-        "[태양광 발전소 부지 경매 특강]사과나무에 가려진 태양광 부지? 보은군 농지 경매의 덫과 기회",
-        "[세종·공주 태양광] 선로 부족 뚫는 '지붕 위 틈새 선로'로 '햇빛 연금' 계좌 완성! (족집게 과외)",
-        "불법건축물 양성화 특별법 핵심 정리",
-        "상속 농지 세금 폭탄? 위성 감시 피해 내 땅 지키는 법 (농지은행 위탁 수수료 면제)"
-      ]
-    },
-    {
-      "blog_id": "chhy5050",
-      "name": "상록공인중개사정현주사무소",
-      "category": "real_estate",
-      "score": {
-        "total": 85.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 66.7,
-        "consistency": 66.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "친구가 내 농사 일손 도와주는 것도 불법? 농지법 자경 기준 완벽 정리",
-        "임야 개간 후 무신고 농막, 철거 위기에서 내 농막 지키는 해법",
-        "정부의 대출 규제, 정말 누구를 위한 것입니까? (주식 부양책의 잔인한 역설)",
-        "영농형 태양광 11월 시행, 2000평에 8억 대출? 농민이 꼭 알아야 할 치명적 단점과 현실 비용, 수익 시뮬레이션",
-        "#김천시 남면 오봉리 토지 매매! 오봉저수지 1분 거리, 평당 53만 원 초급매 전원주택지 추천\""
-      ]
-    },
-    {
-      "blog_id": "dragon1ss",
-      "name": "공인중개사 주실장 부동산이야기",
-      "category": "real_estate",
-      "score": {
-        "total": 85.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 66.7,
-        "consistency": 66.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "토지일부가 전원개발사업구역에 편입되었을경우",
-        "오산시청 먹자골목 24시식당 동태찌개맛집 배부장찌개",
-        "토지 지구단위계획구역 지정후 토지보상에 대하여",
-        "화성비봉 양노공단 토지 600평 단독공장 매매",
-        "이마트 초특가행사전단(6/18~6/24)"
+        "독산2동 380 신통기획 확정! 2,600세대 대단지, 금천구 재개발 어떻게 달라지나?",
+        "신길동 3922번지, 최고 35층 아파트 990세대로 재개발",
+        "다이어트와 혈당 관리 올록담 올리브3 올리브오일 캡슐 섭취 후기",
+        "금정역 산본1동2지구, 재개발 사업 어떻게 개발되나?",
+        "뉴스테이 임대의무기간 8년이 끝났는데…분양 전환, 이제 어떻게 되나요?"
       ]
     },
     {
@@ -2369,11 +1910,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "최저가 신축빌라 부천 공원 품은 3룸 2억대라니 직접 가봐야죠",
-        "7호선신축빌라 급매 에어컨만 5대, 부천 원미동 더블역세권 4룸",
-        "용현동신축빌라 인천 숭의역 역세권 30평형 아이방 로망 이룬 집",
-        "김포 아파트 급매 고촌역 34평형 서울 1정거장인데 이가격에 나온 이유",
-        "부천종합운동장역 아파트 GTX호재 품은 단지형 3룸 파격할인 현장 답사"
+        "숭의동 빌라 급매 실입주금 0원으로 들어가는 숭의역 2억대 아파트형 3룸",
+        "소사본동신축빌라 더블역세권에 부천 남향 뻥뷰 아파트형 방3개",
+        "수원역아너스빌매매 84A 줍줍, 4개노선 수원역 역세권 올라타기",
+        "인천 신축 아파트 분양 숭의역 초역세권 마감직전 특가정보",
+        "중동신축아파트 1호선 부천역 초역세권 30평형 매매"
       ]
     },
     {
@@ -2390,16 +1931,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "저축은행 담보대출 지역별 금리 한도 LTV",
-        "수원 아파트담보대출 LTV90% 신청",
-        "빌라담보대출 신청 후순위대출 조건",
-        "후순위 아파트대출 추가 당일대출",
-        "주택담보대출 조건 후순위 신청 및 대환하기"
+        "외국인 주택 담보대출 아파트 빌라 한도",
+        "사업자 담보대출 대환 및 갈아타기방법",
+        "아파트담보대출 고금리 저금리 갈아타기",
+        "개인사업자 채무통합 통대환대출 소상공인 저금리로 갈아타기",
+        "수도권 아파트 매매자금 캐피탈 한도"
       ]
     },
     {
-      "blog_id": "wealthmanagement",
-      "name": "wealthmanagement님의블로그",
+      "blog_id": "ahaha24c",
+      "name": "경제 브리핑",
       "category": "economy",
       "score": {
         "total": 85.0,
@@ -2411,16 +1952,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "[투자지혜 ❶] 인공지능이라는 W 보이지 않는 질서를 찾는 법",
-        "[투자지혜 ❷] 운용 역량이 성과 결정 초과수익 추구 성패 갈라",
-        "美 뉴욕증시, 3개월 '고변동 터널' 진입 [WM 증시 이슈 리포트]",
-        "ISA·연금저축·IRP로 몰리는 돈 [WM 자산관리시장 리포트]",
-        "AI가 벌어준 주당 1.5시간…생산성은 왜 그대로일까 [WM 이슈 분석]"
+        "코스피란? 코스피 뜻부터 코스피지수·코스피200·야간선물까지 한 번에 이해하기",
+        "삼성바이오 노조, 삼성 초기업노조 탈퇴…독자 노선 선택 배경과 향후 전망",
+        "미국 FOMC 금리 인하 기대감과 엔비디아 중심 AI 반도체 랠리, 하반기 ETF 투자 전략 및 경제뉴스 해설",
+        "[엔비디아 주가 전망] 액면분할 후 AI 반도체 핵심 분석 및 미국 주식 투자 전략",
+        "부동산 청약 시장 양양극화 및 아파트 분양가 전망, 재건축 재개발 경매 투자 전략"
       ]
     },
     {
-      "blog_id": "wodyd781126",
-      "name": "세종시파트너부동산 010-9992-0833",
+      "blog_id": "dog945",
+      "name": "경기도 아파트 지식산업센터 분양정보",
       "category": "real_estate",
       "score": {
         "total": 83.5,
@@ -2429,19 +1970,19 @@
         "relevance": 80.0,
         "consistency": 80.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 6
+        "recent_30d_count": 7
       },
       "recent_titles": [
-        "세종시 아파트 경매 호려울마을7단지 보람동 대장아파트",
-        "세종시 토지 경매 연서면 쌍전리 농지 370평 투자 포인트와 주의해야 할점",
-        "공주 전원주택 경매, 감정가 5억8천만 원이 2억 원대로! 펜션 운영도 가능한 매물 분석전원생활을 꿈꾸는 분들이나 숙박업, 세컨드하우스, 가족 휴양시설을 찾는 분들이라면 이번 경매",
-        "세종시 아파트 경매 소담동 새샘마을3단지 모아미래도 리버시티 5억대 진입! 실거주와 투자를 동시에 잡는 완벽 가이드~",
-        "세종시 상가 경매 대평동 시드니힐 307호 반값이하 9천만원대 입찰 가능 2025타경 502766"
+        "청라 SK V1 지식산업센터 청라 국제 신도시에서 주목받는 비즈니스 센터",
+        "마곡 아이파크 디어반 연구개발 기업이 임대로 입주하는 지식산업센터",
+        "성남 센트럴비즈타워 3차 상대원동 지식산업센터 다시 주목받는 이유는?",
+        "엘리프 마곡 가든스퀘어 지식산업센터 마곡 MBD 중심에서 만나는 업무시설의 새로운 기준",
+        "현대테라타워 세마역 공급이 주목받는 이유"
       ]
     },
     {
-      "blog_id": "spica0322",
-      "name": "위로의 \"산^책\"",
+      "blog_id": "jeyjey37",
+      "name": "푸른염소의 경제블로그",
       "category": "stock",
       "score": {
         "total": 82.0,
@@ -2453,74 +1994,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "주식투자로 자산을 잃는 이유",
-        "밀물_정끝별",
-        "당신의 '행복'은 어디있나요?",
-        "[기업분석] DL그룹, 의심의 안개를 걷어내면 보이는 조용한 패러다임 전환 (with 25년 실적)",
-        "[기업분석] 미래 에너지와 안보의 핵심, '한전기술'에 주목해야 하는 이유"
-      ]
-    },
-    {
-      "blog_id": "rec1820",
-      "name": "JC`Enjoy the Life",
-      "category": "stock",
-      "score": {
-        "total": 82.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.07,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "해외송금도 택배처럼 확인된다? 토스뱅크 해외송금으로 호주송금",
-        "민영주택 신생아특공 신설, 신혼부부 특별공급 청약 전략 바뀐다",
-        "SPCX 주가, 머스크의 우주 제국 스페이스X 상장 포인트",
-        "연준 미국 기준금리 동결 전망 확산, AI 랠리와 코스피에 던지는 신호는?",
-        "주식 반대매매, 신용거래 역습과 코스피 변동성 장세"
-      ]
-    },
-    {
-      "blog_id": "partner6766",
-      "name": "아이엠그레이트",
-      "category": "stock",
-      "score": {
-        "total": 82.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "삼성전자 주가 '여기' 마지막 탑승 기회라는데?",
-        "금값시세는 '이제 시작' 앞으로 어마무시한 일 터진다는데?",
-        "로봇 관련주 3종목 물렸다면? '이렇게' 하라는 소름돋는 전략",
-        "두산에너빌리티 주가 9만원대 속지 마라? 결국 '여기'까지 간다는데",
-        "국민연금이 움직이면 월요일 국내 증시 '비상'? '이렇게' 흘러간다는데"
-      ]
-    },
-    {
-      "blog_id": "kyokyokyokyokyokyoho",
-      "name": "모든 경제 정보 한눈에",
-      "category": "stock",
-      "score": {
-        "total": 82.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "청년미래적금 은행별 금리 비교: 어디가 가장 좋을까?",
-        "청년도약계좌에서 청년미래적금 갈아타기",
-        "한화오션 목표주가 상향 이유",
-        "SK하이닉스 주가 폭등, 삼성전자 밀어냈다 시총 1위 등극",
-        "지방세 환급금 조회 방법"
+        "[마켓 이슈] 하반기 반도체 독주 체제의 변화 가능성",
+        "그때는 맞고 지금은 틀린 투자 격언들",
+        "변동성 극심한 주가에 '일희일비'하고 계신 분들께",
+        "[마켓 이슈] 매일의 변동성에 흔들리지 않는 매매 기준",
+        "국내 파킹형 ETF 수익률 비교 (투자 선택의 기준)"
       ]
     },
     {
@@ -2537,37 +2015,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "\"LNG선 슈퍼사이클 온다\" 지금 봐야할 조선 관련주 TOP3",
-        "삼성물산 목표주가 62만원 \"지금 사도 늦지않은 이유\"",
-        "알바 주휴수당 '모르면 손해' 조건부터 계산방법까지",
-        "\"삼전 넘는다\" SK하이닉스가 시총 1위 찍는 3가지 이유",
-        "\"예금 4%, 적금 10%\" 저축은행 고금리 적금 예금 TOP5"
+        "\"삼성전자 안 부럽다\" 무섭게 오르는 삼화콘덴서 주가, 고점일까 저점일까?",
+        "\"이 와중에 자사주 소각?\" 폭락장 뚫고 주주환원 발표한 '이 종목'",
+        "\"설마 우리집도?\" 최대 70만원 냉방비 지원금, 대상자 조건 확인해보니",
+        "\"연 11% 특판 적금\" 실제 이자 계산해봤더니",
+        "\"조용히 오르고 있다\" 은행주가 웃는 이유 (KB금융, 신한지주, 하나금융)"
       ]
     },
     {
-      "blog_id": "kasala91",
-      "name": "Free Note",
-      "category": "coin",
-      "score": {
-        "total": 82.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "[디파이의 판도를 바꿀 거대 프로젝트] CAP 벤자민 파운더 인터뷰 완벽 분석 & 투자 인사이트! (TGE 임박 / 중동 RWA)",
-        "[DOKDO x HeyElsa] 온체인 캠페인 대단원의 막을 내리다! 최종 18위 달성 & DeFAI 코어 HeyElsa 프로젝트 심층 분석",
-        "잠자는 USDT로 막대한 수익을 창출하는 마법! Stable(스테이블) AI 동화 시청 후기",
-        "[D-4] 5,000 USDC 상금 방어전! DeFi 자비스 ‘HeyElsa’ 실사용 후기 및 랭킹 28위 막판 전략",
-        "AI 기반의 혁신적인 Base 생태계 Perp DEX, Bullbit 완벽 가이드!"
-      ]
-    },
-    {
-      "blog_id": "fdsalsn",
-      "name": "좋은 정보 나눔소",
+      "blog_id": "illbuybanpoapt",
+      "name": "30대 아빠 이야기",
       "category": "real_estate",
       "score": {
         "total": 82.0,
@@ -2579,38 +2036,17 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "광명시흥 3기 신도시(공공주택지구) 현재 진행 상황 및 미래 가치",
-        "관리처분인가 완료한 수진1구역과 생활권 재개발 추진중인 수진2구역의 차이점과 미래 전망",
-        "중앙일보와 JTBC와 차이점과 부도 처리 과정 및 상세 지분구조 정리",
-        "목동 주변 현재 재건축 진행 상황 및 시세 전망",
-        "광명시 지역 재개발 진행 상황 및 핵심 분석"
+        "동탄 삼성 반도체 호재, 지금 아파트 시장에 무슨 일이",
+        "서계동 33번지 재개발, 조합설립 단계 지금 투자 가치는",
+        "서울 강남 아파트 중위가 16억 돌파, 지금 15억 대출 한도 어떻게 되나",
+        "광장극동아파트 재건축, 정비구역 지정 완료 후 지금 어디까지 왔나",
+        "삼성전자 배당금 지금 확인! 연간 9조 8천억 주주환원 정책 총정리"
       ]
     },
     {
-      "blog_id": "dydy624",
-      "name": "정혜준의 부동산 노트",
-      "category": "real_estate",
-      "score": {
-        "total": 82.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 60.0,
-        "consistency": 60.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "전세사기 피해자 지원 제도 신청 방법 총정리 2026",
-        "전세 월세 전환 거절하는 방법",
-        "전세가율 계산법 역전세 위험 자가진단 2026",
-        "해외 비자용 판결문 번역·공증 방법 총정리 2026",
-        "법인 휴면 유지 vs 청산 비용·절차 비교 2026"
-      ]
-    },
-    {
-      "blog_id": "dog945",
-      "name": "경기도 아파트 지식산업센터 분양정보",
-      "category": "real_estate",
+      "blog_id": "dream_asset",
+      "name": "LS증권 블로그",
+      "category": "stock",
       "score": {
         "total": 80.5,
         "activity": 100.0,
@@ -2618,19 +2054,19 @@
         "relevance": 73.3,
         "consistency": 73.3,
         "ad_ratio": 0.0,
-        "recent_30d_count": 5
+        "recent_30d_count": 6
       },
       "recent_titles": [
-        "현대테라타워 세마역 공급이 주목받는 이유",
-        "전세계약 연장 방법 다시 한번 알아봅시다",
-        "종합부동산세 세율 및 기준 헷갈리는 정보들 정리했어요",
-        "아파트 공동명의 장단점 알아봅시다",
-        "수원역 아너스빌 플라츠 오피스텔 모델하우스 분양정보"
+        "[주식] 손실을 줄이기 위해 꼭 알아야 할 두 가지, 리스크와 헤지",
+        "[TGIF] 그리고 아무 말도 없었다 #케빈워시 #FOMC",
+        "[주식] 투자 오답노트, 주식 매매일지 쓰는 법",
+        "[투자] 반도체 기업도 다 다르다! AI 시대, 반도체 설명서",
+        "[HTS 투혼] '뉴스' 활용가이드"
       ]
     },
     {
-      "blog_id": "h2j8282",
-      "name": "편의점, 무인창업에 대한 모든 지식을 공유합니다.",
+      "blog_id": "intpjune",
+      "name": "장중일기",
       "category": "stock",
       "score": {
         "total": 79.0,
@@ -2642,11 +2078,53 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "나나대디의 재테크 일기 : 6월 4주 차 공모주 청약 가이드 (매드업, 레몬 헬스케어, 한국 16호 스팩 핵심 요약)",
-        "6월 4주 차 GS25 FF 신상품 15개에 대해 알아보자.",
-        "삼성전자, SK하이닉스 고점 공포증 치료제? '채권혼합50 ETF'의 정체",
-        "[미국 주식] 고금리에 두들겨 맞은 美 주택 건설 2위 '레나(LEN)' 배당 분석 및 시세차익 투자 전략",
-        "26년 6월 3주 차 GS25 신상품 16개에 대해 알아보자."
+        "메모리반도체 애플이 놓친 시장 구조적 변화, 투자는 어떻게 해야 될까?",
+        "배곧동 안주 맛집 다이어메이커 LP가 있는 분위기 좋은 술집",
+        "이평선 지지와 저항을 활용한 주식 손절 타이밍",
+        "호남 반도체 클러스터 조성 계획 공개에 일부 건설 관련주 급등",
+        "마이크론 실적 발표로 느껴지는 반도체 쇼티지 심각성"
+      ]
+    },
+    {
+      "blog_id": "spica0322",
+      "name": "위로의 \"산^책\"",
+      "category": "stock",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "데이지를 좋아하는 분이라면?(육백마지기,변산반도,강화도,파주)",
+        "늙어보면 알게 되느니!",
+        "미워하는 마음이 나를 병들게 할 때, 용서의 기술!",
+        "98세 어머니가 생의 끝자락에서!",
+        "[차트분석] 추세대 매매(두산, 두산우, 두산에너빌리티)"
+      ]
+    },
+    {
+      "blog_id": "chs4114",
+      "name": "바다빠의 사생활",
+      "category": "stock",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 9
+      },
+      "recent_titles": [
+        "[주식 용어 완벽 정리] 수익 2배? 손실도 2배! 레버리지 & 인버스 뜻과 투자 주의점",
+        "주식 3대 주체 (외인/기관/개인) 특징과 단기 주가 방향성 읽기",
+        "[DCF 가치평가] 맥쿼리인프라(088980) 주가 전망: 워런 버핏도 탐낼 '가치 트랩 제로' 배당주",
+        "주식 가치투자 입문: 워렌 버핏의 투자 철학과 DCF 기업 분석 프로젝트 시작!",
+        "[주식 용어] 사이드카 뜻 완벽 정리! 매수/매도 사이드카 발동 조건과 유래"
       ]
     },
     {
@@ -2663,16 +2141,37 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "코스닥 30주년에도 역대급 소외! 코스피에 비해 부진한 이유는? feat. 코스닥 승강제",
-        "오늘 18시 신청 종료되는 소득연계형 국가장학금! 일단 신청부터 해야 하는 이유는?",
-        "RP가 뭐야? CMA 이자 주는 구조는 환매조건부채권에 있다?",
-        "감정은 배제해라! 주식 퀀트투자 뜻과 대표적인 전략은?",
-        "일론 머스크의 '테라팹' 미국 반도체주뿐만 아니라 파일럿에 국내 소부장 HPSP, 한미반도체 투입, 주가 추이는?"
+        "삼성전자 주가와 삼성전자우 주가, 우선주 괴리율이 좁혀지지 않는 이유는?",
+        "매출은 1조 6천억인데 시총은 2600억? 비타500, 쌍화탕의 광동제약 주가 전망은?",
+        "호재 또는 악재! 보유한 주식 정보 빠르게 확인하는 방법은?",
+        "주식 투자 시작, 주식 시드 뜻과 단계별 적정 금액은?",
+        "위드코로나 시절 주린이 단디제표와 아버지의 투자 회고"
       ]
     },
     {
-      "blog_id": "swifty_7",
-      "name": "트리키의 행복한 라이프로그",
+      "blog_id": "yahoyaho08",
+      "name": "디노의 경제 재테크이야기",
+      "category": "stock",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.13,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "\"2차전지 반등 시작? ESS 장비주가 진짜 수혜인 이유",
+        "\"갤럭시북4가 77만원\" 대학생, 직장인 노트북으로 추천하는 이유",
+        "\"주식시장 갑자기 멈췄다\" 서킷브레이커 사이드카 뜻, 발동조건은?",
+        "\"알테오젠 다시 56만원?\" 코스닥 밸류업 시작된다는데",
+        "\"삼전 좋다더니 이익 10조 증발\" 2분기 실적쇼크에 주가 하락할까?"
+      ]
+    },
+    {
+      "blog_id": "gusrlid",
+      "name": "레이니의 이중생활",
       "category": "stock",
       "score": {
         "total": 79.0,
@@ -2684,11 +2183,32 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "지금 주식에 5천만원 넣는다면, 결국 이 ETF 3개로 나눌 것 같습니다",
-        "삼성전자 주가 '아직도 싸다'는데, 결국 올라가려면 봐야할 것 나왔다",
-        "\"신고가 갱신했다\" SK하이닉스 주가, 진짜 봐야 할 숫자는 따로 있다는데",
-        "금값시세 조정 끝났나 더 빠지나, 지금 꼭 봐야 할 답을 쥐고 있는 숫자 2가지",
-        "\"결혼식보다 혼인신고 먼저\" 올해 놓치면 100만원 날아가는 혼인세액공제 체크"
+        "코스피 15000P 간다는 JP모건 전망, 하락이 줍줍 기회?",
+        "이미지 AI 사이트 추천! 모든 ai 플랫폼을 한번에 구독, 우수AI",
+        "비트코인 거래소 수수료 빗썸과 업비트 비교, 어디가 좋을까?",
+        "다음달 sk 하이닉스 나스닥 adr 상장! 상장일과 장단점",
+        "코스피 급락 이유, 국내 증시 반등할까? ft.삼성전자, 하이닉스"
+      ]
+    },
+    {
+      "blog_id": "investment-hippo",
+      "name": "2030 사회초년생 재테크",
+      "category": "stock",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "샘 알트만 \"1조 달러 아니면 오픈AI 상장 안 해\", AI 인프라 사이클 둔화 우려와 반도체 섹터 조정 분석",
+        "먹는 비만약 대장, 비만치료제 시장에 신흥강자 스트럭처 테라퓨틱스(GPCR) 주가전망",
+        "[52주 신고가] AI 인프라 수혜주 유나이티드 렌탈(URI) 주가 전망",
+        "애플(AAPL) 6%대 급락 원인 분석, AI 지연과 부품값 상승의 이중고",
+        "최근 하락중인 반도체 지수 멱살잡고 끌어올린 마이크론 슈퍼 어닝서프라이즈 MU 실적분석"
       ]
     },
     {
@@ -2713,8 +2233,29 @@
       ]
     },
     {
-      "blog_id": "balahk",
-      "name": "발악하는 재테크",
+      "blog_id": "sunominq",
+      "name": "수노밍쿠의 게임과 IT 이야기",
+      "category": "coin",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 10
+      },
+      "recent_titles": [
+        "코넛코인 P2P 마켓, '코넛샵' 정식 오픈 리뷰",
+        "비트코인 재정거래 예치 수익률 공개 : Basis Pro 검증",
+        "TBH : 태스크바 히어로 30렙 돌파, 초반팁 정리",
+        "디아블로2 레저렉션 스탠 래더 2일차 후기",
+        "디아블로2 레저렉션 악마술사 확장팩 시작"
+      ]
+    },
+    {
+      "blog_id": "hello_genius",
+      "name": "한량한 삶:)",
       "category": "real_estate",
       "score": {
         "total": 79.0,
@@ -2722,15 +2263,78 @@
         "scale": 100,
         "relevance": 53.3,
         "consistency": 53.3,
-        "ad_ratio": 0.13,
+        "ad_ratio": 0.0,
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "폐업 지원금 신청한지 3개월 됐는데 깜깜무소식",
-        "삼성전자와 하이닉스가 쏘아올린 동탄 집 값 폭등?",
-        "삼성 KODEX ETF 투자 이벤트로 차곡차곡 ETF 모으기",
-        "2차 분당 재건축 선도지구 지정되기 위해 한 이것...",
-        "한때 월세로만 260만원씩 벌던 직장인 지금은..."
+        "주린이가 알아야할 주식 용어 정리",
+        "시티가 던진 \"금값 하락 경고\": 하락 원인과 전문가들의 전망",
+        "레몬헬스케어 청약 정리: 공모가 1만원은 적절한 가격일까?",
+        "e편한세상 분당 퍼스트빌리지 분양 정보: 입지·시세 비교까지",
+        "서리풀지구 재개발: 진행 소식 정리"
+      ]
+    },
+    {
+      "blog_id": "dbfksgl",
+      "name": "이제링",
+      "category": "real_estate",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "수원 매교역 대장 매교역 푸르지오 SK VIEW 임장 후기 (전고 거의 다옴)",
+        "매교역 인근 신축 2대장. 수원 센트럴 아이파크 자이 임장 후기",
+        "수원 삼성 수혜? 매교역 인근 신축 수원성중흥S클래스 임장 후기",
+        "노량진뉴타운 신축 분양? 드파인아르티아 27억 분양가에도 청약 추천하는 이유",
+        "부동산 실거래가 여기까지 오른다고? 지역 살펴보니"
+      ]
+    },
+    {
+      "blog_id": "chhy5050",
+      "name": "상록공인중개사정현주사무소",
+      "category": "real_estate",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "[김천 농장 매매] 감문면 태촌리 1,214평 샤인 머스캣 농장 통매매! 하우스·전기·지하수 완비, (매물 번호: 10594번)",
+        "벼농사만 지으면 가난합니다 | 이모작+전략작물 직불금으로 소득 4배 올리는 실전 전략 [2026 최신]",
+        "농지 세금, 이것 하나만 알면 됩니다! 사업용 vs 비사업용 + 미실현이익 과세 위험성",
+        "3m 시멘트 포장길(현황도로)에 농촌체류형 쉼터 설치 가능할까? 허가 조건 완벽 정리",
+        "\"4.8m 농막 샀다가 이행강제금 폭탄!\" 불법 농막 단속 이유와 현실적인 해결책"
+      ]
+    },
+    {
+      "blog_id": "pkhbd",
+      "name": "세종한국부동산",
+      "category": "real_estate",
+      "score": {
+        "total": 79.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 53.3,
+        "consistency": 53.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "'해도 너무하다, 창피하다' 옌스 카스트로프 모친의 과거 발언 재조명 : 한국 축구 시스템 논란",
+        "개미들 불붙은 빚투 : 마이너스통장 43조 돌파, 주식시장 상승 기대와 금융 불안 사이",
+        "규제 실패 낙인 이르다 : 부동산 정책은 왜 시간이 필요한가",
+        "호남 반도체 투자 본격화 : 초격차 승부처는 지방 정부 총력 지원 나선다",
+        "DL이앤씨, 1조3000억 목동6단지 품었다 : 30조 목동 재건축 시대 본격화"
       ]
     },
     {
@@ -2747,32 +2351,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "용인 베이커리 추천 수지 카페 본누벨",
-        "노량진 드파인 아르티아 청약 분양가부터 경쟁률 예상까지",
-        "시세차익 2억 북서울 자이 폴라리스 보류지 청약",
-        "장위 푸르지오 마크원 청약 시세차익 가능성은?",
-        "한국제16호스팩 청약 시작 경쟁률 보고 결정하세요"
-      ]
-    },
-    {
-      "blog_id": "kimdw331",
-      "name": "하루하루 꾸준히",
-      "category": "economy",
-      "score": {
-        "total": 79.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 53.3,
-        "consistency": 53.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "AI 반도체 시장 1조 달러 돌파 전망과 주목해야 할 수혜 포인트 분석",
-        "동전주 퇴출 위기 219개 분석과 포켓몬 카드 재테크 열풍 전망",
-        "농심 육포깡 1주 만에 100만 봉 돌파, 제2의 먹태깡 신화 재현할까?",
-        "은마상가 문방구 30년 만의 작별 인사, 지역 경제가 잃어버린 가치는 무엇일까",
-        "2026 북중미 월드컵 캐나다 6-0 대승과 코네 수술 부상 변수 분석"
+        "저스텍 상장 시초가에 팔아야 할까",
+        "냉방지원금 최대 70만원 지원받는 방법",
+        "식사 푸르지오 파크센트 무순위 넣기 전 꼭 보세요",
+        "광교법조타운 돈까스 아이와 함께 다녀온 이집트경양식",
+        "레몬헬스케어 공모주 의외의 리스크 꼭 확인"
       ]
     },
     {
@@ -2789,16 +2372,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
+        "방콕 카오산로드 맛집 족발덮밥 여행 후기",
+        "2026 북중미 월드컵 탈락 대한축구협회 쇄신 최휘영 문체부 장관 홍명보 사퇴",
         "동탄 아파트 매매 급등 원인: 삼성전자 성과급 및 배액배상 현황",
         "만성 피로 원인 몸에 염증 증상 4가지 및 염증 수치 낮추는 법",
-        "젠슨 황 종로 삼계탕집 방문, '젠슨 황 효과'가 불러온 K푸드 경제학",
-        "태풍 장미 경제영향, 기후플레이션과 풍수해보험 손해율 올여름 전망",
-        "젠슨 황 베라 루빈 AI 팩토리, 대만 공급망이 뜨는 이유"
+        "젠슨 황 종로 삼계탕집 방문, '젠슨 황 효과'가 불러온 K푸드 경제학"
       ]
     },
     {
-      "blog_id": "mayo51",
-      "name": "부티플 레벨업 ☆",
+      "blog_id": "cs1487",
+      "name": "오쿤의 투자노트",
       "category": "economy",
       "score": {
         "total": 79.0,
@@ -2806,63 +2389,21 @@
         "scale": 100,
         "relevance": 53.3,
         "consistency": 53.3,
-        "ad_ratio": 0.13,
-        "recent_30d_count": 8
-      },
-      "recent_titles": [
-        "KODEX 미국AI광통신네트워크ETF 알아보자",
-        "ETF 투자 이벤트 경품이 이 정도라고? 삼성 KODEX ETF, BIG 경품 이벤트",
-        "주택담보대출 4억,5억,6억 대출 이자 계산기, 이자 5%일 경우",
-        "블랙먼데이 코스피 폭락, 환율 전망은?",
-        "오세훈 서울시장 부동산 공약 알아볼까?"
-      ]
-    },
-    {
-      "blog_id": "ptxtax",
-      "name": "세무법인 숲",
-      "category": "economy",
-      "score": {
-        "total": 79.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 53.3,
-        "consistency": 53.3,
-        "ad_ratio": 0.07,
+        "ad_ratio": 0.0,
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "상속세 일괄공제와 기초공제·인적공제, 어떤 기준으로 비교해야 할까요?",
-        "[주간 경제 브리핑] 고환율·금리 불확실성 속, 대표님이 점검해야 할 자금과 비용 흐름 (6월 4주차)",
-        "실제 매출이 없어도 부가세 간주공급으로 과세될 수 있나요?",
-        "부가세 신고 오류, 수정신고·경정청구·기한 후 신고 중 어떤 절차가 맞을까요?",
-        "법인 설립 전 지출도 비용처리 가능할까요? 확인해야 할 기준 정리"
+        "원달러환율 1,600원 육박, \"외환위기급 미국환율 폭등\" 속 달러환율전망 뒤흔드는 \"이 변수\"라는데?",
+        "조선주 \"바다 위에 띄우는 거대한 AI 공장\" 전 세계 데이터센터 패러다임을 바꿀 조선관련주 TOP 3",
+        "근로장려금 지급일 \"나만 아직 입금 안 됐다면?\" 정기 지급 및 신청 기준 총정리",
+        "방산관련주 TOP 5 \"전쟁 끝나면 방산주 끝 아닌가\" 하반기 100조 수주 조기 인도 돌입할 국내외 방산주식 및 미국방산주",
+        "종합소득세 \"기한 놓쳤는데 환급 가능할까?\" 종합소득세기한후신고 가산세 감면 혜택과 종합소득세환급일 총정리"
       ]
     },
     {
-      "blog_id": "gunamp",
-      "name": "민민의 경제블로그",
-      "category": "economy",
-      "score": {
-        "total": 79.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 53.3,
-        "consistency": 53.3,
-        "ad_ratio": 0.07,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "월세 포함 가구도 지원? 2026년 에너지바우처 달라진 점과 자동신청 주의사항",
-        "부모님·자녀 꼭 알려주세요! '정부지원금 사칭' 중고차 대출 사기 총정리",
-        "2030 청년 희소식! 탈모약 건강보험 적용 하반기 추진 확정?",
-        "스페이스X 상장 당일 돌발 변수! 한투운용 배정 결과 연기 및 TIGER ETF 편입 철회 이유",
-        "스페이스X 상장 하루 전! 미래에셋 TIGER 우주테크 ETF 편입 시나리오"
-      ]
-    },
-    {
-      "blog_id": "dream_asset",
-      "name": "LS증권 블로그",
-      "category": "stock",
+      "blog_id": "hoonchan",
+      "name": "복돌이의 부동산 산책",
+      "category": "real_estate",
       "score": {
         "total": 77.5,
         "activity": 100.0,
@@ -2873,16 +2414,16 @@
         "recent_30d_count": 7
       },
       "recent_titles": [
-        "[TGIF] 그리고 아무 말도 없었다 #케빈워시 #FOMC",
-        "[주식] 투자 오답노트, 주식 매매일지 쓰는 법",
-        "[투자] 반도체 기업도 다 다르다! AI 시대, 반도체 설명서",
-        "[HTS 투혼] '뉴스' 활용가이드",
-        "[투자] 실적은 좋은데 주가 하락? 초보자를 위한 실적 발표 읽는 법"
+        "[경매 검증] (2025타경1125) 겉만 번지르르한 증평 공장, 태양광 적합성 검토 실패작",
+        "[태양광 발전소 부지 경매 특강]사과나무에 가려진 태양광 부지? 보은군 농지 경매의 덫과 기회",
+        "[세종·공주 태양광] 선로 부족 뚫는 '지붕 위 틈새 선로'로 '햇빛 연금' 계좌 완성! (족집게 과외)",
+        "불법건축물 양성화 특별법 핵심 정리",
+        "상속 농지 세금 폭탄? 위성 감시 피해 내 땅 지키는 법 (농지은행 위탁 수수료 면제)"
       ]
     },
     {
       "blog_id": "juda3168",
-      "name": "천안직산 동일하이빌 모델하우스",
+      "name": "천안 직산 동일하이빌 파크레인 모델하우스",
       "category": "real_estate",
       "score": {
         "total": 77.0,
@@ -2902,8 +2443,8 @@
       ]
     },
     {
-      "blog_id": "intpjune",
-      "name": "장중일기",
+      "blog_id": "joamail",
+      "name": "재테크인포 - 돈으로 돈을 버는 정보",
       "category": "stock",
       "score": {
         "total": 76.0,
@@ -2912,14 +2453,14 @@
         "relevance": 46.7,
         "consistency": 46.7,
         "ad_ratio": 0.0,
-        "recent_30d_count": 15
+        "recent_30d_count": 8
       },
       "recent_titles": [
-        "코스닥 지수 차트분석 여기서 더 밀리면 위험하다",
-        "인천논현맛집 투파인드피터 맛있고 분위기 좋은 데이트장소",
-        "안산 맛집 돼포집 뼈구이와 함께 즐기는 추억의 술집",
-        "안산 고잔동 파스타 맛집 디몰토 이탈리아 레스토랑 데이트",
-        "고잔동중국집 진성각 청결한 매장 맛있는 짬뽕 맛집"
+        "커버드콜 뜻 구조 장단점, 투자 전 알아야 할 정보",
+        "ISA 계좌 이전 방법 절차 소요시간 혜택 총정리",
+        "기후동행카드 페이백 신청 방법 기간 K패스 비교해보기",
+        "K패스 재등록 왜 필요할까? 대상 방법 마감일 확인해야 할 부분",
+        "RIA 계좌 개설 세금 혜택까지 궁금하다면"
       ]
     },
     {
@@ -2944,8 +2485,8 @@
       ]
     },
     {
-      "blog_id": "lty377",
-      "name": "함께하는 경제적 자유를 향한 모든것",
+      "blog_id": "partner6766",
+      "name": "아이엠그레이트",
       "category": "stock",
       "score": {
         "total": 76.0,
@@ -2957,121 +2498,58 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "최대 19.4%이자 주는 적금이 있다? 가입방법 총정리",
-        "은행해킹 가능할까?",
-        "삼성전자주가가 sk하이닉스 보다 더 못오르는 결정적인 이유",
-        "국민연금 55조 매도 폭탄? 다음 달 리밸런싱 재개에 개인 투자자가 알아야 할 것",
-        "MSCI가 공개한 2026 성적표, 외국인 투자자가 한국 시장을 평가하는 기준은?"
+        "두산에너빌리티 주가 '지금 안팔면' 앞으로 '이렇게' 될거라는데?",
+        "60대 이상 10억 큰손들은 '이걸 담았네' 국내 주식 TOP5 봤더니",
+        "용인 푸르지오 클루센트 분양가 모델하우스 정보",
+        "삼성전자 주가 '이것' 통하면 50만 쭉쭉, '이때'가 기회라는데?",
+        "비트코인 전망, '서서히 사라질 것'이라는데"
       ]
     },
     {
-      "blog_id": "sunominq",
-      "name": "수노밍쿠의 게임과 IT 이야기",
-      "category": "coin",
+      "blog_id": "uniqqu2",
+      "name": "끄니모가 된 끄넌니",
+      "category": "real_estate",
       "score": {
         "total": 76.0,
         "activity": 100.0,
         "scale": 100,
         "relevance": 46.7,
         "consistency": 46.7,
-        "ad_ratio": 0.0,
+        "ad_ratio": 0.07,
         "recent_30d_count": 9
       },
       "recent_titles": [
-        "비트코인 재정거래 예치 수익률 공개 : Basis Pro 검증",
-        "TBH : 태스크바 히어로 30렙 돌파, 초반팁 정리",
-        "디아블로2 레저렉션 스탠 래더 2일차 후기",
-        "디아블로2 레저렉션 악마술사 확장팩 시작",
-        "방치형 RPG 게임 TBH : 태스크바 히어로(Task Bar Hero)"
+        "소연옥 인천부평점에서 소고기규카츠랑 연어덮밥 줄서먹기",
+        "인천영종한양수자인 기본정보 정리｜세대수·입주·주차·면적 한눈에 보기",
+        "e편한세상 영종국제도시 센텀베뉴 기본정보 정리｜세대수·입주·주차·면적 한눈에 보기",
+        "w02 잔금부터 입주 준비까지｜신혼가전·가구·입주청소까지 신혼집 준비",
+        "w01 분양권 매매부터 보금자리론까지｜신혼집 계약하고 대출까지 받은 과정"
       ]
     },
     {
-      "blog_id": "jirihada",
-      "name": "차 한잔과 세상",
-      "category": "real_estate",
+      "blog_id": "kimdw331",
+      "name": "하루하루 꾸준히",
+      "category": "economy",
       "score": {
         "total": 76.0,
         "activity": 100.0,
         "scale": 100,
         "relevance": 46.7,
         "consistency": 46.7,
-        "ad_ratio": 0.0,
+        "ad_ratio": 0.07,
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "[맨손으로 지키는 건강#025] 허리 통증 예방 코어 강화 맨손체조",
-        "[전국 재개발#072] 평촌 재건축 2차 구역 완전 분석 - 범계 ▪ 호계동 단지별 경쟁 구도",
-        "[건강한 노후 #030] 백내장 다초점 수술, 직접 받아보고 쓰는 솔직한 후기 - 눈의 변화",
-        "[전국 재개발#071] 안양 평촌 재건축 현황2026 - 1기 신도시 최속 기록 총정리",
-        "[맨손으로 지키는 건강#024] 승모근 이완 어깨 ▪ 목 스트레칭"
+        "코스피 9,000 돌파 후 SK하이닉스 ADR 상장이 시장에 미칠 영향 분석",
+        "슈퍼 엘니뇨 2027 식량 위기 전망과 물가 상승 영향 분석",
+        "SK하이닉스 나스닥 상장 2026년 하반기 추진 시총 1위의 주가 전망 분석",
+        "삼양식품 매출 3조 시대 전망 포인트와 일본 금리 1.0% 인상 분석",
+        "SK하이닉스 300만원 돌파와 시총 1위 등극, 향후 주가 전망 분석"
       ]
     },
     {
-      "blog_id": "cal114",
-      "name": "프리하게-세상 구석구석 -- >')))>< ~~",
-      "category": "real_estate",
-      "score": {
-        "total": 76.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 46.7,
-        "consistency": 46.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "직장인·학생 필수! 요즘 다 쓰는 AI 툴 TOP 12 완벽 정리 (생산성 200% 높이는 치트키)",
-        "[부동산 경매] 부동산 고수들은 다 쓴다! 상황별 필수 부동산 앱 10가지 완벽 정리 (내 집 마련, 토지, 빌라 투자 필수템)",
-        "[부동산 경매 ] 8억 아파트를 68억에 낙찰? 안양지원 입찰가 오기 레전드 사례와 입찰서 작성 핵 주의사항",
-        "군포 떡볶이 투어 필수 코스! 흥진고 앞 숨은 떡볶이 맛집 솔직 후기",
-        "[후기]행주산성 드라이브 코스 필수! 예쁜 '더츠커피팩토리' 카페"
-      ]
-    },
-    {
-      "blog_id": "cpath",
-      "name": "제이콥의 매일 특별한 하루",
-      "category": "real_estate",
-      "score": {
-        "total": 76.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 46.7,
-        "consistency": 46.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "[코스피 시총순위] 시총 1위 삼성전자 아닌 SK하이닉스?!(ft. 삼전 우)",
-        "[경주체험예약] 경주를 합리적으로 체험할 수 있는 방법, 경주공공서비스예약",
-        "[줍줍] 서울 거주, 무주택 세대주라면 무조건 오늘, 강변역센트럴아이파크 청약(국평 2세대)",
-        "[한국기행] 구룡포 여행 준비, EBS 한국기행으로 '맛집' 조사",
-        "[공모주] 6월 넷째주, 공모주 청약 - 한국제16호기업인수목적 (한국16호스팩)"
-      ]
-    },
-    {
-      "blog_id": "roelcode",
-      "name": "란디터 경제분석",
-      "category": "real_estate",
-      "score": {
-        "total": 76.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 46.7,
-        "consistency": 46.7,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "전세자금대출 이자 계산",
-        "건강보험 과오납 환급",
-        "양도소득세 다주택자",
-        "전세자금대출 우대금리",
-        "건강보험 납부내역 조회"
-      ]
-    },
-    {
-      "blog_id": "rbeod1",
-      "name": "실버라이닝의 생활금융",
+      "blog_id": "cyberlhs",
+      "name": "커넥트웨이",
       "category": "economy",
       "score": {
         "total": 76.0,
@@ -3083,16 +2561,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "전이암 생활비 보험 보장 내용 및 월 납입액 등",
-        "비갱신형 암보험 추천 사례 및 회사별 비교",
-        "도수치료 급여 적용, 실손보험 보상 금액은?",
-        "퇴직연금 500조 시대, 근로자들의 IRP DC 투자 전략",
-        "2026년 6월 주요 파킹통장 금리 비교"
+        "일론 머스크의 자금 조달 전략과 스페이스X, 핵심 트렌드 총정리",
+        "한국 반도체 산업 인력 양성과 마이스터고, 핵심 트렌드 총정리",
+        "2027년 최저임금 결정 과정과 노사 핵심 쟁점 심층 분석 총정리",
+        "홈플러스 신도림점 폐점 위기 배경과 지역 상권 영향 분석 대응법",
+        "2026 하반기 경제정책? LNG LPG 관세 인하 규모 분석"
       ]
     },
     {
-      "blog_id": "lookatself",
-      "name": "친절한 강선비",
+      "blog_id": "motoit",
+      "name": "머니 & 이슈 인사이트",
       "category": "economy",
       "score": {
         "total": 76.0,
@@ -3104,11 +2582,95 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "[LG이노텍 주가] 애플 독점을 넘어선 '초격차 기술력'과 반도체 유리 기판의 미래전략 완벽 해부",
-        "[비상경제점검] 미·란 종전 협상 타결과 유가 80불대 하락, 올림픽공원 경기장 불법 봉쇄 사태 속 3040이 반드시 챙겨야 할 금융·산업 리스크 총정리",
-        "[거시경제 분석] 30년 만의 역대급 경상성장률 17.1% 돌파! 중동 리스크 속 3040이 반드시 잡아야 할 투자 기회",
-        "[클로드 페이블 5] 미국 AI 수출 통제 사태와 빅테크 규제 속 3040 투자자가 주목해야 할 AI 패권 전쟁의 서막",
-        "[삼성 파운드리] 구글 TPU 8세대 협력과 HBM4 최고점 획득이 부르는 나비효과"
+        "파킹통장으로 돈 모으는 시대 끝났다? 새로운 대안은 무엇일까",
+        "금 투자 다시 전성기 오나, 안전자산 선호 심리 확대 배경",
+        "경제 전문가들이 꼽은 향후 10년 유망 산업 TOP 10",
+        "인플레이션 시대 부자들이 선택한 투자 전략 총정리",
+        "경제위기 전 나타나는 이상 신호들, 지금 시장은 안전할까"
+      ]
+    },
+    {
+      "blog_id": "bbbbb-610",
+      "name": "미짠의 알뜰살뜰 경제레터",
+      "category": "economy",
+      "score": {
+        "total": 76.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 46.7,
+        "consistency": 46.7,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "한국경제신문 구독료 및 찐후기, 매일 아침 종이신문 루틴",
+        "ETF 투자 이벤트 대박, 삼성 KODEX ETF BIG 경품 이벤트",
+        "미국나스닥100, S&P500 퇴직연금 투자 채권혼합 ETF 비교해봄",
+        "삼전닉스 말고 미국반도체주식, 결국 미장 간 이유",
+        "SK하이닉스 나스닥 상장 주가 더 오를까? 줍줍 고민중인 아내"
+      ]
+    },
+    {
+      "blog_id": "gunamp",
+      "name": "민민의 경제블로그",
+      "category": "economy",
+      "score": {
+        "total": 76.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 46.7,
+        "consistency": 46.7,
+        "ad_ratio": 0.07,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "다음 달부터 체외충격파 실비 연 12회 제한! 보장 축소 질환 7가지 총정리",
+        "청년미래적금 5부제 신청 시작! 일반형 vs 우대형 내 만기 이자 계산하기",
+        "월세 포함 가구도 지원? 2026년 에너지바우처 달라진 점과 자동신청 주의사항",
+        "부모님·자녀 꼭 알려주세요! '정부지원금 사칭' 중고차 대출 사기 총정리",
+        "2030 청년 희소식! 탈모약 건강보험 적용 하반기 추진 확정?"
+      ]
+    },
+    {
+      "blog_id": "don_don2",
+      "name": "돈되는 정보를 제공합니다.",
+      "category": "coin",
+      "score": {
+        "total": 74.5,
+        "activity": 100.0,
+        "scale": 70,
+        "relevance": 60.0,
+        "consistency": 60.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 5
+      },
+      "recent_titles": [
+        "크립토 투자에 대한 믿음은 어디서오는가?",
+        "비트코인 바닥에선 악재만 보이고 고점에선 호재만 보인다.",
+        "서클은 10배갈 주식",
+        "네비우스를 보고 느끼는 아이렌 27년도 적정 주가 예상",
+        "비트코인 DCA 시작해야할 시기 ON"
+      ]
+    },
+    {
+      "blog_id": "balancebook100",
+      "name": "산동탑부동산",
+      "category": "real_estate",
+      "score": {
+        "total": 74.5,
+        "activity": 100.0,
+        "scale": 70,
+        "relevance": 60.0,
+        "consistency": 60.0,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 4
+      },
+      "recent_titles": [
+        "[아산 탕정2신도시] 2026년 드디어 착공 돌입! 기본 개요 및 현시점 진행 상황 총정리",
+        "\"이자 부담 확 줄었어요\" 신생아 특례대출 자격부터 한도까지, 허소장이 팩트체크 해드립니다! (친근함과 전문가의 신뢰도를 강조한 제목)",
+        "[토지·건물 투자 상식] 천안아산의 미래, 음봉면 일대 도로망 착공과 산단 호재 분석",
+        "[부동산 상식] 2026년 농지 투자할 때 반드시 확인해야 할 '농지법' 규제 포인트",
+        "사무실에 있던 더벅머리 총각"
       ]
     },
     {
@@ -3133,8 +2695,8 @@
       ]
     },
     {
-      "blog_id": "nyria99",
-      "name": "시네마 오마카세",
+      "blog_id": "mellongi123",
+      "name": "직딩 혜무늘보 돈버는 일상",
       "category": "stock",
       "score": {
         "total": 73.0,
@@ -3146,37 +2708,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "월드컵 한국 vs 남아공 : 32강 진출 경우의 수 (피파 랭킹 순위, 대진 상대 예상, 전적)",
-        "두산에너빌리티 주가 전망 - 지금이 매수 기회? 20만 갈까? (목표주가, 주식 배당금)",
-        "[리뷰] 아이 윌 파인드 유 (1~8화 줄거리 및 결말, 뜻, 스포) - 넷플릭스 드라마 최신",
-        "삼전 하이닉스가 다가 아니다! : AI 반도체 저평가 우량주 추천 (주식 투자 전 필독)",
-        "[영화 리뷰] 홈캠 (결말 해석 정보 평점 줄거리) - 넷플릭스 ott 공포"
+        "“집 한 채로 평생 월급 준다는데…” 주택연금 망설이는 이유",
+        "LG전자 주가 45만 원에 2억 물린 직장인.. 반등 기대 한다0는데",
+        "삼성전자 잠정실적 앞두고 난리…‘이 한 방’ 터지면 50만전자 간다?",
+        "주담대 다 조였다고? 2026 신생아특례대출이 남은 기회라는데",
+        "“금값 많이 빠졌다며?” 남편 몰래 비상금 1억 넣은 주부의 최후"
       ]
     },
     {
-      "blog_id": "chs4114",
-      "name": "바다빠의 사생활",
-      "category": "stock",
-      "score": {
-        "total": 73.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 8
-      },
-      "recent_titles": [
-        "[DCF 가치평가] 맥쿼리인프라(088980) 주가 전망: 워런 버핏도 탐낼 '가치 트랩 제로' 배당주",
-        "주식 가치투자 입문: 워렌 버핏의 투자 철학과 DCF 기업 분석 프로젝트 시작!",
-        "[주식 용어] 사이드카 뜻 완벽 정리! 매수/매도 사이드카 발동 조건과 유래",
-        "2026 청년미래적금 출시! 청년도약계좌 유지 vs 환승 수령액 비교 총정리",
-        "내 퇴직금 그냥 두면 벼락거지? 퇴직연금 DB형 vs DC형 완벽 비교 및 추천 가이드 (ft. S&P500, 나스닥)"
-      ]
-    },
-    {
-      "blog_id": "whrudgus1009",
-      "name": "조경현의 흑자인생",
+      "blog_id": "lty377",
+      "name": "함께하는 경제적 자유를 향한 모든것",
       "category": "stock",
       "score": {
         "total": 73.0,
@@ -3188,37 +2729,37 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "내가 비트코인(BTC)에만 투자하는 이유 (feat. 비트코인전망과 트레이딩)",
-        "스페이스 X(SPCX), 테슬라(TSLA), 팔란티어(PLTR), 알파벳(GOOGL), 마이크로소프트(MSFT) 주식 기술적 분석 (feat. 미국주식 트레이딩)",
-        "산성역 대장단지 산성역헤리스톤 매수는 지금도 유효하다 생각합니다. (feat. 재개발)",
-        "올림픽선수기자촌 아파트재건축 정비구역 지정안 및 조합원 분담금을 분석해봅시다",
-        "선거 끝났으니 부동산시장엔 부동산규제의 계절 (6월 부동산 대책 찌라시)"
+        "유럽이 팔란티어를 쫓아낸 진짜 이유 \"소버린 AI전쟁의 서막\"",
+        "삼성전자·SK하이닉스 메모리반도체 경쟁의 숨은 수혜주, '테스' 기업분석",
+        "주식 초보라면 필독! '롱'과 '숏'만 알아도 수익률이 달라진다",
+        "보스턴다이내믹스 상장, 현대차 주가에 정말 악재일까?",
+        "진짜 로봇이 전쟁터에 나간다고? SF가 현실이 된 소름 돋는 근황"
       ]
     },
     {
-      "blog_id": "yahoyaho08",
-      "name": "디노의 경제 재테크이야기",
-      "category": "stock",
+      "blog_id": "nkorea8",
+      "name": "부자되세요",
+      "category": "coin",
       "score": {
         "total": 73.0,
         "activity": 100.0,
         "scale": 100,
         "relevance": 40.0,
         "consistency": 40.0,
-        "ad_ratio": 0.07,
+        "ad_ratio": 0.0,
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "삼성 로봇 청소기 추천, 비스포크 AI 스팀 울트라 써야하는 이유, VR90F01AAG",
-        "\"에스엘 주가 2배 올랐는데도 싸다??\" 에스엘이 로봇주로 재평가 받는 이유",
-        "\"삼성전자 1등 뺏겼다\" 그런데 시총 역전이 오히려 매수 신호인 이유",
-        "\"한국이 미국에 500조 꽂는다\" LNG, 원전 관련주가 뜨는 이유",
-        "\"이제 마용성아니고 동마용성이다?\" 집값 20억 넘긴 이유"
+        "서울시 모아타운 모아주택 차이점과 지정 지역 투자 시 주의사항",
+        "디딤돌 대출 vs 보금자리론: 나에게 유리한 저금리 상품은? (금리 및 중도상환수수료 비교)",
+        "아파트 매매 후 발생한 누수, 하자담보책임 청구 기간과 범위 완벽 정리",
+        "공동명의 아파트 장단점, 취득세부터 종부세까지 세금 실무 가이드",
+        "2027년 코인 과세 확정! 세금 폭탄 피하고 0.21 비트코인으로 노후 준비 끝내는 현실적인 방법"
       ]
     },
     {
-      "blog_id": "sankun_blog",
-      "name": "건설 빅데이터 조달 솔루션, 산업의역군",
+      "blog_id": "s-a-d-papa",
+      "name": "가능성을 투자로 잇다!",
       "category": "real_estate",
       "score": {
         "total": 73.0,
@@ -3230,16 +2771,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "개포우성4차 재건축 삼성물산 수주! '래미안 도곡 팰리스' 정보 알아보기",
-        "회사채 만기 3조원 – 증액 발행하는 대형사, 버티기 들어간 중소형사",
-        "88조 중동 재건시장 열릴까? 기대감에 뜰썩이는 건설업계",
-        "보강토옹벽이란? 원리, 장단점, 시공 현장 알아보기",
-        "마천5구역 시공사 선정 무응찰, 그 이유는? 정보 총정리"
+        "개인회생 중인데 4대 보험도 없고 대위변제까지...미소금융·햇살론 특례대출 가능할까요?",
+        "수원 상가 엘리베이터가 갑자기 멈췄다면? '간헐적 운행불가' 원인과 빠른 해결 사례",
+        "슈퍼엘니뇨가 오면 어떤 ETF를 사야 할까? 식량위기와 애그플레이션 투자 전략 총정리",
+        "기존 건물(구축) 엘리베이터 설치, 싼 업체 찾다가 '후회' 하는 이유는 무엇일까요?",
+        "엘리베이터 없는 상가건물, 설치하면 공실이 줄어들까? 실제 관리단이 입주민에게 배포한 자료로 알아보는 현실적인 효과"
       ]
     },
     {
-      "blog_id": "linswy",
-      "name": "판비의 재테크",
+      "blog_id": "dadam_e",
+      "name": "신혼부부 재테크 로드맵",
       "category": "real_estate",
       "score": {
         "total": 73.0,
@@ -3251,74 +2792,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "이상 이하 미만 초과 뜻, 헷갈리지 않게 확실히 정리",
-        "클로드 AI PC 설치 방법(윈도우) — Claude Desktop 설치부터 Claude Code 설정까지 한 번에 정리",
-        "수질보전특별대책지역 & 수변구역 완벽 정리",
-        "대체산림자원조성비 완벽 정리",
-        "LG이노텍의 성장 잠재력과 주가 전망"
-      ]
-    },
-    {
-      "blog_id": "a001aa",
-      "name": "황상열 황무지 라이팅 스쿨",
-      "category": "real_estate",
-      "score": {
-        "total": 73.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "[닥치고 토지공부] 농지 투자로 부자 될 수 있을까?",
-        "[정보] 콘텐츠 수집 쉽게 하는 방법",
-        "[단상] 일상의 반복이 답이다",
-        "[끄적끄적] 쓰는 사람으로 영원히 남고 싶다",
-        "[닥치고 토지공부] 2026년 농지 트렌드 총정리"
-      ]
-    },
-    {
-      "blog_id": "pkhbd",
-      "name": "세종한국부동산",
-      "category": "real_estate",
-      "score": {
-        "total": 73.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "서울 전세난 속 서초 5000가구 입주장 시작 : 전세 매물 늘었지만 가격 하락은 제한적",
-        "트럼프 추가 공격 경고에 미·이란 협상 흔들 : 중동 긴장 다시 고조되나",
-        "김해 신문 센트럴 아이파크 1379가구 분양 돌입 : 장유신문지구 ‘신문새도시’ 기대감 커",
-        "금융위人상 1800만원 포상 : 국민성장펀드 설계 주역 등 성과 인정",
-        "동탄 20억이면 차라리 여기 : 삼성전자·SK하이닉스 효과로 뜨는 반도체 벨트 부동산"
-      ]
-    },
-    {
-      "blog_id": "lioniks",
-      "name": "바로알기",
-      "category": "real_estate",
-      "score": {
-        "total": 73.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "[경제시그널] 연준 점도표 충격! 한국은행 7월 금리 인상 가능성은",
-        "[경제 시그널] 일본 금리 31년 만에 1% 시대, 글로벌 긴축 본격화… 한국 경제에 미칠 영향은?",
-        "[경제 시그널] 집은 있는데 생활비가 없다…70세 이상 취업자 200만명 시대",
-        "[방구석 통계 알리미] \"서울에 젊은이가 없다\" 전국보다 10년 빠른 '삼중고'의 실체",
-        "[경제 시그널] 삼성전자 빚투하다 날벼락? 은행권 대출 한도 축소 및 비대면 중단 긴급 점검"
+        "신혼부부 월급의 절반 월세로 털리는 중..",
+        "결국 찍어버린 연중 최저점, -52% 실화냐..",
+        "아파트 있어도 청약 당첨 가능? 6월부터 바뀌는 청약내용",
+        "코스피 9천 넘었는데 내 계좌는 거의 지옥이네..",
+        "요즘 유독 무기력하다면, ‘이 우울증’ 때문일수도"
       ]
     },
     {
@@ -3332,19 +2810,19 @@
         "relevance": 40.0,
         "consistency": 40.0,
         "ad_ratio": 0.0,
-        "recent_30d_count": 9
+        "recent_30d_count": 10
       },
       "recent_titles": [
+        "거제를 대표할 압도적 프리미엄,'센트레빌 아스테리움 거제'1307세대 대단지 주목!",
+        "순천 신대지구 맛집, '솔가숯불갈비'에서 즐기는 완벽한 한끼!",
+        "입안 가득 행복, 왜관 한미식당 돈가스와 한미버거 솔직후기!",
         "왜관 아파트 실거래가 비교 및 주거 가치 분석 (2026년 6월 기준)",
-        "덕진 거제의 봄, 살기 좋은 주거 한경과 투자 가치를 분석하다!",
-        "[신기옥] 쭈꾸미삼겹볶음,매콤한 감칠맛에 중독된 솔직후기!",
-        "[순천 아파트] 순천조례수자인에디션 랜선 집들이! 숲세권 명품 단지 입주 인테리어 및 실내 둘러보기",
-        "유럽 감성 가득한 순천 베이커리 카페 '킨보이 더 베이크(Keenboy, the bake)'솔직 후기! (소금빵, 포카치아 맛집)"
+        "덕진 거제의 봄, 살기 좋은 주거 한경과 투자 가치를 분석하다!"
       ]
     },
     {
-      "blog_id": "jongy0644",
-      "name": "기록하는 투자노트",
+      "blog_id": "tomatopass12",
+      "name": "토마토패스",
       "category": "economy",
       "score": {
         "total": 73.0,
@@ -3356,16 +2834,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "테슬라 모델Y 결제방법 일시불 VS 카드 할부 고민 꼭 해봐야 하는 이유(미국주식 QQQ 투자)",
-        "SK하이닉스 노조 26년 임단협 요구안 (노란봉투법의 망령)",
-        "LG전자 주가 내가 볼땐 고평가다 차트 보는 법",
-        "6월 22일 스타벅스 전 지점 오후 3시 조기폐점하는 이유",
-        "2026 5월 미국 PCE 발표시간 예측치는? 최근 3개년 그래프"
+        "은행텔러 자격증 시험 일정, 합격기준과 수석 합격 후기 (+ 꿀팁)",
+        "CFA 직장병행 2개월 합격 후기, 연봉에 대한 개인적인 생각",
+        "금융권 난이도 극상 CFA | 시험일정과 난이도, 그리고 연봉은?",
+        "은퇴설계전문가 ARPS 시험 합격 후기 + 요약집 볼 때 조심하세요!",
+        "은퇴설계전문가 ARPS 시험일정 접수 전 난이도와 합격기준"
       ]
     },
     {
-      "blog_id": "hwa05093",
-      "name": "슬기로운 금융생활",
+      "blog_id": "ptxtax",
+      "name": "세무법인 숲",
       "category": "economy",
       "score": {
         "total": 73.0,
@@ -3377,16 +2855,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "핀트 글로벌 AI+테크 핵심주담은 포레스트 테크플러스?",
-        "SK하이닉스 액면분할 할까? 과거 삼성전자 사례 살펴보기",
-        "코스피 9,000의 의미? 코스피가 주는 시사점은 무엇일까?",
-        "국내주식과 미국주식, 미국주식을 하는 이유?",
-        "경제 신문 읽는 법? 경제 신문을 읽어야 하는 이유와 나의 활용"
+        "음식점 부가세 신고 전, 어떤 공제 항목을 확인해야 할까요?",
+        "[주간 경제 브리핑] 고환율·증시 변동성 속, 비용과 자금 흐름 점검이 필요한 한 주 (6월 5주차)",
+        "학원 사업자는 강사료를 어떻게 신고해야 하나요?",
+        "약국 인수(지위승계)할 때 세금 폭탄 피하는 법 (부가세 면제, 권리금 8.8% 원천징수)",
+        "온라인 쇼핑몰·스마트스토어·자사몰 시작할 때 업종코드는 무엇으로 해야 할까요?"
       ]
     },
     {
-      "blog_id": "tomato_tv",
-      "name": "토마토증권통",
+      "blog_id": "rbeod1",
+      "name": "실버라이닝의 생활금융",
       "category": "economy",
       "score": {
         "total": 73.0,
@@ -3398,16 +2876,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "변액보험판매관리사 접수 전에 시험방식부터 확인해보세요.",
-        "29회 물류관리사 3주 합격 솔직 후기 (비전공자) | 법규 공부 합격 꿀팁!",
-        "2026년 물류관리사 시험일정, 난이도! 물관사 전망까지 총정리",
-        "65세 자산관리사(은행FP) 한 달 합격 후기 + 난이도, 공부방법",
-        "자산관리사 2026 합격기준, 시험일정, 난이도 한 눈에 정리"
+        "치매간병보험(재가급여·시설급여 등) 개념 정리 및 간병인보험과의 차이",
+        "합병증 수술비보험 보상: 직접 치료 목적 인정 여부",
+        "국내 상장 S&P500 ETF 및 나스닥100 ETF 보수 포함 총 비용 비교",
+        "전이암 생활비 보험 보장 내용 및 월 납입액 등",
+        "비갱신형 암보험 추천 사례 및 회사별 비교"
       ]
     },
     {
-      "blog_id": "wiky_n",
-      "name": "wikys_직장인 공부 - 쉴 틈이 없어요",
+      "blog_id": "lookatself",
+      "name": "친절한 강선비",
       "category": "economy",
       "score": {
         "total": 73.0,
@@ -3419,74 +2897,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "[경제학 이론] 소비자잉여란? 같은 가격을 내도 사람마다 “싸게 샀다”고 느끼는 이유",
-        "[AI 개념] \"우리 회사 AI, 이대로 출시해도 안전할까?\" 신뢰할 수 있는 인공지능을 위한 필수 체크리스트 ‘TRAIGA’ 완벽 해부",
-        "[컴퓨터과학 이론] 컴파일이란? 사람이 쓴 코드는 어떻게 컴퓨터가 알아듣는 말이 될까",
-        "[AI 개념] 챗GPT에 회사 기밀 올려도 될까? 기업과 국가의 생존 전략, '소버린 AI' 완벽 가이드",
-        "[개념 정리] \"오늘 저녁 술 약속, 꼭 가야 할까요?\" 억지 회식 대신 선택한 '소버 큐리어스' 가이드"
-      ]
-    },
-    {
-      "blog_id": "gunyoung88",
-      "name": "돈개",
-      "category": "economy",
-      "score": {
-        "total": 73.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "장기동 맛집 삼겹살 돈푸더그릴 한돈커플한상 후기",
-        "코스피 9000 돌파 대응 부동산 규제 속 내 자산 지키는 절세 전략",
-        "코스피 9000 돌파와 삼성전자 전망, 38조 빚투 주의보",
-        "코스피 9000 시대의 반도체 슈퍼사이클 주도주 및 AI 테마 완벽 분석",
-        "코스피 9000 돌파와 반도체 관련주 전망, 버블일까 기회일까"
-      ]
-    },
-    {
-      "blog_id": "peylove1",
-      "name": "투자와 정보글",
-      "category": "economy",
-      "score": {
-        "total": 73.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 40.0,
-        "consistency": 40.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "'7달러'에 갇힌 최저임금 논쟁, 실질 구매력으로 다시 보기",
-        "[칼럼] AI에게 자아가 있을까? : 슈뢰딩거의 고양이와 공염불 사이에서",
-        "[자동차 트렌드] BYD의 '3륜 주행' 퍼포먼스, 단순한 쇼가 아닌 무서운 경고인 이유",
-        "[생각] 대학병원 장례식장에서 마주한 죽음의 양극화, 그리고 인적 네트워크의 빈익빈 부익부",
-        "[투자 인사이트] 매크로(거시경제) 분석이 내 계좌와 따로 노는 진짜 이유"
-      ]
-    },
-    {
-      "blog_id": "joamail",
-      "name": "재테크인포 - 돈으로 돈을 버는 정보",
-      "category": "stock",
-      "score": {
-        "total": 71.5,
-        "activity": 100.0,
-        "scale": 70,
-        "relevance": 53.3,
-        "consistency": 53.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 7
-      },
-      "recent_titles": [
-        "기후동행카드 페이백 신청 방법 기간 K패스 비교해보기",
-        "K패스 재등록 왜 필요할까? 대상 방법 마감일 확인해야 할 부분",
-        "RIA 계좌 개설 세금 혜택까지 궁금하다면",
-        "대위변제 뜻 기록 삭제 대출 조회 A to Z",
-        "해촉증명서 양식 다운 작성하고 국민연금 건강보험공단 제출까지"
+        "[AI 에이전트 마누스] 말 한마디로 앱 개발부터 로컬 파일 정리까지, 메타가 인수한 범용 AI Manus 완벽 분석",
+        "[LG이노텍 주가] 애플 독점을 넘어선 '초격차 기술력'과 반도체 유리 기판의 미래전략 완벽 해부",
+        "[비상경제점검] 미·란 종전 협상 타결과 유가 80불대 하락, 올림픽공원 경기장 불법 봉쇄 사태 속 3040이 반드시 챙겨야 할 금융·산업 리스크 총정리",
+        "[거시경제 분석] 30년 만의 역대급 경상성장률 17.1% 돌파! 중동 리스크 속 3040이 반드시 잡아야 할 투자 기회",
+        "[클로드 페이블 5] 미국 AI 수출 통제 사태와 빅테크 규제 속 3040 투자자가 주목해야 할 AI 패권 전쟁의 서막"
       ]
     },
     {
@@ -3500,7 +2915,7 @@
         "relevance": 53.3,
         "consistency": 53.3,
         "ad_ratio": 0.0,
-        "recent_30d_count": 6
+        "recent_30d_count": 4
       },
       "recent_titles": [
         "[싱글파이어 출연/종이책 출간 준비] 배당으로 부자되기 ETF20종 전자책 할인 이벤트",
@@ -3511,8 +2926,8 @@
       ]
     },
     {
-      "blog_id": "mellongi123",
-      "name": "직딩 혜무늘보 돈버는 일상",
+      "blog_id": "nyria99",
+      "name": "시네마 오마카세",
       "category": "stock",
       "score": {
         "total": 70.0,
@@ -3524,16 +2939,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "전세계약 주의사항, 건축물대장과 국세완납증명서까지 봐야 하는 이유",
-        "근저당 있는 집 hug 전세보증보험, 안심했다가 큰일 날 뻔한 썰",
-        "여보 미안해…비상금으로 산 포스코홀딩스, 고점에 콱 물린 아내의 결말",
-        "“월 60만 원 돌려준다”... 국민연금 환급 대상 나왔다는데",
-        "프랜차이즈창업 사장님들이 디저트39 아이템으로 갈아타는 이유가 있었네"
+        "금호건설 주가 전망 - 연속 상한가!! 지금 사도 될까? (금호건설우 주식)",
+        "홍명보 사퇴 기자회견 총정리 (38억 연봉, 축협 카르텔, 전술, 손흥민) - 차기 감독",
+        "삼성전자 주가 전망: 지금 살까? 40만원 갈까? (호남 반도체 클러스터 투자)",
+        "7월 개봉 예정 영화 총정리 - 그린랜드2, 호프, 스파이더맨4, 모아나, 공포 최신 추천",
+        "2026 월드컵: 한국 32강 탈락!! (홍명보 연봉 논란 및 설영우)"
       ]
     },
     {
-      "blog_id": "etoday12",
-      "name": "이투데이 공식블로그",
+      "blog_id": "eunwol34",
+      "name": "몽글몽글 몽구리",
       "category": "stock",
       "score": {
         "total": 70.0,
@@ -3545,17 +2960,17 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "\"남아공전 비겨도 조 2위\" 2026 북중미 월드컵 32강 진출 경우의 수는?",
-        "\"살충제 못 쓰는 이유 있었네\" 러브버그가 익충인 이유",
-        "이번주 증시 일정 (6/22 ~ 6/26) // 주간증시일정, 주간경제일정",
-        "\"만기시 최대 2200만원\" 2026 청년미래적금 신청기간과 5부제 정리",
-        "한국거래소, 프리마켓 도입 내년 말로 연기…애프터마켓은 9월 시행"
+        "장산역 술집 숙성 연어와 육회 세트에 반한 감성 이자카야 세츠나",
+        "동래술집 평일 낮술로 즐기는 민물장어와 별미 닭목살구이",
+        "29% 폭등한 금호건설(002990) 주가 전망! 1분기 최신 실적분석",
+        "사직역 맛집 푸짐함에 반하고 서비스에 놀란 '까치닭도리솥뚜껑 닭도리'",
+        "어닝쇼크 15억, CJ ENM(035760) 3가지 지표(PER, PBR, 영업이익률)로 본 냉정한 현실"
       ]
     },
     {
-      "blog_id": "seunggabi",
-      "name": "가비로그",
-      "category": "coin",
+      "blog_id": "whrudgus1009",
+      "name": "조경현의 흑자인생",
+      "category": "stock",
       "score": {
         "total": 70.0,
         "activity": 100.0,
@@ -3566,16 +2981,37 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "메타디움(META) 2026 최신 뉴스, DID 크로스체인 허브 로드맵과 시세 전망 총정리",
-        "어칸다(AKAN) 주식 투자 방법 2026 — 의료 대마에서 멕시코 통신 인프라로 변신한 나스닥 소형주",
-        "2026 울산 시장 선거, 현역 김두겸의 '불안한 1위' — 38.9% 지지율의 위태로운 리더십 #울산정치 #지방선거2026 #김두겸시장",
-        "메타디움(META) 최신 뉴스 2026, AI와 DID 신원인증이 만나는 블록체인 지금 어디쯤?",
-        "샤오아이(AIXI) 주가 전망 2027, 애플 특허 소송 승소 이후 달라진 것들"
+        "수서신동아 14평형 16억 돌파의 의미와 대치2단지•수서신동아•수서까치마을 아파트재건축 추진현황",
+        "힐스테이트 e편한세상 문정, 문정동 136번지 주택 재건축 분석 및 부동산임장",
+        "상생임대인제도 폐지 추진에 대한 단상 by 흑자인생 (feat. 부동산정책, 부동산시장)",
+        "내가 비트코인(BTC)에만 투자하는 이유 (feat. 비트코인전망과 트레이딩)",
+        "스페이스 X(SPCX), 테슬라(TSLA), 팔란티어(PLTR), 알파벳(GOOGL), 마이크로소프트(MSFT) 주식 기술적 분석 (feat. 미국주식 트레이딩)"
       ]
     },
     {
-      "blog_id": "alohait",
-      "name": "aloha",
+      "blog_id": "reverple",
+      "name": "멈추지 않는 혁신, 지치지 않는 감각 - MiNDSTORM",
+      "category": "stock",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "내가쓰는 전기 가스 정보 제공하면 돈받는다. 가스 전기사용정보제공하고 돈받기. 개인정보 돈받고팔기. 합법적 개인정보 팔기. 전기사용량 가스사용량 정보제공하고 돈받기.",
+        "홍명보 손흥민관계. 홍명보 손흥민발언. 홍명보가 손흥민에게했던 발언들. 북중미월드컵탈락후 홍명보 손흥민 발언화제.",
+        "2026 대구치맥페스티벌 일정과 공연 라인업 축제가수 장소 주차장 정보.",
+        "스페이스X 하이닉스 나스닥 1위 2위. 하이닉스 나스닥상장 업계2위 규모2위. 하이닉스 외인투자자 직접투자가능. 하이닉스 미국 반도체ETF 편입. 하이닉스 미국주식 직접투자방법.",
+        "한국 32강 경우의수 분석. 한국 남아공에 패 32강 가능성 분석. 한국 32강 가능성 분석. 한국 32강에오르려면? 한국 32강 자력진출 요건. 한국 32강진출시나리오 분석."
+      ]
+    },
+    {
+      "blog_id": "sankun_blog",
+      "name": "건설 빅데이터 조달 솔루션, 산업의역군",
       "category": "real_estate",
       "score": {
         "total": 70.0,
@@ -3587,11 +3023,116 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "치아보험비교사이트 보험료 적용 청구 꼼꼼하게 비교하고 선택해보세요",
-        "문화상품권사용처 정리와 문화비소득공제로 연말 환급 챙기는법",
-        "신용등급점수표 읽는법과 점수 올리는 현실적인 관리 방법",
-        "아파트실거래가조회와 토지이용계획 법원경매정보 보는법 총정리",
-        "스포츠바우처 신청자격과 사회서비스전자바우처 사용법 안내"
+        "이제 현장 사진을 통해 정확한 단계를 확인하고 현장 방문하세요",
+        "2.4억이던 과징금, 7.5억 된다? 불법하도급 제재 강화 총정리",
+        "GTX 개통에도 멈춘 역세권들, 건설사는 왜 움직이지 않을까?",
+        "세움터 서비스 중단 기간, 건설 현장 정보는 여기서 조회하세요!",
+        "개포우성4차 재건축 삼성물산 수주! '래미안 도곡 팰리스' 정보 알아보기"
+      ]
+    },
+    {
+      "blog_id": "voodaddy",
+      "name": "흙수저 탈출 일지",
+      "category": "real_estate",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "정부가 찍어준 투자처!! 대한민국 3대 메가 프로젝트의 핵심 계획 총정리 (+ 수혜 지역)",
+        "끝까지 꺼드럭댔던 홍명보의 감독 사퇴 현장..",
+        "(개빡침주의!) 한국 월드컵 역사를 다시 쓴 홍명보 이야기...",
+        "퇴사할때 꼭 알아야할 정부정책 3가지.. 모르면 손해!!",
+        "퇴직금 수령을 위한 키움증권 IRP 계좌 가입확인서 발급 방법 (Feat. IRP 통장사본)"
+      ]
+    },
+    {
+      "blog_id": "kanghj67",
+      "name": "베어스의 산따라 길따라",
+      "category": "real_estate",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "횡단보도",
+        "화성시 만세구 팔탄면 율암리 39번국도 인근 다양한 면적의 공장용지 분양",
+        "전남 무안군 해제면 '무안황토갯벌랜드' 탐방다리를 건너다 2026.06.02",
+        "화성시 효행구 비봉면 청요리 700평 / 200평 임대중인 공장매매",
+        "화성시 만세구 장안면 사곡리 2차선 접한 180평 근생 허가받은 토지매매"
+      ]
+    },
+    {
+      "blog_id": "a001aa",
+      "name": "황상열 황무지 라이팅 스쿨",
+      "category": "real_estate",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "[닥치고 토지공부] 농지취득자격증명이 거부되는 경우는?",
+        "[후기] 26.6.28(일) 황무지 라이팅스쿨 6월 3주차 수업 후기",
+        "[후기] 26.6.26(금) 9시 AI 도구 활용 전문가 무료 설명회를 마치고",
+        "[단상] 마흔 끝자락이 되어서야 알게 된 인생의 3가지 법칙",
+        "[닥치고 토지공부] 농지취득자격증명은 얼마나 걸릴까?"
+      ]
+    },
+    {
+      "blog_id": "nongjiok",
+      "name": "농지투자OK . LAND POWER 부자연구소",
+      "category": "real_estate",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "\"서남권 대규모 신규 투자로 반도체 압도적 공급\"/삼성 \"광주, 반도체 단지 후보\" /2026년 6월 29일(월)/KBS",
+        "'1350+α'조 메가프로젝트 공개…李 \"공수표 안 되도록 직접 챙긴다\"",
+        "개발제한구역 해제 요건이 어떻게 되나요?",
+        "농지제도 개선 TF 4대 핵심의제 최종 확정 및 공론화 추진",
+        "“용인 클러스터 자리잡기전, 호남 추진하면 양쪽 다 실패할 수도”"
+      ]
+    },
+    {
+      "blog_id": "cal114",
+      "name": "프리하게-세상 구석구석 -- >')))>< ~~",
+      "category": "real_estate",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "[후기] 전통의 깊은 맛을 담은 평양 물냉면-대원옥 솔직 후기",
+        "[부동산 경매] 바로 아랫집이 신건 낙찰? 인덕원센트럴푸르지오 22층 경매 입찰가 산정",
+        "[부동산 경매]첫 매각에 낙찰될까? 동편마을 3단지 풀프레임 권리분석 및 안정적 입찰가",
+        "SK하이닉스 완전 분석 — HBM 슈퍼사이클의 중심, '역사적 레벨업'의 순간",
+        "[후기]동화 속으로 걸어 들어간 듯한 공간, 천안 뚜쥬르 돌가마마을 감성 가득 투어"
       ]
     },
     {
@@ -3616,69 +3157,6 @@
       ]
     },
     {
-      "blog_id": "yak-bang",
-      "name": "The Rational Optimist",
-      "category": "real_estate",
-      "score": {
-        "total": 70.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 10
-      },
-      "recent_titles": [
-        "Eos Energy, EOSE 주가 전망, 아연 기반 장주기 ESS 기술력·실적·희석 리스크 분석",
-        "AIQU·AIQD 신규 상장 AI 3배 레버리지 ETF 분석, 구성종목, 추종지수, SOXL·SOXS와 차이점 및 인공지능 투자전략, 미장, 나스닥 3x, -3x 투자",
-        "부산시 공공 주도 재개발 입안요청제 시행, 신평2구역 재개발사업 정비계획 기본방향 수립 용역 착수 의미는? 위치, 조감도, 배치도",
-        "2026 제19회 부산항축제 기본정보 총정리, 불꽃놀이 일정·가수 라인업·수상레저체험 부산 6월 아이랑 가볼만한곳",
-        "2026 세븐브릿지 투어 라이딩 인 부산 티켓팅 일정 총정리, 광안대교 자전거대회 참가방법 코스 안내"
-      ]
-    },
-    {
-      "blog_id": "anfekr2022",
-      "name": "각종 뿡",
-      "category": "real_estate",
-      "score": {
-        "total": 70.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.27,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "세무기장료 매달 내면서 세금 폭탄 맞지 않으려면",
-        "강릉 한우 맛집 추천 대한민국 0.1% 한우 1++ 맛 볼수 있는 금송아지",
-        "수원 웨딩홀 추천, 견적 비교해보고 신중하게 결정한 더마레보호텔 당일 계약 후기",
-        "여의도 세무사 증여 상속세 부동산 상담 전 꼭 알아야 할 3가지",
-        "서초 상속세 전문 세무사 찾을 때 체크할 3가지"
-      ]
-    },
-    {
-      "blog_id": "dysaghwls",
-      "name": "경제토대왕 부의 전술",
-      "category": "real_estate",
-      "score": {
-        "total": 70.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "카페창업 브랜드변경 절차, 폐업 대신 선택하는 현실적인 방법",
-        "IBK부가세모으기통장 우대금리 5% (f. 자영업자 중소기업)",
-        "여기어때 1만5천원 쿠폰 받고 밀키트까지 챙기는 연말정산 꿀팁",
-        "중앙홀딩스 JTBC 부도난 이유, 유동자산 차입금 비율 (f. 월드컵 축구)",
-        "현대차 주가 100만원 전망, 로봇관련주로 부상하는 피지컬AI"
-      ]
-    },
-    {
       "blog_id": "pearltac0558",
       "name": "pearltac0558님의 블로그",
       "category": "real_estate",
@@ -3692,11 +3170,11 @@
         "recent_30d_count": 10
       },
       "recent_titles": [
+        "주거용오피스텔담보대출 가계 부채 극복한 방법은?",
+        "DSR 면제 대상 주택 종류",
+        "DSR 스트레스 금리 적용",
         "6.27 이전 계약 특례 상세",
-        "역전세 위험 관리 전략",
-        "전세자금대출과의 비교 분석",
-        "2027년 주식 전망",
-        "전세 계약을 할때 주의사항에 대해서 주의사항"
+        "역전세 위험 관리 전략"
       ]
     },
     {
@@ -3710,7 +3188,7 @@
         "relevance": 33.3,
         "consistency": 33.3,
         "ad_ratio": 0.0,
-        "recent_30d_count": 10
+        "recent_30d_count": 8
       },
       "recent_titles": [
         "[신혼가구 투어] 2026 고양가구박람회 솔직 후기! (침대/식탁/쇼파) + 현대백화점 킨텍스점 투어",
@@ -3721,8 +3199,8 @@
       ]
     },
     {
-      "blog_id": "y_log_v",
-      "name": "Ylog",
+      "blog_id": "jongy0644",
+      "name": "기록하는 투자노트",
       "category": "economy",
       "score": {
         "total": 70.0,
@@ -3734,11 +3212,32 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "공포지수의 모든 것! VIX지수와 MOVE지수 정리!",
-        "해외주식 환전 없이 바로 사는 법! 통합증거금 신청 방법!(ft. 메리츠증권)",
-        "2026년 6월 미국 FOMC 결과 분석: 케빈 워시 첫 데뷔전과 기준금리 동결 후속 경제 전망",
-        "Ed Shreen - Old Phone 가사/해석",
-        "클로드 페이블 (Claude Fable 5) 출시와 미국 수출 통제령"
+        "테슬라 모델Y 결제방법 삼성카드 다이렉트 오토 VS 일시불 2,199만원 할부 이유",
+        "테슬라 주니퍼 첫 구매자가 많이 헷갈리는 것! 전기차 보조금 다자녀 혜택 취득세 감면 완벽 정리",
+        "청년미래적금 vs 청년도약계좌 누가 가입하면 좋을까?",
+        "국내증시 코스피 지금 사면 후회하는 종목 TOP3 이유를 알려드림",
+        "코스피랩 주말에 미리보는 월요일 삼성전자 하이닉스 주가"
+      ]
+    },
+    {
+      "blog_id": "xingf",
+      "name": "블루몽kiss",
+      "category": "economy",
+      "score": {
+        "total": 70.0,
+        "activity": 100.0,
+        "scale": 100,
+        "relevance": 33.3,
+        "consistency": 33.3,
+        "ad_ratio": 0.0,
+        "recent_30d_count": 15
+      },
+      "recent_titles": [
+        "반도체 급락, 위기인가 기회인가?",
+        "마이크론의 실적 발표와 SK하이닉스의 ADR 발행",
+        "\"주가는 이익의 함수\"",
+        "모든 자산이 상승하고 있다",
+        "당신이 알던 연준은 끝났다"
       ]
     },
     {
@@ -3755,16 +3254,16 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "증시 역사상 역대급 대격변! SK하이닉스주식, 삼성전자 제치고 시가총액 1위 카운트다운의 진짜 의미",
-        "고유가·고금리인데 왜 주가는 오를까? 역설적인 주식시장의 비밀",
-        "반도체관련주 '몰빵투자', 과연 기회일까 위기일까?",
-        "[국내주식] SK스퀘어, 도대체 왜 이렇게 오를까? 시총 급상승의 비밀",
-        "[주식분석] TSMC와 엠코테크놀로지, 10년의 동맹... 반도체 패키징 시장 판도 바꿀까?"
+        "국내주식종목 삼성물산주가, 왜 지금 다시 주목받을까? 주가 상승의 진짜 이유 3가지",
+        "반도체 VS 빅테크 지금 당신의 매수 선택은?",
+        "[경제용어] OECD 한국 경기선행지수와 코스피(KOSPI)의 상관관계",
+        "햄버거 가격이 계속 오르면 경기 침체가 온다? 일상 속 '빅맥'이 던지는 무서운 경고",
+        "동남아시아 대표국가 인도네시아 외환위기 올까?"
       ]
     },
     {
-      "blog_id": "cyberlhs",
-      "name": "커넥트웨이",
+      "blog_id": "digiloglife",
+      "name": "디지로그라이프로 세상과 소통",
       "category": "economy",
       "score": {
         "total": 70.0,
@@ -3776,53 +3275,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "2026 청년미래적금 가입 자격 및 신청 일정 완전 정복 가이드",
-        "2026 양육비 미지급자 제재 조치 강화 및 대응 가이드",
-        "미·이란 스위스 평화 협상 결렬 위기 및 호르무즈 해협 긴장 분석 대응법",
-        "2026학년도 대입 반도체 계약학과 서열 변화 분석? 반도체 계약학과 서열 핵심 전망",
-        "2027 최저임금 결정 앞둔 쟁점과 노사 입장차 분석? 2027 최저임금 핵심 전망"
-      ]
-    },
-    {
-      "blog_id": "jeongdla",
-      "name": "정긍의 알짜정보",
-      "category": "economy",
-      "score": {
-        "total": 70.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "[국내 증시 격변] SK하이닉스 코스피 시총 1위 등극 및 SK스퀘어 주가 200만 원 돌파",
-        "국내 증시 비상! '동전주 219개 퇴출 위기' 상장폐지 규정 개정과 투자자 대응 전략",
-        "한울반도체 주가 급등? 일본 무라타 협업 및 중기부 국책과제 정리",
-        "HD현대일렉트릭 주가 전망, AI 데이터센터가 쏘아 올린 전력 슈퍼사이클의 미래",
-        "챗GPT 만든 오픈AI 상장 임박! 상장 일정부터 미리 준비하는 투자 방법 정리"
-      ]
-    },
-    {
-      "blog_id": "hawonhawon",
-      "name": "오늘 뉴스 한눈에",
-      "category": "economy",
-      "score": {
-        "total": 70.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "잘못 사용하면 미친놈되는 일본어? 한국인이 오해하는 일본어 3대장 '야메떼·스고이·기모찌'의 진짜 뜻",
-        "야메떼 진짜 뜻, 한국에서만 오해? 일본 '야메떼', 야동이 망쳐서 잘못쓰면 따귀맞을 수 있습니다.",
-        "그것이 알고 싶다 1492회, 시흥 암매장, 28개월 아이의 비극",
-        "정년연장 65세 단계적 추진: 2029년까지의 로드맵과 완벽한 은퇴 자산관리 전략",
-        "2026년 장마기간 지역별 예상 시기 총정리 및 게릴라성 폭우 완벽 대비 가이드"
+        "2008년 금융위기 수준의 하락을 기록한 6월 배경",
+        "BIS 경고 AI 투자 열풍, 장기 침체로 끝날 수도. 글로벌 금융시장 위험 신호",
+        "삼성전자·SK하이닉스 호남 반도체 투자, 광주·전남이 새로운 반도체 중심지 되나",
+        "ISA(개인종합자산관리계좌) 현황 및 슈퍼ISA 출시 지연 이유",
+        "7월 3잉 독립기념일 미국 휴장 및 7월 첫주 미국 증시 주요 스케줄 2개"
       ]
     },
     {
@@ -3839,32 +3296,11 @@
         "recent_30d_count": 15
       },
       "recent_titles": [
-        "월가 전설 존 아놀드에게 배우는 진짜 부자의 철학, 부자는 죽기 전에 다 나눈다",
-        "[미국 증시 전망] 6월 넷째 주 뉴욕증시 관전 포인트 3가지 : 호르무즈 해협 긴장, PCE 물가, 마이크론 실적 발표",
-        "10조 원을 다 기부하고 1만 5천 원짜리 시계를 찬 억만장자, 척 피니의 '살아서 나누는 삶'",
-        "이번 주 증시 풍향계, 코스피 상승 랠리 지속될까?",
-        "\"가난하게 태어난 건 죄가 아니지만...\" 빌 게이츠가 말하는 운명을 개척하는 법"
-      ]
-    },
-    {
-      "blog_id": "sj8623",
-      "name": "골든마마의 종목 밥상",
-      "category": "economy",
-      "score": {
-        "total": 70.0,
-        "activity": 100.0,
-        "scale": 100,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.13,
-        "recent_30d_count": 15
-      },
-      "recent_titles": [
-        "삼화콘덴서 주가 전망 - MLCC관련주 ESS 및 AI핵심부품 초호황",
-        "삼성 KODEX ETF - 200조 돌파 투자 이벤트",
-        "반도체 커버드콜 ETF- 월배당과 성장주 기대",
-        "차세대 배터리-2차전지관련주 전고체와 ESS 슈퍼사이클 시대",
-        "삼성전자 주가 전망 - 반도체 낸드 가격 상승 2분기 영업이익 100조"
+        "\"부자는 가장 먼저 자기 자신에게 투자한다\" 스팽스(SPANX) 창업자 사라 블레이클리의 성공 철학",
+        "[뉴욕 증시 주간 전망] 반도체주 랠리 제동, 케빈 워시 연준 의장의 입과 고용지표에 쏠린 눈",
+        "\"결국 주가는 적정 가격을 찾아간다\" 7월 어닝 시즌 코스피",
+        "주식 팔고 내일 바로 입금? 대한민국 주식시장 'T+1 결제' 도입",
+        "부자는 이익보다 사람을 먼저 생각한다, 하워드 슐츠가 증명한 인생의 가치 투자법"
       ]
     },
     {
@@ -3878,7 +3314,7 @@
         "relevance": 46.7,
         "consistency": 46.7,
         "ad_ratio": 0.0,
-        "recent_30d_count": 7
+        "recent_30d_count": 6
       },
       "recent_titles": [
         "초여름의 작은 행복을 기록하다. 간직하고 싶은 소중한 일상",
@@ -3886,27 +3322,6 @@
         "왕초보 주린이의 주식분석! 국장편 - 엘앤에프",
         "내가 보유 주신 국내 주식 분석하기",
         "인생드라마 등극: 모두가 자신의 무가치함과 싸우고 있다."
-      ]
-    },
-    {
-      "blog_id": "uniqqu2",
-      "name": "끄니모가 된 끄넌니",
-      "category": "real_estate",
-      "score": {
-        "total": 68.5,
-        "activity": 100.0,
-        "scale": 70,
-        "relevance": 46.7,
-        "consistency": 46.7,
-        "ad_ratio": 0.07,
-        "recent_30d_count": 5
-      },
-      "recent_titles": [
-        "무한상사x맘스터치 결재바랍니다 틴케이스 & LED키캡 키링 세트 해골로 겟!",
-        "영종 운남동 호반써밋스카이센트럴2차 기본정보 정리｜세대수·입주·주차·면적·생활권 한눈에 보기",
-        "영종하늘도시 고기 구워주는 더그릴육선 / 고기먹으러 여기만 가는 맛집",
-        "영종 오투쭈꾸미 후기｜줄 서서 먹는 운중로 쭈꾸미 맛집, 2인 세트 점심으로 딱 좋아요",
-        "인천영종동보노빌리티 기본정보 정리｜세대수·입주·주차·면적·생활권 한눈에 보기"
       ]
     },
     {
@@ -3920,14 +3335,14 @@
         "relevance": 46.7,
         "consistency": 46.7,
         "ad_ratio": 0.0,
-        "recent_30d_count": 6
+        "recent_30d_count": 4
       },
       "recent_titles": [
+        "연금 10억 만들기, 나는 어떻게 시작했나",
         "연금투자의 길라잡이, 미래에셋 연금투자 가이드북",
         "은퇴 후, 연금만으로 살아본 썰 풉니다 (부제: 생활비와의 전쟁)",
         "요즘 차이나반도체 투자 어떤가요?",
-        "“은퇴 후에도 매월 돈이 들어온다면?” #연금 #ETF",
-        "“Just Keep Buying” 투자 타이밍을 기다리는 당신에게"
+        "“은퇴 후에도 매월 돈이 들어온다면?” #연금 #ETF"
       ]
     },
     {
@@ -3952,71 +3367,29 @@
       ]
     },
     {
-      "blog_id": "msoh09",
-      "name": "보리의 상큼한 여행^^",
+      "blog_id": "yak-bang",
+      "name": "The Rational Optimist",
       "category": "real_estate",
       "score": {
-        "total": 63.5,
-        "activity": 50.0,
-        "scale": 50,
-        "relevance": 80.0,
-        "consistency": 80.0,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 2
-      },
-      "recent_titles": [
-        "[월부 부동산 강의 내돈내산]달리면서 생각해라. 내삶을 바뀌는 여정을 배우는 시간",
-        "[부동산 강의 내돈내산] 40대 다둥이맘 열반스쿨 첫번째 강의를 듣고서",
-        "[부동산 강의 내돈내산] 생의 '경제적 주인'이 되는 첫발을 내딛자!!",
-        "[내돈내산 부동산]간절함과 노력이 필요한 내집마련",
-        "[내돈내산 부동산]4남매와 함께 하는 드림하우스 꿈꾸다"
-      ]
-    },
-    {
-      "blog_id": "wealth-up",
-      "name": "돈되는 지원금 정보",
-      "category": "economy",
-      "score": {
         "total": 62.5,
         "activity": 100.0,
         "scale": 70,
         "relevance": 33.3,
         "consistency": 33.3,
         "ad_ratio": 0.0,
-        "recent_30d_count": 4
+        "recent_30d_count": 6
       },
       "recent_titles": [
-        "AI가 바꾸는 투자 시장, 지금 주목해야 할 핵심 변화 총정리",
-        "2026년 정부 지원금 총정리! 놓치면 후회하는 나이별·상황별 핵심 혜택 한눈에 보기",
-        "기초수급자 탈락했어도 가능! 당장 생활비 막막할 때 월 199만 원 받는 '선지원 복지제도' (위기사유 9가지)",
-        "오늘부터 요일제 해제! 고유가 피해지원금 7월 3일까지 누구나 신청 가능 (사용처·기한 총정리)",
-        "고유가 지원금, 못 받으셨나요? 5월 18일부터 ‘이의신청’ 시작! 60만 원 챙기세요"
-      ]
-    },
-    {
-      "blog_id": "jajang1004486",
-      "name": "'비트코인 뽀개기!' 제대로 파헤쳐야 잘 지킨다",
-      "category": "economy",
-      "score": {
-        "total": 62.5,
-        "activity": 100.0,
-        "scale": 70,
-        "relevance": 33.3,
-        "consistency": 33.3,
-        "ad_ratio": 0.0,
-        "recent_30d_count": 5
-      },
-      "recent_titles": [
-        "♡ ♡ _6월 18일 19시 30분~ _yes24",
-        "Q. 갑분 비트코인 폭락! 왜 이런 거죠? _《세상에서 가장 쉬운 비트코인 이야기》탐구(3)",
-        "Q. 투자이야기는 왜 없나요??_《세상에서 가장 쉬운 비트코인 이야기》탐구(2)",
-        "진짜 쉬울까? 《세상에서 가장 쉬운 비트코인 이야기》탐구(1)",
-        "☆축 출판!!☆"
+        "Eos Energy, EOSE 주가 전망, 아연 기반 장주기 ESS 기술력·실적·희석 리스크 분석",
+        "AIQU·AIQD 신규 상장 AI 3배 레버리지 ETF 분석, 구성종목, 추종지수, SOXL·SOXS와 차이점 및 인공지능 투자전략, 미장, 나스닥 3x, -3x 투자",
+        "부산시 공공 주도 재개발 입안요청제 시행, 신평2구역 재개발사업 정비계획 기본방향 수립 용역 착수 의미는? 위치, 조감도, 배치도",
+        "2026 제19회 부산항축제 기본정보 총정리, 불꽃놀이 일정·가수 라인업·수상레저체험 부산 6월 아이랑 가볼만한곳",
+        "2026 세븐브릿지 투어 라이딩 인 부산 티켓팅 일정 총정리, 광안대교 자전거대회 참가방법 코스 안내"
       ]
     }
   ],
-  "youtube_auto_registered": 5,
-  "blog_auto_registered": 22,
+  "youtube_auto_registered": 4,
+  "blog_auto_registered": 11,
   "health": {
     "youtube_inactive": [
       {
@@ -4058,12 +3431,6 @@
       {
         "name": "직방TV",
         "channel_id": "UCiUQWRA_xsGzvNVGFlBKBiQ",
-        "category": "real_estate",
-        "reason": "No uploads in 60 days"
-      },
-      {
-        "name": "집과사람 부동산경매학원",
-        "channel_id": "UC2NHFLhZ4LT-2kE0hghRtTA",
         "category": "real_estate",
         "reason": "No uploads in 60 days"
       }
@@ -4110,6 +3477,12 @@
         "blog_id": "jkw039",
         "category": "stock",
         "reason": "No posts in 60 days"
+      },
+      {
+        "name": "코비의 경제이야기",
+        "blog_id": "kobstory",
+        "category": "stock",
+        "reason": "RSS unavailable or empty"
       },
       {
         "name": "없으면 모를까 있으면 편한것",
@@ -4190,6 +3563,12 @@
         "reason": "No posts in 60 days"
       },
       {
+        "name": "또다른 이야기",
+        "blog_id": "yurem08",
+        "category": "coin",
+        "reason": "No posts in 60 days"
+      },
+      {
         "name": "호갱노노",
         "blog_id": "hogangnono",
         "category": "real_estate",
@@ -4204,6 +3583,12 @@
       {
         "name": "경매무료도우미",
         "blog_id": "fhraos386",
+        "category": "real_estate",
+        "reason": "No posts in 60 days"
+      },
+      {
+        "name": "신사람",
+        "blog_id": "danmass",
         "category": "real_estate",
         "reason": "No posts in 60 days"
       },
@@ -4226,8 +3611,32 @@
         "reason": "No posts in 60 days"
       },
       {
+        "name": "경린이의 경매 실전노트",
+        "blog_id": "ppagainhot",
+        "category": "real_estate",
+        "reason": "No posts in 60 days"
+      },
+      {
         "name": "서울일기의 재테크 기록",
         "blog_id": "alafontaine",
+        "category": "real_estate",
+        "reason": "No posts in 60 days"
+      },
+      {
+        "name": "부동산 캠프",
+        "blog_id": "sdyeom61",
+        "category": "real_estate",
+        "reason": "No posts in 60 days"
+      },
+      {
+        "name": "전세지키미 홈큐's 부동산 인사이트",
+        "blog_id": "bigtechplus",
+        "category": "real_estate",
+        "reason": "No posts in 60 days"
+      },
+      {
+        "name": "왼판실장 이수민",
+        "blog_id": "kala4862",
         "category": "real_estate",
         "reason": "No posts in 60 days"
       },
@@ -4248,6 +3657,12 @@
         "blog_id": "irbypnc183",
         "category": "real_estate",
         "reason": "RSS unavailable or empty"
+      },
+      {
+        "name": "부동산 투자는 이렇게 하는겁니다",
+        "blog_id": "cellblock0002",
+        "category": "real_estate",
+        "reason": "No posts in 60 days"
       },
       {
         "name": "씽킹두잇",
