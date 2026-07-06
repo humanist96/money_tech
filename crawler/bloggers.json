@@ -479,6 +479,30 @@
     {
       "name": "날카로운시선 소드킴",
       "blog_id": "kjn811"
+    },
+    {
+      "name": "똔고양이",
+      "blog_id": "donmoneycat"
+    },
+    {
+      "name": "평범한 30대 개미투자자의 투자일기",
+      "blog_id": "retailinvestor89"
+    },
+    {
+      "name": "준도",
+      "blog_id": "jndpark"
+    },
+    {
+      "name": "JC`Enjoy the Life",
+      "blog_id": "rec1820"
+    },
+    {
+      "name": "슬기로운 금융생활",
+      "blog_id": "hwa05093"
+    },
+    {
+      "name": "처음처럼 주식일기장",
+      "blog_id": "q1772"
     }
   ],
   "coin": [
@@ -1839,6 +1863,30 @@
     {
       "name": "분양왕 정박사의 부동산 투자",
       "blog_id": "byking426"
+    },
+    {
+      "name": "torrjeski",
+      "blog_id": "torrjeski"
+    },
+    {
+      "name": "머니완더의 실전 재테크 가이드",
+      "blog_id": "moneywander"
+    },
+    {
+      "name": "트래이나",
+      "blog_id": "portraitranger57"
+    },
+    {
+      "name": "팔공산 공인중개사 사무소",
+      "blog_id": "cyskz"
+    },
+    {
+      "name": "푸른하늘의 하남창고 이야기",
+      "blog_id": "bbkjs792"
+    },
+    {
+      "name": "정이걸음의 부와 나를 찾는 여행",
+      "blog_id": "sinhjeong"
     }
   ],
   "economy": [
@@ -1913,6 +1961,14 @@
     {
       "name": "세무법인 세안택스(슈퍼맨세무사)",
       "blog_id": "luxuryjh72"
+    },
+    {
+      "name": "경제 브리핑",
+      "blog_id": "ahaha24c"
+    },
+    {
+      "name": "슬기로운 정보 생활",
+      "blog_id": "sensible-information"
     }
   ]
 }
