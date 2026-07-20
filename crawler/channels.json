@@ -223,6 +223,14 @@
     {
       "name": "한국주식연구소",
       "channel_id": "UCqUDZeaNL9fdDeqadjS8G5Q"
+    },
+    {
+      "name": "할미언니",
+      "channel_id": "UCkZLa5fKPC9v550eOcfRHcg"
+    },
+    {
+      "name": "실전투자대회1위 전태룡 주식내비",
+      "channel_id": "UCUpG4uNjNt6zIZSFynH177Q"
     }
   ],
   "coin": [
@@ -353,6 +361,14 @@
     {
       "name": "차슐랭ㅣ비트코인 분석",
       "channel_id": "UCvP4YNon2tfOY_1WltiTKlw"
+    },
+    {
+      "name": "팀 그리핀 - 비트코인 & 알트코인 차트 분석",
+      "channel_id": "UCd94dV0lgUxOkd8IVXtn2Tg"
+    },
+    {
+      "name": "아귀차트",
+      "channel_id": "UCdZWoRTVIcSLrjqLBuOOslQ"
     }
   ],
   "real_estate": [
@@ -503,6 +519,10 @@
     {
       "name": "세상에서 제일쉬운 무료 경매강의-세무경",
       "channel_id": "UCk9A4f29jTY3F0Mbqd0DhqA"
+    },
+    {
+      "name": "법원경매정보 옥션원TV",
+      "channel_id": "UC6Q9ucT3ybuxNF1tLRvB6YA"
     }
   ],
   "economy": [

@@ -515,6 +515,18 @@
     {
       "name": "미식헌터",
       "blog_id": "trust-buy"
+    },
+    {
+      "name": "포스터로그",
+      "blog_id": "jehi957123"
+    },
+    {
+      "name": "파이어족의 경제, 금융 이야기",
+      "blog_id": "rct190"
+    },
+    {
+      "name": "주재꿈사",
+      "blog_id": "firestnumberone"
     }
   ],
   "coin": [
@@ -685,6 +697,10 @@
     {
       "name": "독서하는코인",
       "blog_id": "dokco_official"
+    },
+    {
+      "name": "비화랑의 블록체인 삼매경",
+      "blog_id": "kwt82"
     }
   ],
   "real_estate": [
@@ -1939,6 +1955,46 @@
     {
       "name": "pearltac0558님의 블로그",
       "blog_id": "pearltac0558"
+    },
+    {
+      "name": "무주택 마케터의 부동산노트",
+      "blog_id": "doyak12"
+    },
+    {
+      "name": "♣ 수성구 범어동 하하부동산",
+      "blog_id": "cyb2020"
+    },
+    {
+      "name": "광개토부동산",
+      "blog_id": "beckdoomountain"
+    },
+    {
+      "name": "재테크를 통한 경제적인 자유 달성하기",
+      "blog_id": "kimjuni95"
+    },
+    {
+      "name": "갈현동 재개발 전문 삼성 부동산 010-9262-9170",
+      "blog_id": "manskim"
+    },
+    {
+      "name": "태산, 든든한 부동산 파트너",
+      "blog_id": "semo_mini"
+    },
+    {
+      "name": "부평주안공인중개사무소 032-514-8844",
+      "blog_id": "juanrealestate"
+    },
+    {
+      "name": "돈과 마음 사이 — 에이스의 현실 기록",
+      "blog_id": "rei8383"
+    },
+    {
+      "name": "세종한국부동산",
+      "blog_id": "pkhbd"
+    },
+    {
+      "name": "홈와이즈대출비교",
+      "blog_id": "misosh2650"
     }
   ],
   "economy": [
@@ -2021,6 +2077,18 @@
     {
       "name": "슬기로운 정보 생활",
       "blog_id": "sensible-information"
+    },
+    {
+      "name": "재테크하는 제인",
+      "blog_id": "alswl09100"
+    },
+    {
+      "name": "행복을 꿈꾸는 하이브리드 스킬러티 캡틴권",
+      "blog_id": "khb760620"
+    },
+    {
+      "name": "MZ세대 경제뉴스 [뉴스테이션]",
+      "blog_id": "newstation"
     }
   ]
 }
