@@ -231,6 +231,18 @@
     {
       "name": "실전투자대회1위 전태룡 주식내비",
       "channel_id": "UCUpG4uNjNt6zIZSFynH177Q"
+    },
+    {
+      "name": "만쥬",
+      "channel_id": "UCWiMB4iRTqDGu5BmtT3Ytcg"
+    },
+    {
+      "name": "퀀트는 게만아 | 파이썬 자동매매",
+      "channel_id": "UCisI76sCtqpz_S6pKfvAXPQ"
+    },
+    {
+      "name": "트레이딩 리포트",
+      "channel_id": "UChbn9MH2lo10DpsTCirfzEA"
     }
   ],
   "coin": [
@@ -523,6 +535,10 @@
     {
       "name": "법원경매정보 옥션원TV",
       "channel_id": "UC6Q9ucT3ybuxNF1tLRvB6YA"
+    },
+    {
+      "name": "전망좋은집TV",
+      "channel_id": "UCR_gnqIFTMeyE5PSJdECVNg"
     }
   ],
   "economy": [

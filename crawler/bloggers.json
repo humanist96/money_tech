@@ -527,6 +527,18 @@
     {
       "name": "주재꿈사",
       "blog_id": "firestnumberone"
+    },
+    {
+      "name": "루시's ETF & 연금10억 만들기 투자 노트",
+      "blog_id": "mushroomj"
+    },
+    {
+      "name": "훌륭한 정보 in Digital",
+      "blog_id": "erke2000"
+    },
+    {
+      "name": "트렌드칩스",
+      "blog_id": "trendchips"
     }
   ],
   "coin": [
@@ -1995,6 +2007,50 @@
     {
       "name": "홈와이즈대출비교",
       "blog_id": "misosh2650"
+    },
+    {
+      "name": "타이밍부동산 [성남재개발]",
+      "blog_id": "dongtansoo"
+    },
+    {
+      "name": "금정역삼성 부동산",
+      "blog_id": "asl5672"
+    },
+    {
+      "name": "동의대학교 미래융합대학 부동산자산경영학과",
+      "blog_id": "cube1977"
+    },
+    {
+      "name": "[당진부동산]토우공인중개사무소",
+      "blog_id": "llll6015"
+    },
+    {
+      "name": "투자의 신",
+      "blog_id": "fundmanagerfirst"
+    },
+    {
+      "name": "홍소장",
+      "blog_id": "shine_hjy"
+    },
+    {
+      "name": "천땅집사: 천안의 땅과 집을 사고팔아주는 사람",
+      "blog_id": "hsjpro12"
+    },
+    {
+      "name": "리치리치",
+      "blog_id": "sixfeet0504"
+    },
+    {
+      "name": "금강다온경공매",
+      "blog_id": "ausqueen00"
+    },
+    {
+      "name": "RealFinance",
+      "blog_id": "realfinance_"
+    },
+    {
+      "name": "스페이스 크리에이터",
+      "blog_id": "freemeadow"
     }
   ],
   "economy": [
@@ -2089,6 +2145,10 @@
     {
       "name": "MZ세대 경제뉴스 [뉴스테이션]",
       "blog_id": "newstation"
+    },
+    {
+      "name": "마음을 읽는 선생님의 부(富)드러운 경제 교실",
+      "blog_id": "gsworldcho"
     }
   ]
 }
