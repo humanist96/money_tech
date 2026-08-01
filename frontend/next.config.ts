@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "yt3.googleusercontent.com",
       },
+      // 네이버 블로그 프로필 썸네일 (blogpfthumb-phinf 등 phinf 계열 호스트)
+      {
+        protocol: "https",
+        hostname: "**.pstatic.net",
+      },
     ],
   },
   async redirects() {
