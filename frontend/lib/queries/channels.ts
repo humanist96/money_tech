@@ -7,20 +7,20 @@ import type {
 export async function getChannels(category?: string, platform?: string): Promise<Channel[]> {
   const sql = getDb()
   if (category && platform) {
-    return await sql`SELECT * FROM channels WHERE category = ${category} AND platform = ${platform} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
+    return await sql`SELECT * FROM channels WHERE is_active AND category = ${category} AND platform = ${platform} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
   }
   if (category) {
-    return await sql`SELECT * FROM channels WHERE category = ${category} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
+    return await sql`SELECT * FROM channels WHERE is_active AND category = ${category} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
   }
   if (platform) {
-    return await sql`SELECT * FROM channels WHERE platform = ${platform} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
+    return await sql`SELECT * FROM channels WHERE is_active AND platform = ${platform} ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
   }
-  return await sql`SELECT * FROM channels ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
+  return await sql`SELECT * FROM channels WHERE is_active ORDER BY subscriber_count DESC NULLS LAST` as unknown as Channel[]
 }
 
 export async function getChannelById(id: string): Promise<Channel | null> {
   const sql = getDb()
-  const rows = await sql`SELECT * FROM channels WHERE id = ${id} LIMIT 1` as unknown as Channel[]
+  const rows = await sql`SELECT * FROM channels WHERE id = ${id} AND is_active LIMIT 1` as unknown as Channel[]
   return rows[0] ?? null
 }
 
@@ -171,6 +171,7 @@ export async function getChannelActivity(days = 7): Promise<ChannelActivityData[
     FROM videos v
     JOIN channels c ON v.channel_id = c.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
+      AND c.is_active
     GROUP BY c.id, c.name, c.category, v.published_at::date
     ORDER BY c.name, date
   `
@@ -188,6 +189,7 @@ export async function getChannelTypeStats() {
       AVG(hit_rate)::float as avg_hit_rate
     FROM channels
     WHERE channel_type IS NOT NULL AND channel_type != 'unknown'
+      AND is_active
     GROUP BY channel_type
     ORDER BY avg_pis DESC NULLS LAST
   `
@@ -210,6 +212,7 @@ export async function getChannelPredictionProfiles() {
       COUNT(*)::int AS total
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
+    WHERE c.is_active
     GROUP BY c.id, c.name, c.thumbnail_url, c.category
     HAVING COUNT(*) >= 3
     ORDER BY COUNT(*) DESC

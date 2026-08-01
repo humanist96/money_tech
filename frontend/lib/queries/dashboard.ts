@@ -40,6 +40,8 @@ async function getMarketTemperature(days = 7): Promise<MarketTemperature[]> {
     JOIN channels c ON v.channel_id = c.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
       AND ma.sentiment IS NOT NULL
+      AND ma.asset_type IN ('stock', 'coin')
+      AND c.is_active
     GROUP BY c.category
   `
   return rows.map((r: any) => ({
@@ -104,6 +106,7 @@ export async function getEnhancedBuzzAlerts(hours = 48): Promise<BuzzAlertEnhanc
       JOIN channels c ON v.channel_id = c.id
       WHERE v.published_at >= NOW() - INTERVAL '1 hour' * ${hours}
         AND ma.asset_code IS NOT NULL AND ma.sentiment IS NOT NULL
+        AND ma.asset_type IN ('stock', 'coin')
       GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
       HAVING COUNT(DISTINCT v.channel_id) >= 2
     ),
@@ -156,6 +159,7 @@ export async function getContrarianSignals(days = 30, threshold = 75): Promise<C
       WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
         AND p.prediction_type IN ('buy', 'sell')
         AND ma.asset_code IS NOT NULL
+        AND ma.asset_type IN ('stock', 'coin')
       GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
       HAVING COUNT(*) >= 3 AND COUNT(DISTINCT v.channel_id) >= 2
     ),

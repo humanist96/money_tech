@@ -152,7 +152,7 @@ def compute_daily_stats(cur, date_str: str) -> None:
     date_str is the KST calendar date. Boundaries are computed in KST so that
     Korean morning content does not slip into the previous UTC day.
     """
-    categories = ["stock", "coin", "real_estate", "economy"]
+    categories = ["stock", "coin", "economy"]
 
     kst_start = f"{date_str}T00:00:00+09:00"
     next_day = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")

@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 interface AssetMention {
   asset_name: string
   asset_code: string
-  asset_type: 'stock' | 'coin' | 'real_estate'
+  asset_type: 'stock' | 'coin'
   mention_count: number
   positive_count: number
   negative_count: number
@@ -21,7 +21,6 @@ interface AssetHeatmapProps {
 const TYPE_LABELS: Record<string, string> = {
   stock: '주식',
   coin: '코인',
-  real_estate: '부동산',
 }
 
 export function AssetHeatmap({ assets, title = "종목 언급 히트맵" }: AssetHeatmapProps) {
@@ -64,7 +63,6 @@ export function AssetHeatmap({ assets, title = "종목 언급 히트맵" }: Asse
             { value: "all", label: "전체" },
             { value: "stock", label: "주식" },
             { value: "coin", label: "코인" },
-            { value: "real_estate", label: "부동산" },
           ].map((opt) => (
             <button
               key={opt.value}

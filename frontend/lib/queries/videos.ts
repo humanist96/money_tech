@@ -20,6 +20,7 @@ export async function getRecentVideosWithAssets(limit: number = 15) {
     SELECT v.*, c.name as channel_name, c.category as channel_category, c.thumbnail_url as channel_thumbnail
     FROM videos v
     JOIN channels c ON v.channel_id = c.id
+    WHERE c.is_active
     ORDER BY v.published_at DESC NULLS LAST
     LIMIT ${limit}
   `

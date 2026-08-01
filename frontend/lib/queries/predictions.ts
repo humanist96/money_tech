@@ -30,6 +30,7 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
     JOIN channels c ON p.channel_id = c.id
     LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
     WHERE p.prediction_type IN ('buy', 'sell')
+      AND (ma.asset_type IS NULL OR ma.asset_type IN ('stock', 'coin'))
     ORDER BY c.name, ma.asset_name, p.prediction_type, p.predicted_at::date, p.predicted_at DESC
   `
   const sorted = (rows as PredictionFeedItem[])
@@ -93,6 +94,7 @@ export async function getHitRateLeaderboard(
     ) recent ON TRUE
     WHERE cs.horizon = ${horizon}
       AND cs.evaluation_version = 2
+      AND c.is_active
       -- Below this the interval is too wide to rank on; those channels are
       -- reachable from the channel list, just not ranked against the others.
       AND cs.n_effective >= ${MIN_SAMPLE_FOR_RANKING}
@@ -147,6 +149,7 @@ export async function getWeeklyReport(): Promise<{ winners: WeeklyReportItem[]; 
     WHERE p.predicted_at >= NOW() - INTERVAL '7 days'
       AND p.prediction_type IN ('buy', 'sell')
       AND p.direction_score IS NOT NULL
+      AND c.is_active
     GROUP BY c.id, c.name, c.thumbnail_url, c.category
     HAVING COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) >= 1
     ORDER BY accuracy_pct DESC, total_count DESC
@@ -283,6 +286,7 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
     ) latest_price ON true
     WHERE p.prediction_type IN ('buy', 'sell', 'hold')
       AND p.predicted_at >= NOW() - INTERVAL '30 days'
+      AND (ma.asset_type IS NULL OR ma.asset_type IN ('stock', 'coin'))
     ORDER BY p.predicted_at DESC
     LIMIT ${limit}
   `

@@ -25,7 +25,6 @@ const SENTIMENT_COLORS: Record<string, string> = {
 const TYPE_LABELS: Record<string, string> = {
   stock: "주식",
   coin: "코인",
-  real_estate: "부동산",
 }
 
 export default async function AssetDetailPage({ params }: PageProps) {

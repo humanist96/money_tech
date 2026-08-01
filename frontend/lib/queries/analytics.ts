@@ -19,6 +19,7 @@ export async function getRiskScoreboard(days = 14): Promise<RiskScore[]> {
       LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
       WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
         AND ma.asset_code IS NOT NULL AND ma.sentiment IS NOT NULL
+        AND ma.asset_type IN ('stock', 'coin')
       GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
       HAVING COUNT(*) >= 3
     ),
@@ -112,6 +113,7 @@ export async function getHiddenGemChannels(): Promise<HiddenGemChannel[]> {
           ELSE NULL END AS hit_rate
       FROM channels c
       LEFT JOIN predictions p ON p.channel_id = c.id AND p.prediction_type IN ('buy', 'sell')
+      WHERE c.is_active
       GROUP BY c.id, c.name, c.thumbnail_url, c.category, c.subscriber_count, c.prediction_intensity_score
       HAVING COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) >= 2
     ),

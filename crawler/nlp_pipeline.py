@@ -122,6 +122,11 @@ class NLPPipeline:
             asset_code = item.get("code", "")
             sentiment = item.get("sentiment", "neutral")
 
+            # 부동산 스코프 제외(Phase A5) — 프롬프트로 막아도 LLM이 간혹
+            # real_estate를 반환하므로 저장 전 차단
+            if asset_type not in ("stock", "coin"):
+                continue
+
             assets.append({
                 "asset_type": asset_type,
                 "asset_name": asset_name,

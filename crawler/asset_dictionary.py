@@ -1,4 +1,8 @@
-"""Asset dictionary for Korean stock/coin/real estate name recognition."""
+"""Asset dictionary for Korean stock/coin name recognition.
+
+부동산은 자산군 스코프에서 제외됨(핵심가치-재정비 §1.1, Phase A5) — 지역 단위
+발언은 사후 가격 검증이 불가능해 수집하지 않는다.
+"""
 from __future__ import annotations
 
 import time
@@ -95,32 +99,6 @@ COIN_DICT: dict[str, str] = {
     "이뮤터블": "IMX", "매틱": "POL", "폴리곤": "POL",
 }
 
-# Major real estate areas (지역명)
-REAL_ESTATE_DICT: dict[str, str] = {
-    # 서울
-    "강남": "서울/강남", "서초": "서울/서초", "송파": "서울/송파",
-    "잠실": "서울/송파", "반포": "서울/서초", "압구정": "서울/강남",
-    "대치": "서울/강남", "청담": "서울/강남", "논현": "서울/강남",
-    "마포": "서울/마포", "용산": "서울/용산", "성수": "서울/성동",
-    "여의도": "서울/영등포", "목동": "서울/양천", "노원": "서울/노원",
-    "강동": "서울/강동", "강서": "서울/강서", "은평": "서울/은평",
-    "동작": "서울/동작", "관악": "서울/관악",
-    # 경기
-    "판교": "경기/성남", "분당": "경기/성남", "일산": "경기/고양",
-    "과천": "경기/과천", "광명": "경기/광명", "하남": "경기/하남",
-    "위례": "경기/성남", "동탄": "경기/화성", "수원": "경기/수원",
-    "용인": "경기/용인", "평택": "경기/평택", "김포": "경기/김포",
-    "파주": "경기/파주", "의왕": "경기/의왕", "안양": "경기/안양",
-    "인천": "인천", "송도": "인천/연수",
-    # 기타 광역시
-    "부산": "부산", "해운대": "부산/해운대", "대구": "대구",
-    "대전": "대전", "세종": "세종", "광주": "광주",
-    # 부동산 용어
-    "아파트": "", "재건축": "", "재개발": "",
-    "분양": "", "청약": "", "전세": "", "월세": "",
-    "갭투자": "", "임대": "",
-}
-
 # Sentiment keywords for Korean finance context
 POSITIVE_KEYWORDS = [
     "매수", "사야", "오른다", "상승", "급등", "폭등", "반등", "돌파",
@@ -163,15 +141,6 @@ def find_assets_in_text(text: str) -> list[dict]:
                 "asset_type": "coin",
                 "asset_name": name,
                 "asset_code": code,
-            })
-
-    for name, region in REAL_ESTATE_DICT.items():
-        if name in text and region and name not in seen:
-            seen.add(name)
-            results.append({
-                "asset_type": "real_estate",
-                "asset_name": name,
-                "asset_code": region,
             })
 
     return results
@@ -231,35 +200,29 @@ def generate_simple_summary(title: str, assets: list[dict], sentiment: str) -> s
 # ---------------------------------------------------------------------------
 
 
-def load_assets_from_db(cur) -> tuple[dict, dict, dict]:
+def load_assets_from_db(cur) -> tuple[dict, dict]:
     """Load asset dictionaries from database.
 
-    Returns (stock_dict, coin_dict, real_estate_dict) with same format
-    as hardcoded dicts (name -> code mapping, including aliases).
+    Returns (stock_dict, coin_dict) with same format as hardcoded dicts
+    (name -> code mapping, including aliases). real_estate rows are excluded
+    by the query — 부동산은 스코프 밖.
     """
     cur.execute(
         """SELECT asset_name, asset_code, asset_type, aliases
            FROM asset_dictionary
-           WHERE is_active = true"""
+           WHERE is_active = true AND asset_type IN ('stock', 'coin')"""
     )
     stock_dict: dict[str, str] = {}
     coin_dict: dict[str, str] = {}
-    re_dict: dict[str, str] = {}
 
     for name, code, atype, aliases in cur.fetchall():
-        target = (
-            stock_dict
-            if atype == "stock"
-            else coin_dict
-            if atype == "coin"
-            else re_dict
-        )
+        target = stock_dict if atype == "stock" else coin_dict
         target[name] = code
         if aliases:
             for alias in aliases:
                 target[alias] = code
 
-    return stock_dict, coin_dict, re_dict
+    return stock_dict, coin_dict
 
 
 class DynamicAssetDictionary:
@@ -273,7 +236,6 @@ class DynamicAssetDictionary:
     def __init__(self) -> None:
         self._stock: dict[str, str] = dict(STOCK_DICT)
         self._coin: dict[str, str] = dict(COIN_DICT)
-        self._real_estate: dict[str, str] = dict(REAL_ESTATE_DICT)
         self._loaded_at: float = 0
         self._cache_ttl: int = 3600  # 1 hour
 
@@ -296,12 +258,11 @@ class DynamicAssetDictionary:
         except Exception:
             return
         try:
-            s, c, r = load_assets_from_db(cur)
+            s, c = load_assets_from_db(cur)
             cur.execute("RELEASE SAVEPOINT load_assets_dict")
             if s:
                 self._stock = s
                 self._coin = c
-                self._real_estate = r
                 self._loaded_at = time.time()
         except Exception as exc:
             try:
@@ -334,15 +295,6 @@ class DynamicAssetDictionary:
                     "asset_type": "coin",
                     "asset_name": name,
                     "asset_code": code,
-                })
-
-        for name, region in self._real_estate.items():
-            if name in text and region and name not in seen:
-                seen.add(name)
-                results.append({
-                    "asset_type": "real_estate",
-                    "asset_name": name,
-                    "asset_code": region,
                 })
 
         return results

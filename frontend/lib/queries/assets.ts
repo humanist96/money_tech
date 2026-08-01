@@ -21,6 +21,7 @@ export async function getAssetMentions(days: number = 7): Promise<AssetMention[]
     JOIN videos v ON ma.video_id = v.id
     JOIN channels c ON v.channel_id = c.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
+      AND ma.asset_type IN ('stock', 'coin')
     GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
     ORDER BY mention_count DESC
     LIMIT 50
@@ -75,6 +76,7 @@ export async function getAssetConsensus(days = 30): Promise<AssetConsensus[]> {
         LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
         WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
           AND ma.sentiment IS NOT NULL
+          AND ma.asset_type IN ('stock', 'coin')
         GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
         HAVING COUNT(*) >= 2
         ORDER BY COUNT(DISTINCT v.channel_id) DESC, COUNT(*) DESC
@@ -130,6 +132,7 @@ export async function getTopAssetSentiments(limit = 10, days = 7): Promise<TopAs
     JOIN videos v ON ma.video_id = v.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
       AND ma.sentiment IS NOT NULL
+      AND ma.asset_type IN ('stock', 'coin')
     GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
     ORDER BY COUNT(*) DESC
     LIMIT ${limit}
@@ -152,6 +155,7 @@ export async function getSentimentTrend(days = 30): Promise<SentimentTrendPoint[
     JOIN channels c ON v.channel_id = c.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
       AND ma.sentiment IS NOT NULL
+      AND c.is_active
     GROUP BY v.published_at::date, c.category
     ORDER BY date ASC
   `
@@ -171,6 +175,7 @@ export async function getMentionSpike(days = 30): Promise<{ asset_name: string; 
     JOIN videos v ON ma.video_id = v.id
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
       AND ma.asset_code IS NOT NULL
+      AND ma.asset_type IN ('stock', 'coin')
     GROUP BY ma.asset_name, ma.asset_code, v.published_at::date
     ORDER BY ma.asset_name, date
   `
@@ -219,6 +224,8 @@ export async function getAssetCorrelations(days = 14, minOccurrence = 2): Promis
     WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
       AND a1.asset_code IS NOT NULL
       AND a2.asset_code IS NOT NULL
+      AND a1.asset_type IN ('stock', 'coin')
+      AND a2.asset_type IN ('stock', 'coin')
     GROUP BY a1.asset_name, a2.asset_name, a1.asset_code, a2.asset_code
     HAVING COUNT(DISTINCT a1.video_id) >= ${minOccurrence}
     ORDER BY co_occurrence DESC

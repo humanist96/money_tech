@@ -37,7 +37,7 @@ export function TrendLineChart({ stats, title = "업로드 빈도 추이" }: Tre
     }))
     .sort((a, b) => a.date.localeCompare(b.date))
 
-  const categories = ["stock", "coin", "real_estate", "economy"]
+  const categories = ["stock", "coin", "economy"]
 
   return (
     <div className="glass-card-elevated rounded-2xl p-6">

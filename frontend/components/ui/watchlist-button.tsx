@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 interface WatchlistButtonProps {
   assetCode: string
   assetName: string
-  assetType?: "stock" | "coin" | "real_estate"
+  assetType?: "stock" | "coin"
   className?: string
 }
 

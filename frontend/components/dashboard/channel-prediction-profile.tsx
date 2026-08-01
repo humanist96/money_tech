@@ -11,7 +11,6 @@ interface ChannelPredictionProfileProps {
 const CATEGORY_COLORS: Record<string, string> = {
   stock: "#ff5757",
   coin: "#ffb84d",
-  real_estate: "#22c997",
   economy: "#7c6cf0",
 }
 

@@ -119,13 +119,13 @@ export async function POST(request: NextRequest) {
   "summary": "핵심 내용 3줄 요약 (한국어)",
   "sentiment": "positive 또는 negative 또는 neutral",
   "key_points": ["핵심 포인트1", "핵심 포인트2", ...],
-  "mentioned_assets": [{"name": "종목명", "code": "종목코드 또는 null", "type": "stock 또는 coin 또는 real_estate", "sentiment": "positive 또는 negative 또는 neutral"}],
+  "mentioned_assets": [{"name": "종목명", "code": "종목코드 또는 null", "type": "stock 또는 coin", "sentiment": "positive 또는 negative 또는 neutral"}],
   "predictions": [{"type": "buy 또는 sell 또는 hold", "asset": "종목명", "reason": "이유"}]
 }
 
 분석 시 주의사항:
 - 영상 정보가 부족하면 가용한 정보로 최선의 분석을 하세요
-- mentioned_assets에는 구체적 종목/코인/부동산만 포함 (일반적 카테고리 제외)
+- mentioned_assets에는 구체적 종목/코인만 포함 (일반적 카테고리·부동산 제외)
 - predictions는 영상에서 명시적으로 매수/매도/보유 의견이 있을 때만 포함
 - 한국 주식 코드는 6자리 숫자 (예: 005930)`,
         },

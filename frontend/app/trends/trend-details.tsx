@@ -9,7 +9,7 @@ interface TrendDetailsProps {
 }
 
 export function TrendDetails({ stats }: TrendDetailsProps) {
-  const categories = ["stock", "coin", "real_estate", "economy"] as const
+  const categories = ["stock", "coin", "economy"] as const
   const [active, setActive] = useState<string>("stock")
 
   const categoryDetails = categories.map((cat) => {

@@ -15,7 +15,6 @@ const CATEGORIES = [
   { value: "all", label: "ALL", color: "#00e8b8" },
   { value: "stock", label: "주식", color: "#ff5757" },
   { value: "coin", label: "코인", color: "#ffb84d" },
-  { value: "real_estate", label: "부동산", color: "#22c997" },
   { value: "economy", label: "경제", color: "#7c6cf0" },
 ]
 

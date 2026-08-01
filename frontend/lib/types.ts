@@ -18,7 +18,7 @@ export interface Channel {
   id: string
   youtube_channel_id: string | null
   name: string
-  category: 'stock' | 'coin' | 'real_estate' | 'economy'
+  category: 'stock' | 'coin' | 'economy'
   platform: Platform
   blog_id: string | null
   blog_url: string | null
@@ -109,7 +109,7 @@ export interface KeywordEntry {
 export interface MentionedAsset {
   id: string
   video_id: string
-  asset_type: 'stock' | 'coin' | 'real_estate'
+  asset_type: 'stock' | 'coin'
   asset_name: string
   asset_code: string | null
   sentiment: 'positive' | 'negative' | 'neutral' | null
@@ -163,7 +163,7 @@ export interface CrowdSentiment {
 export interface AssetMention {
   asset_name: string
   asset_code: string
-  asset_type: 'stock' | 'coin' | 'real_estate'
+  asset_type: 'stock' | 'coin'
   mention_count: number
   positive_count: number
   negative_count: number
@@ -179,14 +179,12 @@ export interface VideoWithAssets extends VideoWithChannel {
 export const CATEGORY_LABELS: Record<string, string> = {
   stock: '주식',
   coin: '코인',
-  real_estate: '부동산',
   economy: '경제',
 }
 
 export const CATEGORY_COLORS: Record<string, string> = {
   stock: '#ff5757',
   coin: '#ffb84d',
-  real_estate: '#22c997',
   economy: '#7c6cf0',
 }
 
@@ -406,7 +404,7 @@ export interface VideoAnalysis {
 export interface AnalysisMentionedAsset {
   name: string
   code: string | null
-  type: 'stock' | 'coin' | 'real_estate'
+  type: 'stock' | 'coin'
   sentiment: 'positive' | 'negative' | 'neutral'
 }
 

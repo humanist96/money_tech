@@ -11,7 +11,6 @@ interface TopMentionsChartProps {
 const TYPE_COLORS: Record<string, string> = {
   stock: "#ff5757",
   coin: "#ffb84d",
-  real_estate: "#22c997",
 }
 
 export function TopMentionsChart({ data, title = "종목 언급 랭킹" }: TopMentionsChartProps) {
