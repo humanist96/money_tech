@@ -76,13 +76,17 @@ def _mentioned_universe(cur, trade_date: date) -> dict[str, tuple[str, int, int]
     return {row[0]: (row[1], row[2], row[3]) for row in cur.fetchall()}
 
 
-def _market_suffixes(cur, codes: list[str]) -> dict[str, str]:
-    """Known listing market per ticker, for the Yahoo symbol suffix."""
+def _dictionary_meta(cur, codes: list[str]) -> dict[str, tuple[str | None, str | None]]:
+    """Canonical name and listing market per ticker: code -> (name, market).
+
+    Creator mentions supply slang names ("삼전"); the dictionary, when it has
+    the ticker, supplies the official one.
+    """
     cur.execute(
-        "SELECT asset_code, market FROM asset_dictionary WHERE asset_code = ANY(%s)",
+        "SELECT asset_code, asset_name, market FROM asset_dictionary WHERE asset_code = ANY(%s)",
         (codes,),
     )
-    return {code: market for code, market in cur.fetchall() if market}
+    return {code: (name, market) for code, name, market in cur.fetchall()}
 
 
 def _fetch_session_quotes(codes: list[str], markets: dict[str, str],
@@ -125,6 +129,11 @@ def _fetch_session_quotes(codes: list[str], markets: dict[str, str],
 
     out: dict[str, dict] = {}
     for symbol, code in symbols.items():
+        # .KS is inserted before .KQ for unknown markets; keep the first symbol
+        # that yields data instead of letting the later one overwrite it (that
+        # overwrite is how 두산(KOSPI) got stored as KOSDAQ).
+        if code in out:
+            continue
         try:
             frame = data[symbol].dropna(subset=["Close"])
         except Exception:
@@ -133,7 +142,9 @@ def _fetch_session_quotes(codes: list[str], markets: dict[str, str],
             continue
 
         session = frame[frame.index.date <= trade_date]
-        if len(session) < 2:
+        # The last bar must be the session being explained. Without this, a
+        # weekend or holiday run relabels the previous close as trade_date.
+        if len(session) < 2 or session.index.date[-1] != trade_date:
             continue
 
         close = float(session["Close"].iloc[-1])
@@ -179,8 +190,9 @@ def select_movers(conn, trade_date: date | None = None) -> list[MoverCandidate]:
         if not universe:
             logger.info("No creator-mentioned tickers for %s", trade_date)
             return []
-        markets = _market_suffixes(cur, list(universe))
+        meta = _dictionary_meta(cur, list(universe))
 
+    markets = {code: market for code, (_, market) in meta.items() if market}
     quotes = _fetch_session_quotes(list(universe), markets, trade_date)
     if not quotes:
         logger.info("No session quotes for %s (holiday or upstream failure)", trade_date)
@@ -193,9 +205,10 @@ def select_movers(conn, trade_date: date | None = None) -> list[MoverCandidate]:
             continue
         if q["close"] < MIN_CLOSE_PRICE or q["trading_value"] < MIN_TRADING_VALUE:
             continue
+        official_name = meta.get(code, (None, None))[0]
         c = MoverCandidate(
             stock_code=code,
-            stock_name=name,
+            stock_name=official_name or name,
             market=q["market"],
             close_price=q["close"],
             change_pct=q["change_pct"],

@@ -41,14 +41,16 @@ def _index_moves(cur, trade_date: date) -> dict[str, float]:
     moves: dict[str, float] = {}
     for market in ("KOSPI", "KOSDAQ"):
         cur.execute(
-            """SELECT close_price FROM benchmark_prices
+            """SELECT recorded_date, close_price FROM benchmark_prices
                WHERE benchmark_code = %s AND recorded_date <= %s
                ORDER BY recorded_date DESC LIMIT 2""",
             (market, trade_date),
         )
         rows = cur.fetchall()
-        if len(rows) == 2 and rows[1][0]:
-            moves[market] = (float(rows[0][0]) / float(rows[1][0]) - 1) * 100
+        # The latest row must be the session itself: a lagging feed would
+        # otherwise present Friday's index move as "today's market".
+        if len(rows) == 2 and rows[1][1] and rows[0][0] == trade_date:
+            moves[market] = (float(rows[0][1]) / float(rows[1][1]) - 1) * 100
     return moves
 
 
@@ -99,6 +101,12 @@ def _store(cur, candidate, analysis: dict, evidence: list[dict],
 
 def run_for_date(conn, trade_date: date) -> int:
     logger.info("=== Daily movers for %s ===", trade_date)
+
+    # A weekend date has no session; running one anyway (e.g. a manual run on
+    # Sunday) would relabel Friday's quotes as today's and store garbage.
+    if trade_date.weekday() >= 5:
+        logger.info("Skipping %s — weekend, no session", trade_date)
+        return 0
 
     candidates = select_movers(conn, trade_date)
     if not candidates:

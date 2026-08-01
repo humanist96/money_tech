@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import os
 from datetime import date, timedelta
+from urllib.parse import urlparse
 
 import requests
 
@@ -32,14 +33,47 @@ CREATOR_LOOKBACK_DAYS = 90
 
 # A keyword search on a company name pulls in anything sharing that name — a
 # search for 두산 returns its baseball club, and the model duly reported "KBO
-# 리그 성과로 급등". Requiring a market term in the headline keeps only
-# articles that are actually about the listed company.
+# 리그 성과로 급등". Three checks, all cheap:
+#   1. not from a sports outlet (domain),
+#   2. no sports vocabulary anywhere in title or description — sports articles
+#      routinely contain market terms ("5연승으로 순위 상승"), so the
+#      whitelist alone is not enough,
+#   3. a market term in the headline.
 FINANCE_TERMS = (
     "주가", "증권", "코스피", "코스닥", "실적", "영업이익", "매출", "공시",
     "목표가", "투자", "수주", "계약", "증자", "배당", "상장", "급등", "급락",
     "강세", "약세", "반등", "하락", "상승", "시총", "외국인", "기관", "수급",
     "인수", "합병", "지분", "리포트", "전망치", "가이던스",
 )
+
+# Deliberately baseball/sports-specific: entertainment words (콘서트, 드라마)
+# are legitimate price drivers for 하이브·스튜디오드래곤 등 and must stay.
+# Substring match, so short generic words are unsafe: "배구" matches
+# 지"배구"조. Ball sports appear only as their league/pro names.
+SPORTS_TERMS = (
+    "KBO", "프로야구", "야구", "야구단", "K리그", "프로축구", "프로농구", "프로배구",
+    "베어스", "이글스", "타이거즈", "라이온즈", "자이언츠", "트윈스",
+    "위즈", "랜더스", "히어로즈", "다이노스",
+    "이닝", "투수", "타자", "홈런", "타선", "등판", "선발승", "완봉",
+    "구원승", "볼넷", "무승부", "연승", "연패", "구단", "감독 경질",
+    "잠실구장", "포스트시즌", "플레이오프",
+)
+
+SPORTS_DOMAINS = (
+    "sport",       # sportsseoul, sportschosun, sportalkorea, sportskhan, ...
+    "xports", "spotv", "osen.", "mydaily", "stoo.",
+)
+
+
+def is_company_news(title: str, description: str, url: str) -> bool:
+    """True when the article is plausibly about the listed company."""
+    host = urlparse(url).netloc.lower()
+    if any(d in host for d in SPORTS_DOMAINS):
+        return False
+    text = f"{title} {description}"
+    if any(term in text for term in SPORTS_TERMS):
+        return False
+    return any(term in title for term in FINANCE_TERMS)
 
 
 def collect_flow(stock_code: str, trade_date: date) -> tuple[list[dict], dict]:
@@ -121,8 +155,8 @@ def collect_news(stock_name: str, trade_date: date) -> list[dict]:
         # window roughly right without parsing every locale variant.
         if not any(d.strftime("%d %b") in pub for d in (window_start, trade_date)):
             continue
-        # Drop same-name articles from unrelated domains (sports, entertainment).
-        if not any(term in title for term in FINANCE_TERMS):
+        # Drop same-name articles about the ball club, not the company.
+        if not is_company_news(title, desc, item.get("originallink") or item.get("link", "")):
             continue
         out.append({
             "type": "news",
