@@ -23,7 +23,8 @@ from http_util import RateLimiter, clean_html
 from logger import logger
 
 NAVER_NEWS_API = "https://openapi.naver.com/v1/search/news.json"
-_news_limiter = RateLimiter(0.5)
+NAVER_TREND_API = "https://m.stock.naver.com/api/stock/{code}/trend"
+_naver_limiter = RateLimiter(0.5)
 
 # Net buying below this is routine and explains nothing.
 FLOW_THRESHOLD_KRW = 10_000_000_000  # 100억원
@@ -77,30 +78,45 @@ def is_company_news(title: str, description: str, url: str) -> bool:
 
 
 def collect_flow(stock_code: str, trade_date: date) -> tuple[list[dict], dict]:
-    """Foreign and institutional net buying for the session."""
-    try:
-        from pykrx import stock
-    except ImportError:
-        return [], {}
+    """Foreign and institutional net buying for the session.
 
-    day = trade_date.strftime("%Y%m%d")
+    Naver's investor-trend API replaced pykrx here: KRX blocks cloud runner
+    IPs, so every CI call returned an empty body ("Expecting value: line 1").
+    Naver reports net *quantity*; × close approximates net value, which the
+    evidence already labels as 약/잠정치.
+    """
+    _naver_limiter.wait()
     try:
-        df = stock.get_market_trading_value_by_date(day, day, stock_code)
-        if df is None or df.empty:
-            return [], {}
-        row = df.iloc[0]
+        resp = requests.get(
+            NAVER_TREND_API.format(code=stock_code),
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        rows = resp.json()
     except Exception as e:
         logger.warning("Flow fetch failed for %s: %s", stock_code, e)
         return [], {}
 
-    def val(col: str) -> float:
+    # The API serves roughly the last ten sessions; older backfills simply
+    # go without flow evidence rather than borrowing another day's numbers.
+    day = trade_date.strftime("%Y%m%d")
+    row = next((r for r in rows if isinstance(r, dict) and r.get("bizdate") == day), None)
+    if not row:
+        return [], {}
+
+    def val(key: str) -> float:
         try:
-            return float(row.get(col) or 0)
-        except Exception:
+            return float(str(row.get(key) or "0").replace(",", ""))
+        except ValueError:
             return 0.0
 
-    foreign = val("외국인합계")
-    institution = val("기관합계")
+    close = val("closePrice")
+    if close <= 0:
+        return [], {}
+
+    foreign = val("foreignerPureBuyQuant") * close
+    institution = val("organPureBuyQuant") * close
     flow = {"foreign": foreign, "institution": institution}
 
     evidence = []
@@ -129,7 +145,7 @@ def collect_news(stock_name: str, trade_date: date) -> list[dict]:
     if not (client_id and client_secret):
         return []
 
-    _news_limiter.wait()
+    _naver_limiter.wait()
     try:
         resp = requests.get(
             NAVER_NEWS_API,
