@@ -22,10 +22,6 @@ declare module "@auth/core/jwt" {
   }
 }
 
-if (!process.env.AUTH_SECRET) {
-  throw new Error("AUTH_SECRET is not configured")
-}
-
 const providers = []
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   providers.push(
