@@ -2,19 +2,33 @@
 
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import type { HitRateLeaderboardItem } from '@/lib/types'
+import type { HitRateLeaderboardItem, SkillGrade } from '@/lib/types'
+import { MIN_SAMPLE_FOR_RANKING } from '@/lib/queries/predictions'
 import { CATEGORY_LABELS } from '@/lib/types'
 import { ChannelTypeBadge } from '@/components/ui/channel-type-badge'
+
+interface PredictionEvaluation {
+  horizon: string
+  outcome: string
+  eval_date: string | null
+  price_t0: number | null
+  price_th: number | null
+  asset_return: number | null
+  benchmark_code: string | null
+  benchmark_return: number | null
+  excess_return: number | null
+  unevaluable_reason: string | null
+}
 
 interface PredictionDetail {
   id: string
   prediction_type: string
   reason: string | null
   predicted_at: string | null
-  is_accurate: boolean | null
   target_price: number | null
-  actual_price_after_1w: number | null
-  actual_price_after_1m: number | null
+  is_duplicate: boolean
+  evaluation_status: string | null
+  evaluations: PredictionEvaluation[]
   asset_name: string
   asset_code: string | null
   sentiment: string | null
@@ -34,6 +48,45 @@ interface Props {
 
 type SortKey = 'all_predictions' | 'hit_rate' | 'pis'
 
+
+const GRADE_LABELS: Record<SkillGrade, { label: string; color: string; hint: string }> = {
+  beats_market: { label: '시장보다 잘 맞힘', color: '#22c997', hint: '신뢰구간 전체가 50%를 넘습니다' },
+  market_level: { label: '시장 수준', color: '#5a6a88', hint: '우연과 구분되지 않는 범위입니다' },
+  below_market: { label: '시장보다 못 맞힘', color: '#ef4444', hint: '신뢰구간 전체가 50% 아래입니다' },
+  insufficient: { label: '평가 유보', color: '#3a4a6a', hint: `표본 ${MIN_SAMPLE_FOR_RANKING}건 미만` },
+}
+
+/** Shows the interval, not just the point estimate: width is the uncertainty. */
+function ConfidenceBar({ low, high, point }: { low: number | null; high: number | null; point: number | null }) {
+  if (low == null || high == null || point == null) {
+    return <div className="h-1.5 rounded bg-th-tertiary" />
+  }
+  const pct = (v: number) => `${Math.max(0, Math.min(100, v * 100))}%`
+  return (
+    <div className="relative h-1.5 rounded bg-th-tertiary overflow-hidden" title={`95% 신뢰구간 ${Math.round(low * 100)}~${Math.round(high * 100)}%`}>
+      <div className="absolute inset-y-0 left-1/2 w-px bg-th-border" />
+      <div
+        className="absolute inset-y-0 rounded"
+        style={{ left: pct(low), width: pct(high - low), background: low > 0.5 ? '#22c997' : high < 0.5 ? '#ef4444' : '#5a6a88' }}
+      />
+      <div className="absolute inset-y-0 w-0.5 bg-th-primary" style={{ left: pct(point) }} />
+    </div>
+  )
+}
+
+function GradeBadge({ grade }: { grade: SkillGrade }) {
+  const g = GRADE_LABELS[grade]
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+      style={{ background: `${g.color}1a`, color: g.color }}
+      title={g.hint}
+    >
+      {g.label}
+    </span>
+  )
+}
+
 export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   const [sortBy, setSortBy] = useState<SortKey>('all_predictions')
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -44,7 +97,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   const filtered = leaderboard
     .filter(item => filterCategory === 'all' || item.category === filterCategory)
     .sort((a, b) => {
-      if (sortBy === 'hit_rate') return (Number(b.hit_rate) || 0) - (Number(a.hit_rate) || 0)
+      if (sortBy === 'hit_rate') return (Number(b.wilson_low) || 0) - (Number(a.wilson_low) || 0)
       if (sortBy === 'all_predictions') return b.all_predictions - a.all_predictions
       return (b.pis ?? 0) - (a.pis ?? 0)
     })
@@ -71,11 +124,14 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   }, [expandedId, details])
 
   const totalPredictions = leaderboard.reduce((s, l) => s + l.all_predictions, 0)
-  const channelsWithEval = leaderboard.filter(l => l.total_predictions > 0)
-  const avgHitRateRaw = channelsWithEval.length > 0
-    ? channelsWithEval.reduce((s, l) => s + (Number(l.hit_rate) || 0), 0) / channelsWithEval.length * 100
-    : null
-  const avgHitRate = avgHitRateRaw != null && !isNaN(avgHitRateRaw) ? Math.round(avgHitRateRaw) : null
+  const totalEvaluated = leaderboard.reduce((s, l) => s + l.n_effective, 0)
+  const ranked = leaderboard.filter(l => l.grade !== 'insufficient')
+  // Pooled, not an average of per-channel rates: channels with three calls
+  // should not weigh as much as channels with three hundred.
+  const pooledHits = ranked.reduce((s, l) => s + l.n_hits, 0)
+  const pooledN = ranked.reduce((s, l) => s + l.n_effective, 0)
+  const avgHitRate = pooledN > 0 ? Math.round((pooledHits / pooledN) * 100) : null
+  const beatsMarket = leaderboard.filter(l => l.grade === 'beats_market').length
 
   return (
     <div className="space-y-6">
@@ -83,20 +139,31 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard label="예측 채널" value={leaderboard.length} sub="예측 데이터 보유" color="#f97316" />
         <StatCard label="총 예측" value={totalPredictions} sub="건 감지됨" color="#22c997" />
-        <StatCard label="가격 검증" value={leaderboard.reduce((s, l) => s + l.total_predictions, 0)} sub="건 적중 평가" color="#7c6cf0" />
-        <StatCard label="적중률" value={avgHitRate != null ? `${avgHitRate}%` : '수집중'} sub={channelsWithEval.length > 0 ? `${channelsWithEval.length}개 채널` : '1주~3개월 후 평가'} color="#3b82f6" />
+        <StatCard label="평가 완료" value={totalEvaluated} sub="건 (중복·판정보류 제외)" color="#7c6cf0" />
+        <StatCard label="시장 대비 적중률" value={avgHitRate != null ? `${avgHitRate}%` : '평가중'} sub={ranked.length > 0 ? `${beatsMarket}개 채널이 시장 상회` : `표본 ${MIN_SAMPLE_FOR_RANKING}건 이상 채널 없음`} color="#3b82f6" />
       </div>
 
       {/* Info Banner - evaluation methodology */}
       <div className="info-banner space-y-1">
         <div className="font-semibold text-th-primary text-sm mb-1">평가 방법론</div>
         <div className="flex items-start gap-2">
-          <span className="text-[#3b82f6] font-bold shrink-0">A. 방향 적중률</span>
-          <span>영상 발행일 기준 종목 가격 → 1주/1개월/3개월 후 방향성 비교. 매수→가격상승=적중, 매도→가격하락=적중. 가중평균: 1주(50%)+1개월(30%)+3개월(20%)</span>
+          <span className="text-[#3b82f6] font-bold shrink-0">A. 적중 판정</span>
+          <span>
+            발행일 종가와 1주/1개월/3개월 후 종가를 비교하되, <strong>KOSPI·KOSDAQ(코인은 BTC) 대비 초과수익</strong>으로 판정합니다.
+            시장 전체가 오른 만큼은 실력이 아니기 때문입니다. 거래비용 밴드(1주 ±1.5%, 1개월 ±2.5%, 3개월 ±4%) 안의 움직임은
+            적중도 실패도 아닌 &lsquo;판정 보류&rsquo;로 표본에서 제외합니다.
+          </span>
         </div>
-        <div className="text-th-dim mt-1">각 행을 클릭하면 예측 근거 영상과 가격 변동을 확인할 수 있습니다.</div>
+        <div className="flex items-start gap-2">
+          <span className="text-[#22c997] font-bold shrink-0">B. 신뢰구간</span>
+          <span>
+            적중률 옆 괄호는 95% 신뢰구간(Wilson)입니다. 순위는 점추정치가 아니라 구간의 <strong>하한</strong>으로 매깁니다.
+            운 좋은 5건이 꾸준한 50건을 앞지르지 않게 하기 위함입니다. 같은 채널이 30일 내 같은 종목에 반복한 콜은 1건으로 셉니다.
+          </span>
+        </div>
+        <div className="text-th-dim mt-1">각 행을 클릭하면 예측 근거 영상과 판정 내역을 확인할 수 있습니다.</div>
         <div className="flex items-start gap-2 mt-2 pt-2 border-t border-th-border/50">
-          <span className="text-[#f97316] font-bold shrink-0">B. PIS (Prediction Intensity Score)</span>
+          <span className="text-[#f97316] font-bold shrink-0">C. PIS (Prediction Intensity Score)</span>
           <span>채널의 예측 적극성을 0~100으로 수치화. 5가지 지표 가중합산: 예측밀도(30%) + 액션키워드강도(25%) + 종목집중도(20%) + 목표가제시율(15%) + 감성편향도(10%). 높을수록 명확한 매매 의견을 자주 제시하는 채널</span>
         </div>
       </div>
@@ -117,7 +184,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
         <div className="filter-group flex items-center gap-1.5">
           {([
             { key: 'all_predictions' as SortKey, label: '예측수순' },
-            { key: 'hit_rate' as SortKey, label: '적중률순' },
+            { key: 'hit_rate' as SortKey, label: '신뢰하한순' },
             { key: 'pis' as SortKey, label: 'PIS순' },
           ]).map(opt => (
             <button
@@ -166,6 +233,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] text-th-dim">{CATEGORY_LABELS[item.category] ?? item.category}</span>
                         <ChannelTypeBadge type={item.channel_type} />
+                        <GradeBadge grade={item.grade} />
                       </div>
                     </div>
                   </div>
@@ -178,15 +246,34 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                         {item.all_predictions}
                       </div>
                     </div>
-                    <div className="text-right w-12">
-                      <div className="text-[10px] text-th-dim">적중률</div>
+                    <div className="text-right w-36">
+                      <div className="text-[10px] text-th-dim">
+                        적중률 · 평가 {item.n_effective}건
+                      </div>
                       <div className="text-base font-bold tabular-nums" style={{
                         fontFamily: 'var(--font-outfit)',
-                        color: item.total_predictions > 0
-                          ? Math.round((Number(item.hit_rate) || 0) * 100) >= 50 ? '#22c997' : '#ef4444'
-                          : '#3a4a6a'
+                        color: GRADE_LABELS[item.grade].color,
                       }}>
-                        {item.total_predictions > 0 ? `${Math.round((Number(item.hit_rate) || 0) * 100)}%` : '-'}
+                        {item.hit_rate != null ? `${Math.round(item.hit_rate * 100)}%` : '-'}
+                        {item.wilson_low != null && item.wilson_high != null && (
+                          <span className="ml-1 text-[10px] font-normal text-th-dim">
+                            ({Math.round(item.wilson_low * 100)}~{Math.round(item.wilson_high * 100)}%)
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1">
+                        <ConfidenceBar low={item.wilson_low} high={item.wilson_high} point={item.hit_rate} />
+                      </div>
+                    </div>
+                    <div className="text-right w-16">
+                      <div className="text-[10px] text-th-dim">초과수익</div>
+                      <div className="text-sm font-bold tabular-nums" style={{
+                        fontFamily: 'var(--font-outfit)',
+                        color: (item.avg_excess_return ?? 0) > 0 ? '#22c997' : (item.avg_excess_return ?? 0) < 0 ? '#ef4444' : '#5a6a88',
+                      }}>
+                        {item.avg_excess_return != null
+                          ? `${item.avg_excess_return >= 0 ? '+' : ''}${(item.avg_excess_return * 100).toFixed(1)}%p`
+                          : '-'}
                       </div>
                     </div>
                     <div className="text-right w-10">
@@ -242,6 +329,74 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+const OUTCOME_LABELS: Record<string, { label: string; color: string }> = {
+  hit: { label: '적중', color: '#22c997' },
+  miss: { label: '빗나감', color: '#ef4444' },
+  push: { label: '판정보류', color: '#5a6a88' },
+  unevaluable: { label: '평가불가', color: '#3a4a6a' },
+}
+
+const HORIZON_LABELS: Record<string, string> = { '1w': '1주', '1m': '1개월', '3m': '3개월' }
+
+const pct = (v: number | null) =>
+  v == null ? '-' : `${v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%`
+
+/**
+ * Shows how each verdict was reached — base price, later price, benchmark and
+ * the resulting excess. A rating nobody can audit is just an assertion.
+ */
+function EvaluationEvidence({ evaluations }: { evaluations: PredictionEvaluation[] }) {
+  if (!evaluations.length) {
+    return <div className="mt-1.5 text-[10px] text-th-dim opacity-70">아직 평가 시점이 도래하지 않았습니다</div>
+  }
+
+  return (
+    <div className="mt-2 rounded border border-th-border/50 overflow-hidden">
+      <table className="w-full text-[10px]">
+        <thead>
+          <tr className="text-th-dim">
+            <th className="text-left py-1 px-2 font-medium">구간</th>
+            <th className="text-right py-1 px-1 font-medium">발행일가</th>
+            <th className="text-right py-1 px-1 font-medium">평가일가</th>
+            <th className="text-right py-1 px-1 font-medium">종목</th>
+            <th className="text-right py-1 px-1 font-medium">시장</th>
+            <th className="text-right py-1 px-1 font-medium">초과</th>
+            <th className="text-right py-1 px-2 font-medium">판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          {evaluations.map((e) => {
+            const oc = OUTCOME_LABELS[e.outcome] ?? { label: e.outcome, color: '#5a6a88' }
+            return (
+              <tr key={e.horizon} className="border-t border-th-border/30">
+                <td className="py-1 px-2 text-th-primary">{HORIZON_LABELS[e.horizon] ?? e.horizon}</td>
+                <td className="py-1 px-1 text-right tabular-nums text-th-dim">
+                  {e.price_t0 != null ? e.price_t0.toLocaleString() : '-'}
+                </td>
+                <td className="py-1 px-1 text-right tabular-nums text-th-dim">
+                  {e.price_th != null ? e.price_th.toLocaleString() : '-'}
+                </td>
+                <td className="py-1 px-1 text-right tabular-nums">{pct(e.asset_return)}</td>
+                <td className="py-1 px-1 text-right tabular-nums text-th-dim" title={e.benchmark_code ?? '절대수익 기준'}>
+                  {pct(e.benchmark_return)}
+                </td>
+                <td className="py-1 px-1 text-right tabular-nums font-medium" style={{
+                  color: (e.excess_return ?? 0) > 0 ? '#22c997' : (e.excess_return ?? 0) < 0 ? '#ef4444' : '#5a6a88',
+                }}>
+                  {pct(e.excess_return)}
+                </td>
+                <td className="py-1 px-2 text-right font-bold" style={{ color: oc.color }} title={e.unevaluable_reason ?? undefined}>
+                  {oc.label}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
@@ -314,9 +469,11 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
               {pred.sentiment === 'positive' ? '긍정' : pred.sentiment === 'negative' ? '부정' : '중립'}
             </span>
           )}
-          {/* Accuracy */}
-          {pred.is_accurate === true && <span className="text-[10px] text-[#22c997] font-bold">적중</span>}
-          {pred.is_accurate === false && <span className="text-[10px] text-[#ef4444] font-bold">빗나감</span>}
+          {pred.is_duplicate && (
+            <span className="text-[10px] text-th-dim" title="30일 내 같은 종목·방향 반복 콜은 표본에서 1건으로 셉니다">
+              반복 콜 (표본 제외)
+            </span>
+          )}
         </div>
         {/* Reason */}
         {pred.reason && (
@@ -324,29 +481,15 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
             사유: {pred.reason}
           </div>
         )}
-        {/* Price tracking + Comment sentiment */}
+
+        <EvaluationEvidence evaluations={pred.evaluations ?? []} />
+        {/* Per-horizon returns now live in the evidence table above. */}
         <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[10px]">
           <span className="text-th-dim opacity-70">
             {pred.video_published_at ? new Date(pred.video_published_at).toLocaleDateString('ko-KR') : ''}
           </span>
-          {pred.price_at_mention != null && (
-            <span className="text-th-dim">
-              언급가: {pred.price_at_mention.toLocaleString()}원
-            </span>
-          )}
-          {pred.actual_price_after_1w != null && pred.price_at_mention != null && pred.price_at_mention > 0 && (
-            <span style={{
-              color: ((pred.actual_price_after_1w - pred.price_at_mention) / pred.price_at_mention) > 0 ? '#22c997' : '#ef4444'
-            }}>
-              1주후: {((pred.actual_price_after_1w - pred.price_at_mention) / pred.price_at_mention * 100).toFixed(1)}%
-            </span>
-          )}
-          {pred.actual_price_after_1m != null && pred.price_at_mention != null && pred.price_at_mention > 0 && (
-            <span style={{
-              color: ((pred.actual_price_after_1m - pred.price_at_mention) / pred.price_at_mention) > 0 ? '#22c997' : '#ef4444'
-            }}>
-              1개월후: {((pred.actual_price_after_1m - pred.price_at_mention) / pred.price_at_mention * 100).toFixed(1)}%
-            </span>
+          {pred.target_price != null && (
+            <span className="text-th-dim">목표가: {pred.target_price.toLocaleString()}원</span>
           )}
         </div>
       </div>

@@ -4,6 +4,7 @@ import type {
   BacktestResult, BacktestTrade, WeeklyReportItem,
   ConsensusTimelineEntry, AnalystConsensus,
   ActivePrediction, PredictionTimelineData,
+  Horizon, SkillGrade,
 } from '../types'
 
 // Recent Predictions Feed (deduplicated, direction-based)
@@ -37,36 +38,90 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
   return sorted
 }
 
-// Hit Rate Leaderboard (direction-based)
-// Uses mv_hit_rate_leaderboard materialized view for the main aggregation,
-// then fetches recent_predictions per channel (N+1 queries, but main query is instant).
-export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]> {
+// Hit Rate Leaderboard
+// Reads channel_stats, which the evaluator writes with benchmark-adjusted
+// outcomes and Wilson bounds. Ranking uses the interval's lower bound so a
+// short lucky streak cannot outrank a long consistent record.
+export async function getHitRateLeaderboard(
+  horizon: Horizon = '1m'
+): Promise<HitRateLeaderboardItem[]> {
   const sql = getDb()
-  // One LATERAL join instead of a per-channel follow-up query.
   const rows = await sql`
-    SELECT l.*, COALESCE(recent.predictions, '[]'::json) AS recent_predictions
-    FROM mv_hit_rate_leaderboard l
+    SELECT
+      c.id AS channel_id,
+      c.name AS channel_name,
+      c.thumbnail_url AS channel_thumbnail,
+      c.category,
+      c.channel_type,
+      c.prediction_intensity_score AS pis,
+      cs.horizon,
+      cs.hit_rate::float,
+      cs.wilson_low::float,
+      cs.wilson_high::float,
+      cs.n_effective,
+      cs.n_hits,
+      cs.n_push,
+      cs.n_unevaluable,
+      cs.n_buy,
+      cs.n_sell,
+      cs.n_hold,
+      cs.avg_excess_return::float,
+      (SELECT COUNT(*)::int FROM predictions p2 WHERE p2.channel_id = c.id) AS all_predictions,
+      COALESCE(recent.predictions, '[]'::json) AS recent_predictions
+    FROM channel_stats cs
+    JOIN channels c ON c.id = cs.channel_id
     LEFT JOIN LATERAL (
       SELECT json_agg(p_recent) AS predictions
       FROM (
-        SELECT p.prediction_type, p.is_accurate, p.direction_1w, p.direction_1m, p.direction_3m,
-               p.direction_score::float, ma.asset_name
+        SELECT p.prediction_type, ma.asset_name,
+               pe.outcome, pe.excess_return::float
         FROM predictions p
         LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-        WHERE p.channel_id = l.channel_id
-          AND p.prediction_type IN ('buy', 'sell')
+        LEFT JOIN prediction_evaluations pe
+               ON pe.prediction_id = p.id
+              AND pe.horizon = ${horizon}
+              AND pe.evaluation_version = 2
+        WHERE p.channel_id = c.id
+          AND NOT p.is_duplicate
+          AND p.prediction_type IN ('buy', 'sell', 'hold')
         ORDER BY p.predicted_at DESC NULLS LAST
         LIMIT 5
       ) p_recent
     ) recent ON TRUE
+    WHERE cs.horizon = ${horizon}
+      AND cs.evaluation_version = 2
+    ORDER BY cs.wilson_low DESC NULLS LAST, cs.n_effective DESC
   `
 
   return (rows as any[]).map((r) => ({
     ...r,
-    hit_rate: Number(r.hit_rate) || 0,
+    hit_rate: r.hit_rate ?? null,
+    grade: gradeChannel(r.n_effective, r.wilson_low, r.wilson_high),
     recent_predictions: r.recent_predictions ?? [],
   })) as HitRateLeaderboardItem[]
 }
+
+/**
+ * Translates the interval into a claim we can defend.
+ * The whole interval must sit on one side of 50% before calling a channel
+ * better or worse than the market; otherwise the record is consistent with
+ * chance and says so.
+ */
+function gradeChannel(
+  nEffective: number,
+  wilsonLow: number | null,
+  wilsonHigh: number | null
+): SkillGrade {
+  if (nEffective < MIN_SAMPLE_FOR_RANKING || wilsonLow == null || wilsonHigh == null) {
+    return 'insufficient'
+  }
+  if (wilsonLow > 0.5) return 'beats_market'
+  if (wilsonHigh < 0.5) return 'below_market'
+  return 'market_level'
+}
+
+/** Sample below which a record is reported as "under evaluation". */
+export const MIN_SAMPLE_FOR_RANKING = 10
 
 // YouTuber Backtesting Simulator
 // Weekly Winner/Loser Report

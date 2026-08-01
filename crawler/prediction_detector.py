@@ -94,16 +94,12 @@ def detect_predictions(text: str, found_assets: list[dict], platform: str = "def
         sell_score += sum(1 for p in extra_sell if p in context)
         hold_score = sum(1 for p in HOLD_PATTERNS if p in context)
 
+        # No full-text fallback: scoring the whole document assigned every
+        # asset in it the same direction, so a buy argument about one stock
+        # became a buy prediction for every other ticker mentioned nearby.
+        # Weak local evidence means no prediction.
         if buy_score <= 1 and sell_score <= 1 and hold_score <= 1:
-            # Fall back to full text if no local signal
-            buy_score = sum(1 for p in BUY_PATTERNS if p in text)
-            buy_score += sum(1 for p in extra_buy if p in text)
-            sell_score = sum(1 for p in SELL_PATTERNS if p in text)
-            sell_score += sum(1 for p in extra_sell if p in text)
-            hold_score = sum(1 for p in HOLD_PATTERNS if p in text)
-
-            if buy_score <= 1 and sell_score <= 1 and hold_score <= 1:
-                continue
+            continue
 
         if buy_score > sell_score and buy_score > hold_score:
             pred_type = "buy"

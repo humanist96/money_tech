@@ -19,6 +19,9 @@ from logger import logger
 from prediction_detector import detect_predictions
 from report_prediction_detector import map_recommendation, determine_confidence
 
+# Repeat calls inside this window count as one bet (see evaluator_v2).
+DUPLICATE_WINDOW_DAYS = 30
+
 
 @dataclass
 class NLPResult:
@@ -30,6 +33,7 @@ class NLPResult:
     predictions: list[dict] = field(default_factory=list)
     summary: str = ""
     key_points: list[str] = field(default_factory=list)
+    detection_method: str = "keyword"
     # Report-specific fields
     prediction_type: Optional[str] = None
     confidence: Optional[str] = None
@@ -128,12 +132,16 @@ class NLPPipeline:
         # Map LLM predictions to standard format
         predictions: list[dict] = []
         type_map = {"buy": "buy", "sell": "sell", "hold": "hold"}
+        # Assets carry their own type; hardcoding 'stock' here sent coin calls
+        # to the stock price source and left them permanently unevaluable.
+        asset_types = {a["asset_name"]: a["asset_type"] for a in assets}
         for pred in llm_result.get("predictions", []):
             pred_type = type_map.get(pred.get("type", ""), pred.get("type", ""))
+            pred_asset = pred.get("asset_name", "")
             predictions.append({
-                "asset_name": pred.get("asset_name", ""),
+                "asset_name": pred_asset,
                 "asset_code": pred.get("asset_code", ""),
-                "asset_type": "stock",
+                "asset_type": asset_types.get(pred_asset, "stock"),
                 "prediction_type": pred_type,
                 "reason": pred.get("reason", ""),
             })
@@ -149,6 +157,7 @@ class NLPPipeline:
             predictions=predictions,
             summary=summary,
             key_points=key_points,
+            detection_method="llm",
         )
 
     def _process_report(self, report) -> NLPResult:
@@ -256,6 +265,7 @@ class NLPPipeline:
         published_at: Optional[str],
     ) -> None:
         """Store results for YouTube, blog, and Telegram content."""
+        detection_method = result.detection_method
         if result.assets:
             for asset in result.assets:
                 asset_sentiment = result.asset_sentiments.get(
@@ -284,10 +294,33 @@ class NLPPipeline:
                 )
                 ma_row = cur.fetchone()
                 if ma_row:
+                    # A channel repeating the same call on the same asset is one
+                    # opinion, not many: mark repeats so they are stored for
+                    # display but excluded from the effective sample.
+                    cur.execute(
+                        """SELECT 1 FROM predictions p
+                           JOIN mentioned_assets ma ON ma.id = p.mentioned_asset_id
+                           WHERE p.channel_id = %s
+                             AND ma.asset_name = %s
+                             AND p.prediction_type = %s
+                             AND p.predicted_at > COALESCE(%s::timestamptz, NOW())
+                                                  - INTERVAL '%s days'
+                           LIMIT 1""",
+                        (
+                            channel_uuid,
+                            pred["asset_name"],
+                            pred["prediction_type"],
+                            published_at,
+                            DUPLICATE_WINDOW_DAYS,
+                        ),
+                    )
+                    is_duplicate = cur.fetchone() is not None
+
                     cur.execute(
                         """INSERT INTO predictions
-                        (video_id, channel_id, mentioned_asset_id, prediction_type, reason, predicted_at)
-                        VALUES (%s, %s, %s, %s, %s, %s)
+                        (video_id, channel_id, mentioned_asset_id, prediction_type, reason,
+                         predicted_at, detection_method, is_duplicate)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (video_id, mentioned_asset_id, prediction_type) DO NOTHING""",
                         (
                             video_uuid,
@@ -296,6 +329,8 @@ class NLPPipeline:
                             pred["prediction_type"],
                             pred.get("reason", ""),
                             published_at,
+                            pred.get("detection_method", detection_method),
+                            is_duplicate,
                         ),
                     )
             if result.predictions:
@@ -357,8 +392,9 @@ class NLPPipeline:
             cur.execute(
                 """INSERT INTO predictions
                 (video_id, channel_id, mentioned_asset_id, prediction_type,
-                 target_price, previous_target_price, confidence, reason, predicted_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 target_price, previous_target_price, confidence, reason, predicted_at,
+                 detection_method)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'report')
                 ON CONFLICT (video_id, mentioned_asset_id, prediction_type) DO NOTHING""",
                 (
                     video_uuid,

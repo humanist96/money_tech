@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import type { HitRateLeaderboardItem, HiddenGemChannel, WeeklyReportItem } from '@/lib/types'
+import Link from 'next/link'
+import type { HitRateLeaderboardItem, HiddenGemChannel, WeeklyReportItem, Horizon } from '@/lib/types'
 import { LeaderboardClient } from './leaderboard-client'
 import { WeeklyReportPanel, type WeeklyCall } from '@/components/features/weekly-report'
 import { HiddenGemsPanel } from '@/components/features/hidden-gems'
@@ -19,9 +20,16 @@ interface Props {
   typeStats: Array<{ channel_type: string; count: number; avg_pis: number | null; avg_hit_rate: number | null }>
   weekly: { winners: WeeklyReportItem[]; losers: WeeklyReportItem[]; bestCall: WeeklyCall; worstCall: WeeklyCall }
   hiddenGems: HiddenGemChannel[]
+  horizon: Horizon
 }
 
-export function LeaderboardTabs({ leaderboard, typeStats, weekly, hiddenGems }: Props) {
+const HORIZON_TABS: Array<{ key: Horizon; label: string }> = [
+  { key: '1w', label: '1주' },
+  { key: '1m', label: '1개월' },
+  { key: '3m', label: '3개월' },
+]
+
+export function LeaderboardTabs({ leaderboard, typeStats, weekly, hiddenGems, horizon }: Props) {
   const [view, setView] = useState<View>('all')
   const active = VIEWS.find((v) => v.key === view)
 
@@ -44,6 +52,26 @@ export function LeaderboardTabs({ leaderboard, typeStats, weekly, hiddenGems }: 
       </div>
 
       {active && <p className="text-xs text-th-dim">{active.hint}</p>}
+
+      {/* Horizons are scored independently — a call can be right at one month
+          and wrong at three, so they are never averaged together. */}
+      {view === 'all' && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-th-dim">평가 구간</span>
+          <div className="filter-group flex items-center gap-1.5">
+            {HORIZON_TABS.map((h) => (
+              <Link
+                key={h.key}
+                href={`/leaderboard?horizon=${h.key}`}
+                scroll={false}
+                className={`filter-btn ${horizon === h.key ? 'active' : ''}`}
+              >
+                {h.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {view === 'all' && <LeaderboardClient leaderboard={leaderboard} typeStats={typeStats} />}
       {view === 'weekly' && (

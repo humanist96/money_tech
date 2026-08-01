@@ -15,10 +15,9 @@ export async function GET(req: NextRequest) {
         p.prediction_type,
         p.reason,
         p.predicted_at,
-        p.is_accurate,
         p.target_price,
-        p.actual_price_after_1w,
-        p.actual_price_after_1m,
+        p.is_duplicate,
+        p.evaluation_status,
         COALESCE(ma.asset_name, '(미지정)') AS asset_name,
         ma.asset_code,
         ma.sentiment,
@@ -28,10 +27,23 @@ export async function GET(req: NextRequest) {
         v.youtube_video_id,
         v.blog_post_url,
         v.published_at AS video_published_at,
-        v.thumbnail_url AS video_thumbnail
+        v.thumbnail_url AS video_thumbnail,
+        COALESCE(ev.rows, '[]'::json) AS evaluations
       FROM predictions p
       JOIN videos v ON p.video_id = v.id
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+      LEFT JOIN LATERAL (
+        SELECT json_agg(e ORDER BY e.horizon) AS rows
+        FROM (
+          SELECT pe.horizon, pe.outcome, pe.eval_date,
+                 pe.price_t0::float, pe.price_th::float,
+                 pe.asset_return::float, pe.benchmark_code,
+                 pe.benchmark_return::float, pe.excess_return::float,
+                 pe.unevaluable_reason
+          FROM prediction_evaluations pe
+          WHERE pe.prediction_id = p.id AND pe.evaluation_version = 2
+        ) e
+      ) ev ON TRUE
       WHERE p.channel_id = ${channelId}
       ORDER BY p.predicted_at DESC NULLS LAST
       LIMIT 30

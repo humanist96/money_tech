@@ -288,6 +288,15 @@ export interface HotKeyword {
   rank_change: number
 }
 
+export type Horizon = '1w' | '1m' | '3m'
+
+/**
+ * Plain-language reading of a channel's record.
+ * Derived from the confidence interval, not the point estimate: a 70% hit rate
+ * over 12 calls is not evidence of skill, and the label should not imply it is.
+ */
+export type SkillGrade = 'beats_market' | 'market_level' | 'below_market' | 'insufficient'
+
 export interface HitRateLeaderboardItem {
   channel_id: string
   channel_name: string
@@ -295,15 +304,28 @@ export interface HitRateLeaderboardItem {
   category: string
   channel_type: ChannelType
   pis: number | null
-  hit_rate: number
-  total_predictions: number
+  horizon: Horizon
+  /** Hits / (hits + misses). Pushes and unevaluable calls are excluded. */
+  hit_rate: number | null
+  wilson_low: number | null
+  wilson_high: number | null
+  /** Sample actually used for scoring. */
+  n_effective: number
+  n_hits: number
+  n_push: number
+  n_unevaluable: number
+  n_buy: number
+  n_sell: number
+  n_hold: number
+  /** Mean return in excess of the benchmark, as a fraction. */
+  avg_excess_return: number | null
   all_predictions: number
-  accurate_count: number
+  grade: SkillGrade
   recent_predictions: Array<{
     prediction_type: string
-    is_accurate: boolean | null
     asset_name: string
-    direction_score: number | null
+    outcome: string | null
+    excess_return: number | null
   }>
 }
 

@@ -1,9 +1,12 @@
 import {
   getHitRateLeaderboard, getChannelTypeStats, getWeeklyReport, getHiddenGemChannels,
 } from "@/lib/queries"
+import type { Horizon } from "@/lib/types"
 import { LeaderboardTabs } from "./leaderboard-tabs"
 
 export const dynamic = "force-dynamic"
+
+const HORIZONS: Horizon[] = ["1w", "1m", "3m"]
 
 async function safeQuery<T>(name: string, fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -14,9 +17,20 @@ async function safeQuery<T>(name: string, fn: () => Promise<T>, fallback: T): Pr
   }
 }
 
-export default async function LeaderboardPage() {
+export default async function LeaderboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ horizon?: string }>
+}) {
+  const params = await searchParams
+  // 1 month is the default: long enough for a call to play out, short enough
+  // that most predictions have a verdict.
+  const horizon: Horizon = HORIZONS.includes(params.horizon as Horizon)
+    ? (params.horizon as Horizon)
+    : "1m"
+
   const [leaderboard, typeStats, weekly, hiddenGems] = await Promise.all([
-    safeQuery("getHitRateLeaderboard", () => getHitRateLeaderboard(), []),
+    safeQuery("getHitRateLeaderboard", () => getHitRateLeaderboard(horizon), []),
     safeQuery("getChannelTypeStats", () => getChannelTypeStats(), []),
     safeQuery("getWeeklyReport", () => getWeeklyReport(), {
       winners: [], losers: [], bestCall: null, worstCall: null,
@@ -61,6 +75,7 @@ export default async function LeaderboardPage() {
         typeStats={typeStats}
         weekly={weekly}
         hiddenGems={hiddenGems}
+        horizon={horizon}
       />
     </div>
   )
