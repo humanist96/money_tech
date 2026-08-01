@@ -56,8 +56,9 @@ jobs:
 
   blog:
     runs-on: ubuntu-latest
-    # ~5s per blogger after the profile-fetch fix; 153 bloggers fits comfortably.
-    timeout-minutes: 30
+    # Measured in CI: ~18s per blogger (RSS + new-post content fetch + NLP),
+    # so 153 bloggers need ~46 min. A 30-minute cap cut the run off at 101.
+    timeout-minutes: 60
     needs: migrate
 
     steps:
