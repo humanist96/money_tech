@@ -44,6 +44,11 @@ ABSOLUTE_BAND_MULTIPLIER = 2.0
 
 MIN_SAMPLE_FOR_RANKING = 10
 
+# Commit every N predictions. A single transaction across the whole backlog
+# held one connection open long enough for the server to drop it, and took all
+# completed work down with it.
+COMMIT_EVERY = 100
+
 
 def wilson_interval(hits: int, n: int, z: float = 1.96) -> tuple[float, float]:
     """95% confidence interval for a proportion.
@@ -60,13 +65,21 @@ def wilson_interval(hits: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return (max(0.0, center - margin), min(1.0, center + margin))
 
 
-def resolve_benchmark(asset_type: str, market: str | None) -> str | None:
-    """Which benchmark a given asset is measured against (None = absolute)."""
+def resolve_benchmark(asset_type: str, market: str | None, asset_code: str | None = None) -> str | None:
+    """Which benchmark a given asset is measured against (None = absolute).
+
+    BTC has to be excluded explicitly: benchmarking it against itself makes its
+    excess return identically zero, so every BTC call would land inside the
+    band and be dropped as a push — silently erasing the record of any channel
+    that mostly talks about BTC.
+    """
     if asset_type == "stock":
         if market and market.upper() == "KOSDAQ":
             return "KOSDAQ"
         return "KOSPI"
     if asset_type == "coin":
+        if (asset_code or "").upper() == "BTC":
+            return None  # judged on absolute return with a widened band
         return "BTC"
     return None
 
@@ -162,13 +175,13 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
         pending = _fetch_pending(cur, limit)
         logger.info("Evaluating %d prediction(s)", len(pending))
 
-        for (pred_id, ptype, t0, channel_id, asset_code,
-             asset_type, market, is_delisted) in pending:
+        for processed, (pred_id, ptype, t0, channel_id, asset_code,
+                        asset_type, market, is_delisted) in enumerate(pending, 1):
             if t0 is None:
                 continue
 
             done = _existing_horizons(cur, pred_id)
-            benchmark_code = resolve_benchmark(asset_type, market)
+            benchmark_code = resolve_benchmark(asset_type, market, asset_code)
             base = get_price_asof(cur, asset_code, t0)
 
             for horizon, days in HORIZONS.items():
@@ -247,6 +260,10 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                    WHERE id = %s""",
                 (pred_id, EVALUATION_VERSION, pred_id),
             )
+
+            if processed % COMMIT_EVERY == 0:
+                conn.commit()
+                logger.info("  evaluated %d/%d", processed, len(pending))
 
         conn.commit()
 

@@ -38,6 +38,9 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
   return sorted
 }
 
+/** Sample below which a record is reported as "under evaluation". */
+export const MIN_SAMPLE_FOR_RANKING = 10
+
 // Hit Rate Leaderboard
 // Reads channel_stats, which the evaluator writes with benchmark-adjusted
 // outcomes and Wilson bounds. Ranking uses the interval's lower bound so a
@@ -90,6 +93,9 @@ export async function getHitRateLeaderboard(
     ) recent ON TRUE
     WHERE cs.horizon = ${horizon}
       AND cs.evaluation_version = 2
+      -- Below this the interval is too wide to rank on; those channels are
+      -- reachable from the channel list, just not ranked against the others.
+      AND cs.n_effective >= ${MIN_SAMPLE_FOR_RANKING}
     ORDER BY cs.wilson_low DESC NULLS LAST, cs.n_effective DESC
   `
 
@@ -119,9 +125,6 @@ function gradeChannel(
   if (wilsonHigh < 0.5) return 'below_market'
   return 'market_level'
 }
-
-/** Sample below which a record is reported as "under evaluation". */
-export const MIN_SAMPLE_FOR_RANKING = 10
 
 // YouTuber Backtesting Simulator
 // Weekly Winner/Loser Report
