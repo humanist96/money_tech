@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { getDb } from '@/lib/db'
+import { getCurrentUser } from '@/lib/auth-helpers'
 import type { VideoAnalysis } from '@/lib/types'
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY!
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 
 export async function POST(request: NextRequest) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Login required' }, { status: 401 })
+  }
+
   const body = await request.json()
   const { videoId } = body
 

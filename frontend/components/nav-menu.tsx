@@ -55,15 +55,6 @@ const PRIMARY_ITEMS: NavItem[] = [
     ),
   },
   {
-    href: "/assistant",
-    label: "AI 어시스턴트",
-    icon: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l1.09 3.26L16.36 6l-2.63 2.09L14.82 12 12 9.91 9.18 12l1.09-3.91L7.64 6l3.27-.74z" />
-      </svg>
-    ),
-  },
-  {
     href: "/pricing",
     label: "요금제",
     icon: (
@@ -225,15 +216,6 @@ const NAV_GROUPS: NavGroup[] = [
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
             <path d="M4 22h16" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-          </svg>
-        ),
-      },
-      {
-        href: "/notebook",
-        label: "리서치 \u03B2",
-        icon: (
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
         ),
       },

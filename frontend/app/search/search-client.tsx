@@ -34,8 +34,6 @@ export default function SearchClient() {
   const [report, setReport] = useState<SearchReport | null>(null)
   const [generatingReport, setGeneratingReport] = useState(false)
 
-  // NotebookLM state
-  const [sendingToNotebook, setSendingToNotebook] = useState(false)
 
   // Track if search was performed
   const [hasSearched, setHasSearched] = useState(false)
@@ -141,6 +139,10 @@ export default function SearchClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoId }),
       })
+      if (res.status === 401) {
+        window.location.href = '/login'
+        return
+      }
       const data = await res.json()
 
       if (res.ok && data.analysis) {
@@ -186,6 +188,10 @@ export default function SearchClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoIds: top5.map((r) => r.videoId) }),
       })
+      if (res.status === 401) {
+        window.location.href = '/login'
+        return
+      }
       const data = await res.json()
       if (res.ok && data.report) {
         setReport(data.report)
@@ -196,57 +202,6 @@ export default function SearchClient() {
       setGeneratingReport(false)
     }
   }, [results, analyses])
-
-  const handleSendToNotebook = useCallback(async () => {
-    if (results.length === 0) return
-    setSendingToNotebook(true)
-
-    const top5 = results.slice(0, 5)
-    const youtubeUrls = top5.map((r) => `https://www.youtube.com/watch?v=${r.videoId}`)
-
-    let analysisText = ''
-    if (report) {
-      analysisText += `[종합 분석]\n${report.overall_summary}\n\n공통 의견: ${report.consensus}\n\n`
-      if (report.key_arguments.length > 0) {
-        analysisText += `주요 근거:\n${report.key_arguments.map((a) => `- ${a}`).join('\n')}\n\n`
-      }
-    }
-    const analyzedVideos = top5.filter((r) => analyses[r.videoId])
-    for (const v of analyzedVideos) {
-      const a = analyses[v.videoId]
-      if (a?.summary) {
-        analysisText += `[${v.title}]\n${a.summary}\n\n`
-      }
-    }
-
-    try {
-      const nbCookies = localStorage.getItem('moneytech_nb_cookies') || ''
-      if (!nbCookies) {
-        window.location.href = '/notebook'
-        return
-      }
-      const res = await fetch('/api/notebook/notebooks/research', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-nb-cookies': nbCookies,
-        },
-        body: JSON.stringify({
-          keyword,
-          youtube_urls: youtubeUrls,
-          analysis_text: analysisText,
-        }),
-      })
-      const data = await res.json()
-      if (res.ok && data.id) {
-        window.location.href = `/notebook?id=${data.id}`
-      }
-    } catch {
-      // silent
-    } finally {
-      setSendingToNotebook(false)
-    }
-  }, [results, keyword, report, analyses])
 
   const isSearching = searching || blogSearching
 
@@ -379,25 +334,6 @@ export default function SearchClient() {
                       </span>
                     ) : (
                       'Top 5 종합 분석'
-                    )}
-                  </button>
-                  <button
-                    onClick={handleSendToNotebook}
-                    disabled={sendingToNotebook}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-th-tertiary border border-[#7c6cf0]/30 text-[#7c6cf0] text-sm font-medium rounded-lg hover:bg-th-tertiary/80 transition-colors disabled:opacity-40"
-                  >
-                    {sendingToNotebook ? (
-                      <span className="flex items-center gap-2">
-                        <Spinner /> 전송 중...
-                      </span>
-                    ) : (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                        </svg>
-                        NotebookLM 리서치
-                      </>
                     )}
                   </button>
                 </div>

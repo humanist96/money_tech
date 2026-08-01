@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { getDb } from '@/lib/db'
+import { getCurrentUser } from '@/lib/auth-helpers'
 import type { VideoAnalysis, SearchReport } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Login required' }, { status: 401 })
+  }
+
   const body = await request.json()
   const { videoIds } = body
 

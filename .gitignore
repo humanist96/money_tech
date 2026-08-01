@@ -9,3 +9,7 @@ __pycache__/
 *.egg-info/
 dist/
 .vercel
+
+# bkit plugin state / supabase CLI cache
+.bkit/
+supabase/.temp/
