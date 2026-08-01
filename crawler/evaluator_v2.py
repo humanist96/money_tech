@@ -186,6 +186,68 @@ def _record(cur, prediction_id, horizon: str, **fields) -> None:
     )
 
 
+def requeue_unevaluable(conn) -> int:
+    """Reopen unevaluable verdicts whose missing price has since arrived.
+
+    "unevaluable" is recorded when no price exists for t0 (or the horizon
+    date). Without this step that verdict is a ratchet: _fetch_pending's
+    NOT EXISTS treats the row as done, so even after a backfill loads the
+    price the prediction is never scored. Deleting the row is safe — it holds
+    no information beyond "price was missing at the time", and the evaluator
+    recomputes it on the next pass.
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            DELETE FROM prediction_evaluations pe
+            USING predictions p, mentioned_assets ma
+            WHERE pe.prediction_id = p.id
+              AND p.mentioned_asset_id = ma.id
+              AND pe.evaluation_version = %s
+              AND pe.outcome = 'unevaluable'
+              AND pe.unevaluable_reason = 'no_price_at_t0'
+              AND EXISTS (
+                  SELECT 1 FROM asset_prices ap
+                  WHERE ap.asset_code = ma.asset_code
+                    AND ap.recorded_date <= p.predicted_at::date
+                    AND ap.recorded_date >= p.predicted_at::date - %s
+              )
+            """,
+            (EVALUATION_VERSION, MAX_DATE_SLACK_DAYS),
+        )
+        reopened_t0 = cur.rowcount
+
+        cur.execute(
+            """
+            DELETE FROM prediction_evaluations pe
+            USING predictions p, mentioned_assets ma
+            WHERE pe.prediction_id = p.id
+              AND p.mentioned_asset_id = ma.id
+              AND pe.evaluation_version = %s
+              AND pe.outcome = 'unevaluable'
+              AND pe.unevaluable_reason = 'no_price_at_horizon'
+              AND EXISTS (
+                  SELECT 1 FROM asset_prices ap
+                  WHERE ap.asset_code = ma.asset_code
+                    AND ap.recorded_date <= p.predicted_at::date
+                        + CASE pe.horizon WHEN '1w' THEN 7 WHEN '1m' THEN 30 ELSE 90 END
+                    AND ap.recorded_date >= p.predicted_at::date
+                        + CASE pe.horizon WHEN '1w' THEN 7 WHEN '1m' THEN 30 ELSE 90 END - %s
+              )
+            """,
+            (EVALUATION_VERSION, MAX_DATE_SLACK_DAYS),
+        )
+        reopened_h = cur.rowcount
+        conn.commit()
+
+    total = reopened_t0 + reopened_h
+    logger.info(
+        "Requeued %d unevaluable verdict(s) (%d t0, %d horizon)",
+        total, reopened_t0, reopened_h,
+    )
+    return total
+
+
 def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
     """Score every prediction whose horizons have come due."""
     counts = {"hit": 0, "miss": 0, "push": 0, "unevaluable": 0, "not_due": 0}

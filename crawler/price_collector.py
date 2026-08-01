@@ -121,6 +121,11 @@ def record_daily_prices(conn) -> int:
     today = today_kst().isoformat()
 
     with conn.cursor() as cur:
+        # "Still awaiting evaluation" must be read from prediction_evaluations,
+        # not approximated by a 120-day mention window: a prediction older than
+        # the window whose 3m horizon is still open needs today's price too.
+        # The date floor only trims predictions so old that every horizon
+        # already resolved or expired past the slack window.
         cur.execute("""
             SELECT DISTINCT ma.asset_code, ma.asset_type
             FROM predictions p
@@ -128,7 +133,18 @@ def record_daily_prices(conn) -> int:
             WHERE ma.asset_code IS NOT NULL
               AND ma.asset_type IN ('stock', 'coin')
               AND NOT p.is_duplicate
-              AND p.predicted_at >= NOW() - INTERVAL '120 days'
+              AND p.prediction_type IN ('buy', 'sell', 'hold')
+              AND p.predicted_at >= NOW() - INTERVAL '100 days'
+              AND EXISTS (
+                  SELECT 1 FROM (SELECT unnest(ARRAY['1w','1m','3m']) AS h) hs
+                  WHERE NOT EXISTS (
+                      SELECT 1 FROM prediction_evaluations pe
+                      WHERE pe.prediction_id = p.id
+                        AND pe.horizon = hs.h
+                        AND pe.evaluation_version = 2
+                        AND pe.outcome IN ('hit', 'miss', 'push')
+                  )
+              )
         """)
         assets = cur.fetchall()
 

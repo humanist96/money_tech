@@ -175,6 +175,18 @@ jobs:
       - name: Install dependencies
         run: pip install -r crawler/requirements.txt
 
+      # Self-healing for price-history gaps: if the evaluate job fails for a
+      # stretch, record_daily_prices leaves holes that no later run repairs on
+      # its own — daily snapshots only cover "today". The backfill's skip
+      # heuristic makes this cheap when there is nothing to repair, and
+      # evaluate.py's requeue step then reopens verdicts the new prices unlock.
+      - name: Repair price-history gaps
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd crawler
+          python backfill_prices.py --history --days 60
+
       - name: Collect prices & evaluate predictions
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

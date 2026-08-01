@@ -14,7 +14,7 @@ from logger import logger
 from price_history import load_benchmark_history
 from price_collector import record_daily_prices
 from backfill_prices import mark_duplicates
-from evaluator_v2 import evaluate_predictions, update_channel_stats
+from evaluator_v2 import evaluate_predictions, requeue_unevaluable, update_channel_stats
 from channel_classifier import update_stale_classifications
 
 load_dotenv()
@@ -68,6 +68,12 @@ def main():
             mark_duplicates(conn)
         except Exception as e:
             logger.error("Duplicate marking failed: %s", e, exc_info=True)
+
+        logger.info("=== Requeue Unevaluable (prices arrived since) ===")
+        try:
+            requeue_unevaluable(conn)
+        except Exception as e:
+            logger.error("Requeue failed: %s", e, exc_info=True)
 
         logger.info("=== Prediction Evaluation (v2) ===")
         try:

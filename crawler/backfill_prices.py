@@ -114,20 +114,31 @@ def backfill_history(conn, limit: int | None = None, days: int = 400) -> int:
         assets = _assets_needing_history(cur, limit)
     logger.info("Loading history for %d asset(s)", len(assets))
 
+    recent_start = end - timedelta(days=30)
+
     for i, (code, asset_type) in enumerate(assets, 1):
         with conn.cursor() as cur:
             cur.execute(
-                """SELECT COUNT(*) FROM asset_prices
+                """SELECT COUNT(*),
+                          COUNT(*) FILTER (WHERE recorded_date >= %s)
+                   FROM asset_prices
                    WHERE asset_code = %s AND recorded_date >= %s""",
-                (code, start),
+                (recent_start, code, start),
             )
-            have = cur.fetchone()[0]
+            have, have_recent = cur.fetchone()
 
-        # Roughly one row per trading day; skip assets already loaded so the
-        # job can be re-run after an interruption without redoing the work.
-        if have > days * 0.5:
+        # Roughly one row per trading day. An overall row count alone is not
+        # enough to skip: an asset dense through spring but empty for the last
+        # two months still passes `have > days*0.5`, which is exactly how the
+        # May-onward evaluation gap survived repeated --history re-runs. The
+        # last 30 days must be covered on their own (>=15 of ~21 trading days;
+        # coins trade daily so the bar holds for both types).
+        if have > days * 0.5 and have_recent >= 15:
             if i % 25 == 0:
-                logger.info("[%d/%d] %s: already loaded (%d rows)", i, len(assets), code, have)
+                logger.info(
+                    "[%d/%d] %s: already loaded (%d rows, %d recent)",
+                    i, len(assets), code, have, have_recent,
+                )
             continue
 
         if asset_type == "stock":
