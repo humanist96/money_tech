@@ -22,6 +22,10 @@ declare module "@auth/core/jwt" {
   }
 }
 
+if (!process.env.AUTH_SECRET) {
+  throw new Error("AUTH_SECRET is not configured")
+}
+
 const providers = []
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   providers.push(
@@ -41,7 +45,7 @@ if (process.env.KAKAO_CLIENT_ID && process.env.KAKAO_CLIENT_SECRET) {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.AUTH_SECRET || "dev-fallback-secret-change-in-production",
+  secret: process.env.AUTH_SECRET,
   providers,
   session: {
     strategy: "jwt",
