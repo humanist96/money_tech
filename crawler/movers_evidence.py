@@ -75,7 +75,9 @@ def collect_flow(stock_code: str, trade_date: date) -> tuple[list[dict], dict]:
             side = "순매수" if amount > 0 else "순매도"
             evidence.append({
                 "type": "flow",
-                "summary": f"{label}이 약 {abs(amount) / 1e8:,.0f}억원 {side}했습니다.",
+                # Marked provisional: the job runs at 16:40 KST, before the
+                # exchange finalises investor-type figures for the session.
+                "summary": f"{label}이 약 {abs(amount) / 1e8:,.0f}억원 {side}했습니다. (장 마감 직후 잠정치)",
                 "source_url": f"https://finance.naver.com/item/frgn.naver?code={stock_code}",
                 "source_date": trade_date.isoformat(),
             })

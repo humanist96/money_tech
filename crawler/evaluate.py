@@ -13,6 +13,7 @@ from db import get_conn, close_pool
 from logger import logger
 from price_history import load_benchmark_history
 from price_collector import record_daily_prices
+from backfill_prices import mark_duplicates
 from evaluator_v2 import evaluate_predictions, update_channel_stats
 from channel_classifier import update_stale_classifications
 
@@ -61,6 +62,12 @@ def main():
             record_daily_prices(conn)
         except Exception as e:
             logger.error("Price collection failed: %s", e, exc_info=True)
+
+        logger.info("=== Duplicate / Contradiction Marking ===")
+        try:
+            mark_duplicates(conn)
+        except Exception as e:
+            logger.error("Duplicate marking failed: %s", e, exc_info=True)
 
         logger.info("=== Prediction Evaluation (v2) ===")
         try:

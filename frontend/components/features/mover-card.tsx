@@ -140,6 +140,12 @@ export function MoverCard({ mover }: { mover: DailyMover }) {
             </button>
           )}
         </div>
+
+        {/* Carried on the card itself, not just the page: these also render on
+            the dashboard, where the page-level notice is absent. */}
+        <p className="mt-2 pt-2 border-t border-th-border/40 text-[10px] text-th-dim leading-relaxed">
+          공개 데이터 요약이며 투자 자문이 아닙니다. 원인 설명은 제공된 근거에 한해 생성됩니다.
+        </p>
       </div>
 
       {open && (

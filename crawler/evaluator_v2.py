@@ -84,6 +84,25 @@ def resolve_benchmark(asset_type: str, market: str | None, asset_code: str | Non
     return None
 
 
+# A target within this band of the current price is not a directional call.
+TARGET_NEUTRAL_BAND = 0.03
+
+
+def direction_from_target(target_price: float, price_t0: float) -> str:
+    """Direction implied by an analyst target versus the price when published.
+
+    v1 compared a 12-month target against a 1-month price and called the gap an
+    error rate, which measured nothing. The defensible signal in a target is its
+    direction, judged on the same horizons and benchmark as every other call.
+    """
+    gap = target_price / price_t0 - 1
+    if gap > TARGET_NEUTRAL_BAND:
+        return "buy"
+    if gap < -TARGET_NEUTRAL_BAND:
+        return "sell"
+    return "hold"
+
+
 def classify(prediction_type: str, excess: float, band: float) -> str:
     """hit / miss / push for one prediction at one horizon."""
     if abs(excess) <= band:
@@ -102,7 +121,8 @@ def _fetch_pending(cur, limit: int | None = None) -> list[tuple]:
     """Predictions that still need at least one horizon evaluated."""
     sql = """
         SELECT p.id, p.prediction_type, p.predicted_at::date, p.channel_id,
-               ma.asset_code, ma.asset_type, ad.market, ad.is_delisted
+               ma.asset_code, ma.asset_type, ad.market, ad.is_delisted,
+               p.target_price
         FROM predictions p
         JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
         LEFT JOIN asset_dictionary ad ON ad.asset_code = ma.asset_code
@@ -176,13 +196,18 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
         logger.info("Evaluating %d prediction(s)", len(pending))
 
         for processed, (pred_id, ptype, t0, channel_id, asset_code,
-                        asset_type, market, is_delisted) in enumerate(pending, 1):
+                        asset_type, market, is_delisted, target_price) in enumerate(pending, 1):
             if t0 is None:
                 continue
 
             done = _existing_horizons(cur, pred_id)
             benchmark_code = resolve_benchmark(asset_type, market, asset_code)
             base = get_price_asof(cur, asset_code, t0)
+
+            # An analyst call often carries only a target price, no verb. The
+            # target relative to the price at publication is the direction.
+            if ptype == "hold" and target_price and base and base[0] > 0:
+                ptype = direction_from_target(float(target_price), base[0])
 
             for horizon, days in HORIZONS.items():
                 if horizon in done:

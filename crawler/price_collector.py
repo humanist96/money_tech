@@ -107,55 +107,28 @@ def get_stock_price(code: str, date_str: str | None = None) -> float | None:
         return None
 
 
-def collect_prices_for_predictions(conn) -> int:
-    """Fetch prices for predictions that don't have price_at_mention yet."""
-    updated = 0
+def record_daily_prices(conn) -> int:
+    """Record today's close for every asset still awaiting evaluation.
+
+    Scoped by open evaluations rather than recent mentions: a 3-month horizon
+    needs a price 90 days after the call, by which time the mention has long
+    left any 30-day window. The old scope silently starved long horizons and
+    they resolved as `no_price_at_horizon`.
+    """
+    from price_history import today_kst  # local: price_history imports this module
+
+    recorded = 0
+    today = today_kst().isoformat()
+
     with conn.cursor() as cur:
         cur.execute("""
             SELECT DISTINCT ma.asset_code, ma.asset_type
             FROM predictions p
-            JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-            WHERE p.prediction_type IS NOT NULL
-            AND ma.price_at_mention IS NULL
-            AND ma.asset_code IS NOT NULL
-        """)
-        needed = cur.fetchall()
-
-        # Batch fetch all coin prices at once
-        coin_symbols = [code for code, atype in needed if atype == "coin"]
-        coin_prices = get_coin_prices_batch(coin_symbols) if coin_symbols else {}
-
-        for asset_code, asset_type in needed:
-            price = None
-            if asset_type == "coin":
-                price = coin_prices.get(asset_code)
-            elif asset_type == "stock":
-                price = get_stock_price(asset_code)
-
-            if price is not None:
-                cur.execute(
-                    "UPDATE mentioned_assets SET price_at_mention = %s WHERE asset_code = %s AND price_at_mention IS NULL",
-                    (price, asset_code),
-                )
-                updated += 1
-
-        conn.commit()
-    logger.info("Collected prices for %d assets", updated)
-    return updated
-
-
-def record_daily_prices(conn) -> int:
-    """Record daily prices for all actively mentioned assets."""
-    recorded = 0
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT DISTINCT ma.asset_code, ma.asset_type
-            FROM mentioned_assets ma
-            JOIN videos v ON ma.video_id = v.id
-            WHERE v.published_at >= NOW() - INTERVAL '30 days'
-            AND ma.asset_code IS NOT NULL
+            JOIN mentioned_assets ma ON ma.id = p.mentioned_asset_id
+            WHERE ma.asset_code IS NOT NULL
+              AND ma.asset_type IN ('stock', 'coin')
+              AND NOT p.is_duplicate
+              AND p.predicted_at >= NOW() - INTERVAL '120 days'
         """)
         assets = cur.fetchall()
 

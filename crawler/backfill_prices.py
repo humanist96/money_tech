@@ -188,29 +188,36 @@ def backfill_price_at_mention(conn) -> int:
 
 
 def mark_duplicates(conn) -> int:
-    """Flag repeat calls so one opinion is counted once."""
+    """Flag repeat calls so one opinion is counted once.
+
+    A repeat is the *immediately preceding* call on the same (channel, asset)
+    being the same direction within the window. Comparing against the previous
+    same-direction call instead would treat buy -> sell -> buy as a repeat of
+    the first buy, when the reversal in between makes the third call a new bet.
+    """
     with conn.cursor() as cur:
         cur.execute(
             """
             WITH ordered AS (
                 SELECT p.id,
-                       p.channel_id,
-                       ma.asset_code,
-                       p.prediction_type,
                        p.predicted_at,
-                       LAG(p.predicted_at) OVER (
-                           PARTITION BY p.channel_id, ma.asset_code, p.prediction_type
-                           ORDER BY p.predicted_at
-                       ) AS prev_at
+                       p.prediction_type,
+                       LAG(p.predicted_at) OVER w AS prev_at,
+                       LAG(p.prediction_type) OVER w AS prev_type
                 FROM predictions p
                 JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
                 WHERE p.predicted_at IS NOT NULL AND ma.asset_code IS NOT NULL
+                WINDOW w AS (
+                    PARTITION BY p.channel_id, ma.asset_code
+                    ORDER BY p.predicted_at
+                )
             )
             UPDATE predictions p
             SET is_duplicate = TRUE
             FROM ordered o
             WHERE p.id = o.id
               AND o.prev_at IS NOT NULL
+              AND o.prev_type = o.prediction_type
               AND o.predicted_at - o.prev_at < INTERVAL '%s days'
               AND NOT p.is_duplicate
             """

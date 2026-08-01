@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Optional
 
 from asset_dictionary import (
@@ -299,34 +300,42 @@ class NLPPipeline:
                 )
                 ma_row = cur.fetchone()
                 if ma_row:
-                    # A channel repeating the same call on the same asset is one
-                    # opinion, not many: mark repeats so they are stored for
-                    # display but excluded from the effective sample.
+                    # A repeat is the immediately preceding call on the same
+                    # (channel, asset) being the same direction inside the
+                    # window; a reversal in between starts a new bet. Keyed on
+                    # asset_code to match the backfill — keying on asset_name
+                    # made the two paths disagree about what "same asset" means.
                     cur.execute(
-                        """SELECT 1 FROM predictions p
-                           JOIN mentioned_assets ma ON ma.id = p.mentioned_asset_id
+                        """SELECT p.prediction_type, p.predicted_at
+                           FROM predictions p
+                           JOIN mentioned_assets ma2 ON ma2.id = p.mentioned_asset_id
                            WHERE p.channel_id = %s
-                             AND ma.asset_name = %s
-                             AND p.prediction_type = %s
-                             AND p.predicted_at > COALESCE(%s::timestamptz, NOW())
-                                                  - INTERVAL '%s days'
+                             AND COALESCE(ma2.asset_code, ma2.asset_name) = %s
+                             AND p.predicted_at < COALESCE(%s::timestamptz, NOW())
+                           ORDER BY p.predicted_at DESC
                            LIMIT 1""",
                         (
                             channel_uuid,
-                            pred["asset_name"],
-                            pred["prediction_type"],
+                            pred.get("asset_code") or pred["asset_name"],
                             published_at,
-                            DUPLICATE_WINDOW_DAYS,
                         ),
                     )
-                    is_duplicate = cur.fetchone() is not None
+                    prev = cur.fetchone()
+                    is_duplicate = False
+                    if prev and prev[0] == pred["prediction_type"] and prev[1]:
+                        predicted_dt = published_at or datetime.now(timezone.utc).isoformat()
+                        cur.execute(
+                            "SELECT (%s::timestamptz - %s) < INTERVAL '%s days'",
+                            (predicted_dt, prev[1], DUPLICATE_WINDOW_DAYS),
+                        )
+                        is_duplicate = bool(cur.fetchone()[0])
 
                     cur.execute(
                         """INSERT INTO predictions
                         (video_id, channel_id, mentioned_asset_id, prediction_type, reason,
                          predicted_at, detection_method, is_duplicate)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (video_id, mentioned_asset_id, prediction_type) DO NOTHING""",
+                        ON CONFLICT DO NOTHING""",
                         (
                             video_uuid,
                             channel_uuid,
@@ -400,7 +409,7 @@ class NLPPipeline:
                  target_price, previous_target_price, confidence, reason, predicted_at,
                  detection_method)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'report')
-                ON CONFLICT (video_id, mentioned_asset_id, prediction_type) DO NOTHING""",
+                ON CONFLICT DO NOTHING""",
                 (
                     video_uuid,
                     channel_uuid,
