@@ -733,3 +733,74 @@ export type Database = {
     }
   }
 }
+
+
+// ---------------------------------------------------------------------------
+// Daily movers ("why did it move")
+// ---------------------------------------------------------------------------
+
+export type MoverCauseType =
+  | 'earnings' | 'contract' | 'capital_change' | 'supply_demand'
+  | 'news_theme' | 'market_wide' | 'creator_driven' | 'unexplained'
+
+export type MoverConfidence = 'high' | 'medium' | 'low'
+
+export type EvidenceType = 'disclosure' | 'flow' | 'news' | 'market' | 'creator'
+
+export interface MoverEvidence {
+  n: number
+  type: EvidenceType
+  summary: string
+  source_url: string | null
+  source_date: string | null
+}
+
+export interface MoverFactor {
+  type: EvidenceType
+  description: string
+  /** Indices into `evidence`; validated server-side before storage. */
+  evidence_refs: number[]
+}
+
+export interface MoverCreatorPrediction {
+  channel_id: string
+  channel_name: string
+  channel_type: string | null
+  prediction_type: string
+  days_ago: number | null
+  /** '적중' | '빗나감' | '판정보류' | '평가 전' — never asserted before scoring. */
+  verdict: string
+  excess_return: number | null
+  wilson_low: number | null
+  n_effective: number | null
+  video_title: string | null
+  video_id: string
+}
+
+export interface MoverCreatorContext {
+  text?: string | null
+  predictions: MoverCreatorPrediction[]
+  sentiment_7d: Record<string, number>
+}
+
+export interface DailyMover {
+  id: string
+  trade_date: string
+  stock_code: string
+  stock_name: string
+  market: string | null
+  close_price: number | null
+  change_pct: number
+  trading_value: number | null
+  value_ratio: number | null
+  selection_reason: string | null
+  headline: string | null
+  cause_type: MoverCauseType | null
+  summary: string | null
+  confidence: MoverConfidence | null
+  factors: MoverFactor[]
+  evidence: MoverEvidence[]
+  creator_context: MoverCreatorContext | null
+  investor_flow: { foreign?: number; institution?: number } | null
+  llm_model: string | null
+}

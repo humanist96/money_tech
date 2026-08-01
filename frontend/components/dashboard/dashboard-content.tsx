@@ -3,7 +3,7 @@
 import type {
   Channel, AssetConsensus, PredictionFeedItem, TopAssetSentiment,
   MarketSentimentGauge, VideoWithChannel, MentionedAsset, AssetMention, BuzzAlertEnhanced,
-  PredictionProfile, ContrarianSignal, RiskScore,
+  PredictionProfile, ContrarianSignal, RiskScore, DailyMover,
 } from "@/lib/types"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { VideoFeed } from "@/components/dashboard/video-feed"
@@ -18,6 +18,8 @@ import { ContrarianSignalPanel } from "@/components/features/contrarian-signal"
 import { EnhancedBuzzAlertPanel } from "@/components/features/enhanced-buzz-alert"
 import { RiskScoreboard } from "@/components/features/risk-scoreboard"
 import { YouTuberPortfolio } from "@/components/features/youtuber-portfolio"
+import { MoverCard } from "@/components/features/mover-card"
+import Link from "next/link"
 import { DashboardLayout, type DashboardSection } from "@/components/dashboard/dashboard-layout"
 
 interface DashboardContentProps {
@@ -35,12 +37,14 @@ interface DashboardContentProps {
   marketGauge: MarketSentimentGauge
   contrarianSignals: ContrarianSignal[]
   riskScores: RiskScore[]
+  topMovers: DailyMover[]
 }
 
 export function DashboardContent({
   channels, videos, totalVideos, todayVideos, topCategory,
   consensus, assetMentions, predictions, assetSentiments,
   buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores,
+  topMovers,
 }: DashboardContentProps) {
   const sections: DashboardSection[] = [
     {
@@ -67,6 +71,26 @@ export function DashboardContent({
       id: "buzz",
       label: "떡상 조기경보",
       content: <EnhancedBuzzAlertPanel alerts={buzzAlerts} />,
+    },
+    {
+      id: "movers",
+      label: "어제 왜 움직였나",
+      content: topMovers.length > 0 ? (
+        <div className="space-y-2">
+          <div className="grid gap-3 lg:grid-cols-2">
+            {topMovers.map((m) => <MoverCard key={m.id} mover={m} />)}
+          </div>
+          <div className="text-right">
+            <Link href="/movers" className="text-[11px] text-th-accent hover:underline">
+              등락 원인 전체 보기 →
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="card-dark p-6 text-center text-sm text-th-dim">
+          장 마감 후 등락 원인이 집계됩니다
+        </div>
+      ),
     },
     {
       id: "stats",

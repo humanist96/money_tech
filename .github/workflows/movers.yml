@@ -1,0 +1,40 @@
+name: Daily Movers
+
+# Separate from crawl.yml: this runs once after the Korean close, while the
+# crawlers run every six hours. Sharing a workflow would tie this to a job
+# matrix that has repeatedly hit its own timeouts.
+on:
+  schedule:
+    - cron: '40 7 * * 1-5'   # 07:40 UTC = 16:40 KST, after the close settles
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'YYYYMMDD (blank = most recent session)'
+        required: false
+
+jobs:
+  movers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      - name: Explain yesterday's movers
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: |
+          cd crawler
+          python movers_main.py --date "${{ inputs.date }}" --backfill-days 3

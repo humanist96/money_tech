@@ -3,7 +3,7 @@ import {
   getAssetConsensus, getAssetMentions,
   getRecentPredictions, getTopAssetSentiments,
   getEnhancedBuzzAlerts, getChannelPredictionProfiles,
-  getMarketSentimentGauge, getContrarianSignals, getRiskScoreboard,
+  getMarketSentimentGauge, getContrarianSignals, getRiskScoreboard, getTopMovers,
 } from "@/lib/queries"
 import type { Channel } from "@/lib/types"
 import { CATEGORY_LABELS } from "@/lib/types"
@@ -21,7 +21,7 @@ async function safeQuery<T>(name: string, fn: () => Promise<T>, fallback: T): Pr
 }
 
 async function getDashboardData() {
-  const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores] = await Promise.all([
+  const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores, topMovers] = await Promise.all([
     safeQuery("getChannels", () => getChannels(), [] as Channel[]),
     safeQuery("getRecentVideosWithAssets", () => getRecentVideosWithAssets(15), []),
     safeQuery("getDailyStats", () => getDailyStats(30), []),
@@ -35,6 +35,7 @@ async function getDashboardData() {
     safeQuery("getMarketSentimentGauge", () => getMarketSentimentGauge(), { overall_score: 50, category_scores: [], historical_extremes: [], current_warning: null }),
     safeQuery("getContrarianSignals", () => getContrarianSignals(30, 75), []),
     safeQuery("getRiskScoreboard", () => getRiskScoreboard(14), []),
+    safeQuery("getTopMovers", () => getTopMovers(2), []),
   ])
 
   const today = new Date().toISOString().split("T")[0]
@@ -53,6 +54,7 @@ async function getDashboardData() {
     channels, videos, totalVideos, todayVideos, topCategory,
     consensus, assetMentions, predictions, assetSentiments,
     buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores,
+    topMovers,
   }
 }
 

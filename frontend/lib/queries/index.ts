@@ -58,3 +58,11 @@ export {
   getRiskScoreboard,
   getHiddenGemChannels,
 } from './analytics'
+
+// Daily movers
+export {
+  getLatestMoversDate,
+  getMoversByDate,
+  getTopMovers,
+  getMoverHistory,
+} from './movers'
