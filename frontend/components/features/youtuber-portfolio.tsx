@@ -304,9 +304,17 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
                         >
                           {pred.asset_name}
                         </Link>
-                        {pred.direction_score !== null && (
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ml-auto ${pred.direction_score >= 0.5 ? 'bg-[#22c997]/10 text-[#22c997]' : 'bg-[#ff5757]/10 text-[#ff5757]'}`}>
-                            {pred.direction_score >= 0.5 ? '적중' : '빗나감'}
+                        {pred.outcome_1m && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ml-auto ${
+                            pred.outcome_1m === 'hit'
+                              ? 'bg-[#22c997]/10 text-[#22c997]'
+                              : pred.outcome_1m === 'miss'
+                                ? 'bg-[#ff5757]/10 text-[#ff5757]'
+                                : 'bg-th-tertiary text-th-dim'
+                          }`} title="1개월 구간, 벤치마크 대비 초과수익 기준">
+                            {pred.outcome_1m === 'hit' ? '적중'
+                              : pred.outcome_1m === 'miss' ? '빗나감'
+                              : pred.outcome_1m === 'push' ? '판정보류' : '평가불가'}
                           </span>
                         )}
                       </div>

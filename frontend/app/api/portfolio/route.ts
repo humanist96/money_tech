@@ -15,17 +15,21 @@ export async function GET(request: NextRequest) {
   try {
     const sql = getDb()
 
-    // Combined hit rate
+    // Combined record on the v2 definition (1-month horizon), pooled across the
+    // selected channels. Reads channel_stats so this agrees with the leaderboard
+    // instead of averaging the retired direction_score column.
     const hitRateRows = await sql`
       SELECT
-        COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
-        COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
-        CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-          THEN AVG(p.direction_score)::float
-          ELSE NULL END AS combined_hit_rate
-      FROM predictions p
-      WHERE p.channel_id = ANY(${channelIds})
-        AND p.prediction_type IN ('buy', 'sell')
+        COALESCE(SUM(cs.n_hits), 0)::int      AS accurate_count,
+        COALESCE(SUM(cs.n_effective), 0)::int AS total_predictions,
+        CASE WHEN SUM(cs.n_effective) > 0
+          THEN (SUM(cs.n_hits)::float / SUM(cs.n_effective))
+          ELSE NULL END                       AS combined_hit_rate,
+        AVG(cs.avg_excess_return)::float      AS avg_excess_return
+      FROM channel_stats cs
+      WHERE cs.channel_id = ANY(${channelIds})
+        AND cs.horizon = '1m'
+        AND cs.evaluation_version = 2
     `
 
     // Opinion conflicts between selected channels
@@ -54,12 +58,17 @@ export async function GET(request: NextRequest) {
         p.id, c.name AS channel_name,
         COALESCE(ma.asset_name, '(미지정)') AS asset_name,
         ma.asset_code, p.prediction_type,
-        p.direction_score::float AS direction_score,
+        pe.outcome AS outcome_1m,
         p.predicted_at
       FROM predictions p
       JOIN channels c ON p.channel_id = c.id
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+      LEFT JOIN prediction_evaluations pe
+             ON pe.prediction_id = p.id
+            AND pe.horizon = '1m'
+            AND pe.evaluation_version = 2
       WHERE p.channel_id = ANY(${channelIds})
+        AND NOT p.is_duplicate
         AND p.prediction_type IN ('buy', 'sell')
       ORDER BY c.name, ma.asset_name, p.prediction_type, p.predicted_at::date, p.predicted_at DESC
     `

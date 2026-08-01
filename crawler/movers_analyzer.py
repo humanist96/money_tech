@@ -142,13 +142,18 @@ def _validate(raw: dict, evidence: list[dict], candidate) -> dict:
         "factors": factors,
         "creator_context_text": raw.get("creator_context"),
         # Confidence is a property of the evidence, not of how sure the model sounds.
-        "confidence": _confidence(evidence_types, factors),
+        "confidence": _confidence(evidence_types, factors, cause_type),
         "llm_model": MODEL,
     }
 
 
-def _confidence(evidence_types: set[str], factors: list[dict]) -> str:
+def _confidence(evidence_types: set[str], factors: list[dict], cause_type: str) -> str:
     if not factors:
+        return "low"
+    # Saying "no identifiable cause" and "high confidence" at once is incoherent;
+    # the model produced exactly that pairing. Confidence describes how well the
+    # cause is supported, so an unnamed cause cannot be well supported.
+    if cause_type == "unexplained":
         return "low"
     substantive = evidence_types & {"disclosure", "flow", "news"}
     if "disclosure" in evidence_types and len(substantive) >= 2:

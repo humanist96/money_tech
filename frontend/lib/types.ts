@@ -604,7 +604,8 @@ export interface PortfolioResponse {
     asset_name: string
     asset_code: string | null
     prediction_type: string
-    direction_score: number | null
+    /** v2 verdict at the 1-month horizon; null until the horizon comes due. */
+    outcome_1m: string | null
     predicted_at: string | null
   }[]
 }
@@ -678,7 +679,8 @@ export interface ActivePrediction {
   predicted_at: string | null
   days_since: number
   is_accurate: boolean | null
-  direction_score: number | null
+  /** v2 verdict at the 1-month horizon; null until the horizon comes due. */
+  outcome_1m: string | null
   reason: string | null
 }
 
@@ -801,4 +803,23 @@ export interface DailyMover {
   creator_context: MoverCreatorContext | null
   investor_flow: { foreign?: number; institution?: number } | null
   llm_model: string | null
+}
+
+
+/** One horizon's row from channel_stats (evaluation_version 2). */
+export interface ChannelHorizonStats {
+  horizon: Horizon
+  n_effective: number
+  n_hits: number
+  n_push: number
+  n_unevaluable: number
+  n_buy: number
+  n_sell: number
+  n_hold: number
+  /** Portion of the sample judged on absolute return (BTC), not vs a benchmark. */
+  n_absolute: number
+  hit_rate: number | null
+  wilson_low: number | null
+  wilson_high: number | null
+  avg_excess_return: number | null
 }

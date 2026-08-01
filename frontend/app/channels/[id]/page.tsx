@@ -247,35 +247,14 @@ export default async function ChannelDetailPage({ params }: PageProps) {
 
       {/* Analytics cards */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <HitRateCard
-          hitRate={hitRateData.hit_rate}
-          totalPredictions={hitRateData.total_predictions}
-          accurateCount={hitRateData.accurate_count}
-          dir1wCorrect={hitRateData.dir_1w_correct}
-          dir1wTotal={hitRateData.dir_1w_total}
-          dir1mCorrect={hitRateData.dir_1m_correct}
-          dir1mTotal={hitRateData.dir_1m_total}
-          recentPredictions={predictions.filter((p: any) => p.prediction_type !== 'hold').map((p: any) => ({
-            asset_name: p.asset_name,
-            asset_code: p.asset_code,
-            prediction_type: p.prediction_type,
-            predicted_at: p.predicted_at,
-            price_at_mention: p.price_at_mention,
-            actual_price: p.actual_price_after_3m || p.actual_price_after_1m || p.actual_price_after_1w,
-            is_accurate: p.is_accurate,
-            direction_1w: p.direction_1w ?? null,
-            direction_1m: p.direction_1m ?? null,
-            direction_3m: p.direction_3m ?? null,
-            direction_score: p.direction_score ?? null,
-          }))}
-        />
+        <HitRateCard stats={hitRateData.byHorizon} />
         <ProfileRadar
           channelName={channel.name}
           data={{
             aggressiveness: profileData.aggressiveness ?? 50,
             conservatism: profileData.conservatism ?? 50,
             diversity: Math.min((profileData.diversity ?? 50) * 5, 100),
-            accuracy: (channel.hit_rate ?? 0.5) * 100,
+            accuracy: (hitRateData.primary?.hit_rate ?? 0.5) * 100,
             depth: Math.min(profileData.depth ?? 50, 100),
           }}
         />

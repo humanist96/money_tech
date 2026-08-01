@@ -261,7 +261,7 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
       p.predicted_at,
       EXTRACT(DAY FROM NOW() - p.predicted_at)::int AS days_since,
       p.is_accurate,
-      p.direction_score::float AS direction_score,
+      pe.outcome AS outcome_1m,
       p.reason,
       CASE
         WHEN ma.price_at_mention IS NOT NULL
@@ -275,6 +275,10 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
         ELSE NULL
       END AS progress_pct
     FROM predictions p
+    LEFT JOIN prediction_evaluations pe
+           ON pe.prediction_id = p.id
+          AND pe.horizon = '1m'
+          AND pe.evaluation_version = 2
     JOIN channels c ON p.channel_id = c.id
     LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
     LEFT JOIN LATERAL (
@@ -306,7 +310,7 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
     predicted_at: r.predicted_at,
     days_since: Number(r.days_since) || 0,
     is_accurate: r.is_accurate,
-    direction_score: r.direction_score != null ? Number(r.direction_score) : null,
+    outcome_1m: r.outcome_1m ?? null,
     reason: r.reason,
   }))
 }

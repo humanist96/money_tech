@@ -287,6 +287,10 @@ def update_channel_stats(conn) -> int:
                                       AND pe.outcome IN ('hit','miss'))::int          AS n_sell,
                    COUNT(*) FILTER (WHERE p.prediction_type = 'hold'
                                       AND pe.outcome IN ('hit','miss'))::int          AS n_hold,
+                   -- Scored on absolute return (BTC) rather than vs a benchmark;
+                   -- surfaced so a mixed-scale record is visible, not hidden.
+                   COUNT(*) FILTER (WHERE pe.benchmark_code IS NULL
+                                      AND pe.outcome IN ('hit','miss'))::int          AS n_absolute,
                    AVG(pe.excess_return) FILTER (WHERE pe.outcome IN ('hit','miss'))  AS avg_excess,
                    STDDEV_SAMP(pe.excess_return) FILTER (WHERE pe.outcome IN ('hit','miss')) AS std_excess
             FROM prediction_evaluations pe
@@ -299,15 +303,15 @@ def update_channel_stats(conn) -> int:
         rows = cur.fetchall()
 
         for (channel_id, horizon, n_eff, n_hits, n_push, n_unev,
-             n_buy, n_sell, n_hold, avg_excess, std_excess) in rows:
+             n_buy, n_sell, n_hold, n_absolute, avg_excess, std_excess) in rows:
             hit_rate = (n_hits / n_eff) if n_eff else None
             low, high = wilson_interval(n_hits, n_eff)
             cur.execute(
                 """INSERT INTO channel_stats
                    (channel_id, horizon, n_effective, n_hits, n_push, n_unevaluable,
-                    n_buy, n_sell, n_hold, hit_rate, wilson_low, wilson_high,
+                    n_buy, n_sell, n_hold, n_absolute, hit_rate, wilson_low, wilson_high,
                     avg_excess_return, excess_std, evaluation_version, updated_at)
-                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
+                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
                    ON CONFLICT (channel_id, horizon, evaluation_version) DO UPDATE SET
                        n_effective = EXCLUDED.n_effective,
                        n_hits = EXCLUDED.n_hits,
@@ -316,6 +320,7 @@ def update_channel_stats(conn) -> int:
                        n_buy = EXCLUDED.n_buy,
                        n_sell = EXCLUDED.n_sell,
                        n_hold = EXCLUDED.n_hold,
+                       n_absolute = EXCLUDED.n_absolute,
                        hit_rate = EXCLUDED.hit_rate,
                        wilson_low = EXCLUDED.wilson_low,
                        wilson_high = EXCLUDED.wilson_high,
@@ -323,7 +328,7 @@ def update_channel_stats(conn) -> int:
                        excess_std = EXCLUDED.excess_std,
                        updated_at = NOW()""",
                 (channel_id, horizon, n_eff, n_hits, n_push, n_unev,
-                 n_buy, n_sell, n_hold,
+                 n_buy, n_sell, n_hold, n_absolute,
                  hit_rate, low if n_eff else None, high if n_eff else None,
                  avg_excess, std_excess, EVALUATION_VERSION),
             )

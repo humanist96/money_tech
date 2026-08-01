@@ -28,14 +28,17 @@ export async function GET(request: Request) {
         p.prediction_type,
         p.reason,
         p.predicted_at,
-        p.direction_1w,
-        p.direction_1m,
-        p.direction_3m,
-        p.direction_score::float AS direction_score,
+        pe.outcome            AS outcome_1m,
+        pe.excess_return::float AS excess_return_1m,
+        pe.benchmark_code     AS benchmark_1m,
         ma.price_at_mention::float AS price_at_mention,
         p.target_price::float AS target_price
       FROM predictions p
       JOIN channels c ON p.channel_id = c.id
+      LEFT JOIN prediction_evaluations pe
+             ON pe.prediction_id = p.id
+            AND pe.horizon = '1m'
+            AND pe.evaluation_version = 2
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
       WHERE p.prediction_type IN ('buy', 'sell')
         AND p.predicted_at >= NOW() - INTERVAL '1 day' * ${days}

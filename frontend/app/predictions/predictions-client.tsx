@@ -12,9 +12,11 @@ type DirectionFilter = 'all' | 'buy' | 'sell' | 'hold'
 type StatusFilter = 'all' | 'active' | 'hit' | 'miss'
 type SortKey = 'newest' | 'closest' | 'furthest'
 
+// Verdicts come from the v2 evaluation; anything unscored stays "in progress"
+// rather than borrowing the retired direction_score.
 function getStatus(p: ActivePrediction): 'hit' | 'miss' | 'active' {
-  if (p.is_accurate === true || (p.direction_score != null && p.direction_score >= 0.5)) return 'hit'
-  if (p.is_accurate === false || (p.direction_score != null && p.direction_score < 0.5 && p.direction_score > -1)) return 'miss'
+  if (p.outcome_1m === 'hit') return 'hit'
+  if (p.outcome_1m === 'miss') return 'miss'
   return 'active'
 }
 

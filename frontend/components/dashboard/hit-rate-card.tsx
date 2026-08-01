@@ -1,139 +1,163 @@
 "use client"
 
-interface PredictionRecord {
-  asset_name: string
-  asset_code: string
-  prediction_type: string
-  predicted_at: string
-  price_at_mention: number | null
-  actual_price: number | null
-  is_accurate: boolean | null
-  direction_1w: boolean | null
-  direction_1m: boolean | null
-  direction_3m: boolean | null
-  direction_score: number | null
+import { useState } from "react"
+import type { ChannelHorizonStats, Horizon, SkillGrade } from "@/lib/types"
+
+const MIN_SAMPLE_FOR_RANKING = 10
+
+const HORIZON_LABELS: Record<Horizon, string> = { "1w": "1주", "1m": "1개월", "3m": "3개월" }
+
+const GRADE_META: Record<SkillGrade, { label: string; color: string; hint: string }> = {
+  beats_market: { label: "시장보다 잘 맞힘", color: "#22c997", hint: "신뢰구간 전체가 50%를 넘습니다" },
+  market_level: { label: "시장 수준", color: "#5a6a88", hint: "우연과 구분되지 않는 범위입니다" },
+  below_market: { label: "시장보다 못 맞힘", color: "#ef4444", hint: "신뢰구간 전체가 50% 아래입니다" },
+  insufficient: { label: "평가 유보", color: "#3a4a6a", hint: `표본 ${MIN_SAMPLE_FOR_RANKING}건 미만` },
+}
+
+function grade(s: ChannelHorizonStats): SkillGrade {
+  if (s.n_effective < MIN_SAMPLE_FOR_RANKING || s.wilson_low == null || s.wilson_high == null) {
+    return "insufficient"
+  }
+  if (s.wilson_low > 0.5) return "beats_market"
+  if (s.wilson_high < 0.5) return "below_market"
+  return "market_level"
 }
 
 interface HitRateCardProps {
-  hitRate: number | null
-  totalPredictions: number
-  accurateCount: number
-  recentPredictions: PredictionRecord[]
-  dir1wCorrect?: number
-  dir1wTotal?: number
-  dir1mCorrect?: number
-  dir1mTotal?: number
+  stats: ChannelHorizonStats[]
 }
 
-function DirectionBadge({ value }: { value: boolean | null }) {
-  if (value === null) return <span className="text-[9px] text-th-dim">-</span>
-  return value
-    ? <span className="text-[9px] text-[#22c997]">&#x2191;</span>
-    : <span className="text-[9px] text-[#ff5757]">&#x2193;</span>
-}
-
-export function HitRateCard({ hitRate, totalPredictions, accurateCount, recentPredictions, dir1wCorrect, dir1wTotal, dir1mCorrect, dir1mTotal }: HitRateCardProps) {
-  const rate = hitRate !== null ? Math.round(hitRate * 100) : null
-  const rateColor = rate !== null
-    ? rate >= 60 ? '#22c997' : rate >= 40 ? '#ffb84d' : '#ff5757'
-    : 'var(--th-text-dim)'
+/**
+ * Channel record on the same definition the leaderboard uses: hits over
+ * hits+misses, judged on return in excess of the benchmark, with the interval
+ * shown so a thin sample cannot read as a strong record.
+ *
+ * The previous version averaged `direction_score`, a column the evaluator no
+ * longer writes — this page and the leaderboard were reporting two different
+ * numbers for the same channel.
+ */
+export function HitRateCard({ stats }: HitRateCardProps) {
+  const [horizon, setHorizon] = useState<Horizon>("1m")
+  const current = stats.find((s) => s.horizon === horizon) ?? null
 
   return (
     <div className="glass-card-elevated rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-th-border/50">
-        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
-          방향 적중률
+      <div className="px-6 py-4 border-b border-th-border/50 flex items-center justify-between gap-3">
+        <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: "var(--font-outfit)" }}>
+          적중률 (시장 대비)
         </h3>
+        <div className="filter-group flex items-center gap-1">
+          {(Object.keys(HORIZON_LABELS) as Horizon[]).map((h) => (
+            <button
+              key={h}
+              onClick={() => setHorizon(h)}
+              className={`filter-btn text-[11px] ${horizon === h ? "active" : ""}`}
+            >
+              {HORIZON_LABELS[h]}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="p-6">
-        <div className="flex items-center gap-6 mb-6">
-          <div className="relative w-20 h-20">
-            <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
-              <path
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none" stroke="var(--th-border)" strokeWidth="3"
-              />
-              {rate !== null && (
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none" stroke={rateColor} strokeWidth="3"
-                  strokeDasharray={`${rate}, 100`}
-                  strokeLinecap="round"
-                />
+      {!current || current.n_effective === 0 ? (
+        <div className="p-6 text-center text-sm text-th-dim">
+          {stats.length === 0
+            ? "아직 평가된 예측이 없습니다. 재검증이 진행 중입니다."
+            : `${HORIZON_LABELS[horizon]} 구간에 평가된 예측이 없습니다.`}
+        </div>
+      ) : (
+        <div className="p-6 space-y-4">
+          <div className="flex items-end gap-3">
+            <div
+              className="text-4xl font-bold tabular-nums"
+              style={{ fontFamily: "var(--font-outfit)", color: GRADE_META[grade(current)].color }}
+            >
+              {current.hit_rate != null ? `${Math.round(current.hit_rate * 100)}%` : "-"}
+            </div>
+            <div className="pb-1.5 space-y-1">
+              {current.wilson_low != null && current.wilson_high != null && (
+                <div className="text-[11px] text-th-dim tabular-nums">
+                  95% 신뢰구간 {Math.round(current.wilson_low * 100)}~{Math.round(current.wilson_high * 100)}%
+                </div>
               )}
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xl font-extrabold tabular-nums" style={{ color: rateColor, fontFamily: 'var(--font-outfit)' }}>
-                {rate !== null ? `${rate}%` : '-'}
+              <span
+                className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                style={{
+                  background: `${GRADE_META[grade(current)].color}1a`,
+                  color: GRADE_META[grade(current)].color,
+                }}
+                title={GRADE_META[grade(current)].hint}
+              >
+                {GRADE_META[grade(current)].label}
               </span>
             </div>
           </div>
 
-          <div>
-            <p className="text-xs text-th-dim">방향 예측 정확률</p>
-            <div className="flex items-center gap-3 mt-2 text-xs tabular-nums">
-              <span className="text-[#22c997]">적중 {accurateCount}건</span>
-              <span className="text-[#ff5757]">빗나감 {totalPredictions - accurateCount}건</span>
-            </div>
-            {dir1wTotal !== undefined && dir1wTotal > 0 && (
-              <div className="flex items-center gap-3 mt-1.5 text-[10px] text-th-muted tabular-nums">
-                <span>1주 {dir1wCorrect}/{dir1wTotal}</span>
-                <span>1월 {dir1mCorrect}/{dir1mTotal}</span>
-              </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Stat label="평가 표본" value={`${current.n_effective}건`} hint="적중+빗나감 (판정보류·중복 제외)" />
+            <Stat
+              label="평균 초과수익"
+              value={
+                current.avg_excess_return != null
+                  ? `${current.avg_excess_return >= 0 ? "+" : ""}${(current.avg_excess_return * 100).toFixed(1)}%p`
+                  : "-"
+              }
+              hint="벤치마크 대비"
+              color={
+                (current.avg_excess_return ?? 0) > 0
+                  ? "#22c997"
+                  : (current.avg_excess_return ?? 0) < 0
+                    ? "#ef4444"
+                    : undefined
+              }
+            />
+            <Stat label="판정 보류" value={`${current.n_push}건`} hint="거래비용 밴드 내 움직임" />
+            <Stat label="평가 불가" value={`${current.n_unevaluable}건`} hint="가격 소스 없음·상장폐지 등" />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-th-dim pt-1 border-t border-th-border/40">
+            <span>매수 {current.n_buy}</span>
+            <span>·</span>
+            <span>매도 {current.n_sell}</span>
+            <span>·</span>
+            <span>보유 {current.n_hold}</span>
+            {current.n_absolute > 0 && (
+              <>
+                <span>·</span>
+                <span
+                  className="text-[#ffb84d]"
+                  title="BTC는 비교할 벤치마크가 없어 절대수익으로 판정합니다. 다른 종목과 척도가 달라 함께 표기합니다."
+                >
+                  절대수익 판정 {current.n_absolute}건 (BTC)
+                </span>
+              </>
             )}
           </div>
         </div>
+      )}
+    </div>
+  )
+}
 
-        {recentPredictions.length > 0 && (
-          <div>
-            <h4 className="text-[10px] text-th-dim uppercase tracking-wider font-medium mb-2">최근 예측</h4>
-            <div className="space-y-1.5">
-              {recentPredictions.slice(0, 5).map((p, i) => {
-                const priceChange = p.price_at_mention && p.actual_price
-                  ? ((p.actual_price - p.price_at_mention) / p.price_at_mention * 100).toFixed(1)
-                  : null
-                const isPositive = priceChange !== null && parseFloat(priceChange) > 0
-                const score = p.direction_score
-                return (
-                  <div key={i} className="flex items-center justify-between bg-th-tertiary/50 rounded-xl px-3.5 py-2.5 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${p.prediction_type === 'buy' ? 'bg-[#22c997]/12 text-[#22c997]' : 'bg-[#ff5757]/12 text-[#ff5757]'}`}>
-                        {p.prediction_type === 'buy' ? 'B' : 'S'}
-                      </span>
-                      <span className="text-th-primary font-medium">{p.asset_name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-0.5">
-                        <DirectionBadge value={p.direction_1w} />
-                        <DirectionBadge value={p.direction_1m} />
-                        <DirectionBadge value={p.direction_3m} />
-                      </div>
-                      {priceChange !== null && (
-                        <span className={`tabular-nums font-medium ${isPositive ? 'text-[#22c997]' : 'text-[#ff5757]'}`}>
-                          {isPositive ? '+' : ''}{priceChange}%
-                        </span>
-                      )}
-                      {score !== null && (
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${
-                          score >= 0.5
-                            ? 'bg-[#22c997]/12 text-[#22c997]'
-                            : 'bg-[#ff5757]/12 text-[#ff5757]'
-                        }`}>
-                          {score >= 0.5 ? '적중' : '빗나감'}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {totalPredictions === 0 && (
-          <p className="text-sm text-th-dim">아직 평가된 예측이 없습니다.</p>
-        )}
+function Stat({
+  label,
+  value,
+  hint,
+  color,
+}: {
+  label: string
+  value: string
+  hint?: string
+  color?: string
+}) {
+  return (
+    <div className="bg-th-tertiary/50 rounded-lg p-2.5 text-center" title={hint}>
+      <div className="text-[10px] text-th-dim">{label}</div>
+      <div
+        className="text-sm font-bold tabular-nums mt-0.5"
+        style={{ fontFamily: "var(--font-outfit)", color: color ?? "var(--th-text-primary)" }}
+      >
+        {value}
       </div>
     </div>
   )

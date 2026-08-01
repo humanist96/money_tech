@@ -1,7 +1,7 @@
 import { getDb } from '../db'
 import type {
   Channel, ChannelType, Platform, ChannelAssetOpinion,
-  ChannelSpecialtyItem, ChannelActivityData,
+  ChannelSpecialtyItem, ChannelActivityData, ChannelHorizonStats,
 } from '../types'
 
 export async function getChannels(category?: string, platform?: string): Promise<Channel[]> {
@@ -24,28 +24,41 @@ export async function getChannelById(id: string): Promise<Channel | null> {
   return rows[0] ?? null
 }
 
+/**
+ * Channel record under evaluation_version 2.
+ *
+ * The old version averaged `direction_score`, which the evaluator no longer
+ * writes — the column is frozen at whatever the retired pipeline last left
+ * there. Reading channel_stats keeps this page and the leaderboard reporting
+ * the same number instead of two contradictory ones.
+ */
 export async function getChannelHitRate(channelId: string) {
   const sql = getDb()
   const rows = await sql`
     SELECT
-      COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
-      COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
-      CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-        THEN AVG(p.direction_score)::float
-        ELSE NULL END AS hit_rate,
-      COUNT(CASE WHEN p.direction_1w = true THEN 1 END)::int AS dir_1w_correct,
-      COUNT(CASE WHEN p.direction_1w IS NOT NULL THEN 1 END)::int AS dir_1w_total,
-      COUNT(CASE WHEN p.direction_1m = true THEN 1 END)::int AS dir_1m_correct,
-      COUNT(CASE WHEN p.direction_1m IS NOT NULL THEN 1 END)::int AS dir_1m_total
-    FROM predictions p
-    WHERE p.channel_id = ${channelId}
-      AND p.prediction_type IN ('buy', 'sell')
+      horizon,
+      n_effective,
+      n_hits,
+      n_push,
+      n_unevaluable,
+      n_buy,
+      n_sell,
+      n_hold,
+      n_absolute,
+      hit_rate::float,
+      wilson_low::float,
+      wilson_high::float,
+      avg_excess_return::float
+    FROM channel_stats
+    WHERE channel_id = ${channelId}
+      AND evaluation_version = 2
+    ORDER BY CASE horizon WHEN '1w' THEN 1 WHEN '1m' THEN 2 ELSE 3 END
   `
-  return rows[0] as {
-    accurate_count: number; total_predictions: number; hit_rate: number | null;
-    dir_1w_correct: number; dir_1w_total: number;
-    dir_1m_correct: number; dir_1m_total: number;
-  }
+  const byHorizon = rows as unknown as ChannelHorizonStats[]
+  // 1 month is the headline figure; the others are shown alongside it.
+  const primary = byHorizon.find((r) => r.horizon === '1m') ?? byHorizon[0] ?? null
+
+  return { primary, byHorizon }
 }
 
 export async function getChannelPredictions(channelId: string, limit = 10) {

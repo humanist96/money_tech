@@ -98,7 +98,14 @@ export async function getRiskScoreboard(days = 14): Promise<RiskScore[]> {
 export async function getHiddenGemChannels(): Promise<HiddenGemChannel[]> {
   const sql = getDb()
   const rows = await sql`
-    WITH channel_stats AS (
+    WITH channel_stats_v2 AS (
+      SELECT channel_id, n_hits, n_effective, hit_rate
+      FROM channel_stats
+      WHERE horizon = '1m' AND evaluation_version = 2 AND n_effective >= 2
+    ),
+    -- Ranked on the v2 record (1-month horizon) so "hidden gems" means the same
+    -- thing the leaderboard means.
+    channel_stats AS (
       SELECT
         c.id AS channel_id,
         c.name AS channel_name,
@@ -106,16 +113,12 @@ export async function getHiddenGemChannels(): Promise<HiddenGemChannel[]> {
         c.category,
         c.subscriber_count,
         c.prediction_intensity_score,
-        COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
-        COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_predictions,
-        CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-          THEN AVG(p.direction_score)::float
-          ELSE NULL END AS hit_rate
+        cs.n_hits AS accurate_count,
+        cs.n_effective AS total_predictions,
+        cs.hit_rate::float AS hit_rate
       FROM channels c
-      LEFT JOIN predictions p ON p.channel_id = c.id AND p.prediction_type IN ('buy', 'sell')
+      JOIN channel_stats_v2 cs ON cs.channel_id = c.id
       WHERE c.is_active
-      GROUP BY c.id, c.name, c.thumbnail_url, c.category, c.subscriber_count, c.prediction_intensity_score
-      HAVING COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) >= 2
     ),
     channel_profile AS (
       SELECT

@@ -30,6 +30,17 @@ FLOW_THRESHOLD_KRW = 10_000_000_000  # 100억원
 MAX_NEWS = 5
 CREATOR_LOOKBACK_DAYS = 90
 
+# A keyword search on a company name pulls in anything sharing that name — a
+# search for 두산 returns its baseball club, and the model duly reported "KBO
+# 리그 성과로 급등". Requiring a market term in the headline keeps only
+# articles that are actually about the listed company.
+FINANCE_TERMS = (
+    "주가", "증권", "코스피", "코스닥", "실적", "영업이익", "매출", "공시",
+    "목표가", "투자", "수주", "계약", "증자", "배당", "상장", "급등", "급락",
+    "강세", "약세", "반등", "하락", "상승", "시총", "외국인", "기관", "수급",
+    "인수", "합병", "지분", "리포트", "전망치", "가이던스",
+)
+
 
 def collect_flow(stock_code: str, trade_date: date) -> tuple[list[dict], dict]:
     """Foreign and institutional net buying for the session."""
@@ -107,6 +118,9 @@ def collect_news(stock_name: str, trade_date: date) -> list[dict]:
         # pubDate is RFC-1123; a substring date check is enough to keep the
         # window roughly right without parsing every locale variant.
         if not any(d.strftime("%d %b") in pub for d in (window_start, trade_date)):
+            continue
+        # Drop same-name articles from unrelated domains (sports, entertainment).
+        if not any(term in title for term in FINANCE_TERMS):
             continue
         out.append({
             "type": "news",
