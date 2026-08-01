@@ -34,6 +34,7 @@ export default async function LeaderboardPage({
     safeQuery("getChannelTypeStats", () => getChannelTypeStats(), []),
     safeQuery("getWeeklyReport", () => getWeeklyReport(), {
       winners: [], losers: [], bestCall: null, worstCall: null,
+      periodStart: null, periodEnd: null,
     }),
     safeQuery("getHiddenGemChannels", () => getHiddenGemChannels(), []),
   ])

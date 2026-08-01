@@ -61,23 +61,6 @@ export async function getChannelHitRate(channelId: string) {
   return { primary, byHorizon }
 }
 
-export async function getChannelPredictions(channelId: string, limit = 10) {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT p.prediction_type, p.predicted_at, p.is_accurate,
-           p.actual_price_after_1w, p.actual_price_after_1m, p.actual_price_after_3m,
-           p.direction_1w, p.direction_1m, p.direction_3m, p.direction_score::float AS direction_score,
-           ma.asset_name, ma.asset_code, ma.asset_type, ma.price_at_mention
-    FROM predictions p
-    JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-    WHERE p.channel_id = ${channelId}
-      AND p.prediction_type IN ('buy', 'sell')
-    ORDER BY p.predicted_at DESC NULLS LAST
-    LIMIT ${limit}
-  `
-  return rows
-}
-
 export async function getChannelProfile(channelId: string) {
   const sql = getDb()
   const rows = await sql`

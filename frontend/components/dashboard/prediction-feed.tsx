@@ -24,31 +24,31 @@ function timeAgo(dateStr: string | null): string {
   return `${days}일 전`
 }
 
-function DirectionIndicator({ d1w, d1m, d3m }: { d1w: boolean | null; d1m: boolean | null; d3m: boolean | null }) {
+// v2 verdicts (hit/miss/push); unevaluable and not-yet-due horizons are hidden.
+const OUTCOME_STYLES: Record<string, { mark: string; className: string }> = {
+  hit: { mark: '↑', className: 'bg-[#22c997]/12 text-[#22c997]' },
+  miss: { mark: '↓', className: 'bg-[#ff5757]/12 text-[#ff5757]' },
+  push: { mark: '·', className: 'bg-th-border/40 text-th-dim' },
+}
+
+function OutcomeIndicator({ o1w, o1m, o3m }: { o1w: string | null; o1m: string | null; o3m: string | null }) {
   const periods = [
-    { label: '1주', value: d1w },
-    { label: '1월', value: d1m },
-    { label: '3월', value: d3m },
-  ]
-  const evaluated = periods.filter(p => p.value !== null)
-  if (evaluated.length === 0) return null
+    { label: '1주', outcome: o1w },
+    { label: '1월', outcome: o1m },
+    { label: '3월', outcome: o3m },
+  ].filter(p => p.outcome !== null && p.outcome in OUTCOME_STYLES)
+  if (periods.length === 0) return null
 
   return (
     <div className="flex items-center gap-1">
-      {periods.map((p) => (
-        <span
-          key={p.label}
-          className={`text-[8px] px-1 py-0.5 rounded font-medium ${
-            p.value === null
-              ? 'text-th-dim'
-              : p.value
-                ? 'bg-[#22c997]/12 text-[#22c997]'
-                : 'bg-[#ff5757]/12 text-[#ff5757]'
-          }`}
-        >
-          {p.label}{p.value === null ? '' : p.value ? '↑' : '↓'}
-        </span>
-      ))}
+      {periods.map((p) => {
+        const style = OUTCOME_STYLES[p.outcome!]
+        return (
+          <span key={p.label} className={`text-[8px] px-1 py-0.5 rounded font-medium ${style.className}`}>
+            {p.label}{style.mark}
+          </span>
+        )
+      })}
     </div>
   )
 }
@@ -73,7 +73,7 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
         {predictions.map((pred) => {
           const badge = PREDICTION_BADGES[pred.prediction_type ?? "buy"] ?? PREDICTION_BADGES.buy
           const catColor = CATEGORY_COLORS[pred.channel_category] ?? "#6b7280"
-          const score = pred.direction_score
+          const verdict = pred.outcome_1m === 'hit' || pred.outcome_1m === 'miss' ? pred.outcome_1m : null
 
           return (
             <div key={pred.id} className="px-5 py-3.5 hover:bg-th-hover/40 transition">
@@ -101,9 +101,9 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
                     >
                       {badge.label}
                     </span>
-                    {score !== null && (
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${score >= 0.5 ? 'bg-[#22c997]/10 text-[#22c997]' : 'bg-[#ff5757]/10 text-[#ff5757]'}`}>
-                        {score >= 0.5 ? "적중" : "빗나감"}
+                    {verdict !== null && (
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${verdict === 'hit' ? 'bg-[#22c997]/10 text-[#22c997]' : 'bg-[#ff5757]/10 text-[#ff5757]'}`}>
+                        {verdict === 'hit' ? "적중" : "빗나감"}
                       </span>
                     )}
                   </div>
@@ -114,7 +114,7 @@ export function PredictionFeed({ predictions, title = "최근 예측" }: Predict
                     {pred.asset_name}
                   </a>
                   <div className="flex items-center gap-2 mt-1">
-                    <DirectionIndicator d1w={pred.direction_1w} d1m={pred.direction_1m} d3m={pred.direction_3m} />
+                    <OutcomeIndicator o1w={pred.outcome_1w} o1m={pred.outcome_1m} o3m={pred.outcome_3m} />
                     {pred.reason && (
                       <p className="text-[11px] text-th-dim line-clamp-1">{pred.reason}</p>
                     )}

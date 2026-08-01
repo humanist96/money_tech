@@ -36,15 +36,17 @@ export async function getRiskScoreboard(days = 14): Promise<RiskScore[]> {
       GROUP BY ma.asset_code
     ),
     expert_opinion AS (
+      -- "Expert" = channels whose v2 1-month record beats 50%; the old
+      -- channels.hit_rate column is frozen at the retired pipeline's values.
       SELECT
         ma.asset_code,
         AVG(CASE WHEN p.prediction_type = 'buy' THEN 1 WHEN p.prediction_type = 'sell' THEN -1 ELSE 0 END)::float AS expert_avg
       FROM predictions p
       JOIN videos v ON p.video_id = v.id
-      JOIN channels c ON v.channel_id = c.id
+      JOIN channel_stats cs ON cs.channel_id = v.channel_id
+        AND cs.horizon = '1m' AND cs.evaluation_version = 2 AND cs.hit_rate > 0.5
       JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
       WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
-        AND c.hit_rate > 0.5
         AND ma.asset_code IS NOT NULL
       GROUP BY ma.asset_code
     )

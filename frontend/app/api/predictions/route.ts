@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
         ma.context_text,
         p.prediction_type,
         p.reason,
-        p.is_accurate,
+        pe1m.outcome AS outcome_1m,
         v.title AS video_title,
         v.youtube_video_id,
         v.blog_post_url,
@@ -72,6 +72,8 @@ export async function GET(req: NextRequest) {
       JOIN videos v ON ma.video_id = v.id
       JOIN channels c ON v.channel_id = c.id
       LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
+      LEFT JOIN prediction_evaluations pe1m
+             ON pe1m.prediction_id = p.id AND pe1m.horizon = '1m' AND pe1m.evaluation_version = 2
       WHERE ma.asset_name = ${assetName}
         AND ma.sentiment IS NOT NULL
       ORDER BY v.published_at DESC

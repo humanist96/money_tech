@@ -16,6 +16,9 @@ interface WeeklyReportProps {
   losers: WeeklyReportItem[]
   bestCall: WeeklyCall
   worstCall: WeeklyCall
+  /** 평가 확정 기준 7일 창 — 파이프라인이 달력보다 늦으면 과거 주간일 수 있다. */
+  periodStart?: string | null
+  periodEnd?: string | null
 }
 
 function RankCard({
@@ -133,7 +136,7 @@ function ShareButton({ winners, bestCall }: { winners: WeeklyReportItem[]; bestC
   )
 }
 
-export function WeeklyReportPanel({ winners, losers, bestCall, worstCall }: WeeklyReportProps) {
+export function WeeklyReportPanel({ winners, losers, bestCall, worstCall, periodStart, periodEnd }: WeeklyReportProps) {
   const hasData = winners.length > 0 || losers.length > 0
 
   if (!hasData) {
@@ -149,8 +152,13 @@ export function WeeklyReportPanel({ winners, losers, bestCall, worstCall }: Week
 
   return (
     <div className="space-y-6">
-      {/* Share */}
-      <div className="flex justify-end">
+      {/* Period + Share */}
+      <div className="flex items-center justify-between gap-4">
+        {periodStart && periodEnd ? (
+          <p className="text-[11px] text-th-dim">
+            평가 확정 기준 <span className="tabular-nums">{periodStart} ~ {periodEnd}</span> (1주 예측의 사후 판정이 이 기간에 확정된 건)
+          </p>
+        ) : <span />}
         <ShareButton winners={winners} bestCall={bestCall} />
       </div>
 
@@ -177,6 +185,7 @@ export function WeeklyReportPanel({ winners, losers, bestCall, worstCall }: Week
               {bestCall.return_pct !== null && (
                 <p className="text-xl font-bold mt-2 text-[#22c997]" style={{ fontFamily: 'var(--font-outfit)' }}>
                   {bestCall.return_pct >= 0 ? '+' : ''}{Number(bestCall.return_pct).toFixed(1)}%
+                  <span className="text-[10px] font-medium text-th-dim ml-1.5">벤치마크 대비 (1주)</span>
                 </p>
               )}
             </div>
@@ -201,6 +210,7 @@ export function WeeklyReportPanel({ winners, losers, bestCall, worstCall }: Week
               {worstCall.return_pct !== null && (
                 <p className="text-xl font-bold mt-2 text-[#ff5757]" style={{ fontFamily: 'var(--font-outfit)' }}>
                   {Number(worstCall.return_pct).toFixed(1)}%
+                  <span className="text-[10px] font-medium text-th-dim ml-1.5">벤치마크 대비 (1주)</span>
                 </p>
               )}
             </div>

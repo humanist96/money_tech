@@ -1,13 +1,11 @@
 import { getDb } from '../db'
 import type {
   PredictionFeedItem, HitRateLeaderboardItem,
-  BacktestResult, BacktestTrade, WeeklyReportItem,
-  ConsensusTimelineEntry, AnalystConsensus,
-  ActivePrediction, PredictionTimelineData,
-  Horizon, SkillGrade,
+  WeeklyReportItem, ConsensusTimelineEntry,
+  ActivePrediction, Horizon, SkillGrade,
 } from '../types'
 
-// Recent Predictions Feed (deduplicated, direction-based)
+// Recent Predictions Feed (deduplicated, v2 evaluation outcomes)
 export async function getRecentPredictions(limit = 20): Promise<PredictionFeedItem[]> {
   const sql = getDb()
   const rows = await sql`
@@ -21,16 +19,22 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
       p.prediction_type,
       p.reason,
       p.predicted_at,
-      p.is_accurate,
-      p.direction_1w,
-      p.direction_1m,
-      p.direction_3m,
-      p.direction_score::float AS direction_score
+      pe1w.outcome AS outcome_1w,
+      pe1m.outcome AS outcome_1m,
+      pe3m.outcome AS outcome_3m,
+      pe1m.excess_return::float AS excess_return_1m
     FROM predictions p
     JOIN channels c ON p.channel_id = c.id
     LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+    LEFT JOIN prediction_evaluations pe1w
+           ON pe1w.prediction_id = p.id AND pe1w.horizon = '1w' AND pe1w.evaluation_version = 2
+    LEFT JOIN prediction_evaluations pe1m
+           ON pe1m.prediction_id = p.id AND pe1m.horizon = '1m' AND pe1m.evaluation_version = 2
+    LEFT JOIN prediction_evaluations pe3m
+           ON pe3m.prediction_id = p.id AND pe3m.horizon = '3m' AND pe3m.evaluation_version = 2
     WHERE p.prediction_type IN ('buy', 'sell')
       AND (ma.asset_type IS NULL OR ma.asset_type IN ('stock', 'coin'))
+      AND c.is_active
     ORDER BY c.name, ma.asset_name, p.prediction_type, p.predicted_at::date, p.predicted_at DESC
   `
   const sorted = (rows as PredictionFeedItem[])
@@ -71,9 +75,19 @@ export async function getHitRateLeaderboard(
       cs.n_hold,
       cs.avg_excess_return::float,
       (SELECT COUNT(*)::int FROM predictions p2 WHERE p2.channel_id = c.id) AS all_predictions,
+      -- 계획 §3.2: BTC는 절대수익 판정이라 척도가 섞이므로 비중을 표기해 가시화
+      btc.share::float AS btc_share,
       COALESCE(recent.predictions, '[]'::json) AS recent_predictions
     FROM channel_stats cs
     JOIN channels c ON c.id = cs.channel_id
+    LEFT JOIN LATERAL (
+      SELECT COUNT(*) FILTER (WHERE ma3.asset_code = 'BTC')::float / NULLIF(COUNT(*), 0) AS share
+      FROM predictions p3
+      LEFT JOIN mentioned_assets ma3 ON p3.mentioned_asset_id = ma3.id
+      WHERE p3.channel_id = c.id
+        AND NOT p3.is_duplicate
+        AND p3.prediction_type IN ('buy', 'sell', 'hold')
+    ) btc ON TRUE
     LEFT JOIN LATERAL (
       SELECT json_agg(p_recent) AS predictions
       FROM (
@@ -128,30 +142,51 @@ function gradeChannel(
   return 'market_level'
 }
 
-// YouTuber Backtesting Simulator
 // Weekly Winner/Loser Report
-export async function getWeeklyReport(): Promise<{ winners: WeeklyReportItem[]; losers: WeeklyReportItem[]; bestCall: any; worstCall: any }> {
+// Ranks channels by v2 1-week outcomes from the most recent 7-day window of
+// *confirmed evaluations* (anchored at MAX(eval_date), not today — the
+// evaluation pipeline can trail the calendar when price history lags, and a
+// hard NOW()-7d window would then render an empty panel forever). The window
+// dates are returned so the UI can label the period honestly. The old version
+// averaged the retired direction_score over predictions made in the last
+// 7 days, most of which could not have been evaluated yet.
+export async function getWeeklyReport(): Promise<{
+  winners: WeeklyReportItem[]; losers: WeeklyReportItem[]; bestCall: any; worstCall: any
+  periodStart: string | null; periodEnd: string | null
+}> {
   const sql = getDb()
+  const anchorRows = await sql`
+    SELECT MAX(pe.eval_date)::date::text AS period_end,
+           (MAX(pe.eval_date)::date - 6)::text AS period_start
+    FROM prediction_evaluations pe
+    WHERE pe.horizon = '1w' AND pe.evaluation_version = 2 AND pe.outcome IN ('hit', 'miss')
+  `
+  const periodEnd: string | null = (anchorRows[0] as any)?.period_end ?? null
+  const periodStart: string | null = (anchorRows[0] as any)?.period_start ?? null
+  if (!periodEnd) {
+    return { winners: [], losers: [], bestCall: null, worstCall: null, periodStart: null, periodEnd: null }
+  }
+
   const rows = await sql`
     SELECT
       c.id AS channel_id,
       c.name AS channel_name,
       c.thumbnail_url AS channel_thumbnail,
       c.category,
-      COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::int AS accurate_count,
-      COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END)::int AS total_count,
-      CASE WHEN COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) > 0
-        THEN (COUNT(CASE WHEN p.direction_score >= 0.5 THEN 1 END)::float /
-              COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) * 100)
-        ELSE 0 END AS accuracy_pct
-    FROM predictions p
+      COUNT(CASE WHEN pe.outcome = 'hit' THEN 1 END)::int AS accurate_count,
+      COUNT(*)::int AS total_count,
+      (COUNT(CASE WHEN pe.outcome = 'hit' THEN 1 END)::float / COUNT(*) * 100) AS accuracy_pct
+    FROM prediction_evaluations pe
+    JOIN predictions p ON p.id = pe.prediction_id
     JOIN channels c ON p.channel_id = c.id
-    WHERE p.predicted_at >= NOW() - INTERVAL '7 days'
+    WHERE pe.horizon = '1w'
+      AND pe.evaluation_version = 2
+      AND pe.outcome IN ('hit', 'miss')
+      AND pe.eval_date >= ${periodStart}::date
+      AND pe.eval_date <= ${periodEnd}::date
       AND p.prediction_type IN ('buy', 'sell')
-      AND p.direction_score IS NOT NULL
       AND c.is_active
     GROUP BY c.id, c.name, c.thumbnail_url, c.category
-    HAVING COUNT(CASE WHEN p.direction_score IS NOT NULL THEN 1 END) >= 1
     ORDER BY accuracy_pct DESC, total_count DESC
   `
 
@@ -167,55 +202,36 @@ export async function getWeeklyReport(): Promise<{ winners: WeeklyReportItem[]; 
     worst_call: null,
   }))
 
-  const bestCallRows = await sql`
+  // Directional quality: excess return for a buy, its negation for a sell —
+  // reported as benchmark-relative % so the number matches the leaderboard.
+  const callRows = await sql`
     SELECT
       c.name AS channel_name,
       ma.asset_name,
       p.prediction_type,
-      CASE WHEN ma.price_at_mention > 0 AND p.actual_price_after_1w IS NOT NULL
-        THEN ((p.actual_price_after_1w - ma.price_at_mention) / ma.price_at_mention * 100)
-        ELSE NULL END AS return_pct
-    FROM predictions p
+      (CASE WHEN p.prediction_type = 'sell' THEN -pe.excess_return ELSE pe.excess_return END * 100)::float AS return_pct
+    FROM prediction_evaluations pe
+    JOIN predictions p ON p.id = pe.prediction_id
     JOIN channels c ON p.channel_id = c.id
     JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-    WHERE p.predicted_at >= NOW() - INTERVAL '7 days'
+    WHERE pe.horizon = '1w'
+      AND pe.evaluation_version = 2
+      AND pe.outcome IN ('hit', 'miss')
+      AND pe.excess_return IS NOT NULL
+      AND pe.eval_date >= ${periodStart}::date
+      AND pe.eval_date <= ${periodEnd}::date
       AND p.prediction_type IN ('buy', 'sell')
-      AND ma.price_at_mention > 0
-      AND p.actual_price_after_1w IS NOT NULL
-    ORDER BY CASE WHEN p.prediction_type = 'buy'
-      THEN (p.actual_price_after_1w - ma.price_at_mention) / ma.price_at_mention
-      ELSE (ma.price_at_mention - p.actual_price_after_1w) / ma.price_at_mention
-    END DESC
-    LIMIT 1
-  `
-
-  const worstCallRows = await sql`
-    SELECT
-      c.name AS channel_name,
-      ma.asset_name,
-      p.prediction_type,
-      CASE WHEN ma.price_at_mention > 0 AND p.actual_price_after_1w IS NOT NULL
-        THEN ((p.actual_price_after_1w - ma.price_at_mention) / ma.price_at_mention * 100)
-        ELSE NULL END AS return_pct
-    FROM predictions p
-    JOIN channels c ON p.channel_id = c.id
-    JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-    WHERE p.predicted_at >= NOW() - INTERVAL '7 days'
-      AND p.prediction_type IN ('buy', 'sell')
-      AND ma.price_at_mention > 0
-      AND p.actual_price_after_1w IS NOT NULL
-    ORDER BY CASE WHEN p.prediction_type = 'buy'
-      THEN (p.actual_price_after_1w - ma.price_at_mention) / ma.price_at_mention
-      ELSE (ma.price_at_mention - p.actual_price_after_1w) / ma.price_at_mention
-    END ASC
-    LIMIT 1
+      AND c.is_active
+    ORDER BY 4 DESC
   `
 
   return {
     winners: all.slice(0, 5),
     losers: all.slice(-5).reverse(),
-    bestCall: bestCallRows[0] || null,
-    worstCall: worstCallRows[0] || null,
+    bestCall: callRows[0] || null,
+    worstCall: callRows.length > 1 ? callRows[callRows.length - 1] : null,
+    periodStart,
+    periodEnd,
   }
 }
 
@@ -260,7 +276,6 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
       latest_price.price::float AS current_price,
       p.predicted_at,
       EXTRACT(DAY FROM NOW() - p.predicted_at)::int AS days_since,
-      p.is_accurate,
       pe.outcome AS outcome_1m,
       p.reason,
       CASE
@@ -309,7 +324,6 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
     progress_pct: r.progress_pct != null ? Math.round(Number(r.progress_pct) * 10) / 10 : null,
     predicted_at: r.predicted_at,
     days_since: Number(r.days_since) || 0,
-    is_accurate: r.is_accurate,
     outcome_1m: r.outcome_1m ?? null,
     reason: r.reason,
   }))

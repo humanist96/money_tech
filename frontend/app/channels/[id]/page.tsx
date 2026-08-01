@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { getChannelById, getVideosByChannelId, formatViewCount, getChannelHitRate, getChannelPredictions, getChannelProfile, getChannelSpecialty } from "@/lib/queries"
+import { getChannelById, getVideosByChannelId, formatViewCount, getChannelHitRate, getChannelProfile, getChannelSpecialty } from "@/lib/queries"
 import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types"
 import { VideoFeed } from "@/components/dashboard/video-feed"
 import { HitRateCard } from "@/components/dashboard/hit-rate-card"
@@ -14,11 +14,10 @@ interface PageProps {
 
 export default async function ChannelDetailPage({ params }: PageProps) {
   const { id } = await params
-  const [channel, videos, hitRateData, predictions, profileData, specialty] = await Promise.all([
+  const [channel, videos, hitRateData, profileData, specialty] = await Promise.all([
     getChannelById(id),
     getVideosByChannelId(id),
     getChannelHitRate(id),
-    getChannelPredictions(id),
     getChannelProfile(id),
     getChannelSpecialty(id),
   ])

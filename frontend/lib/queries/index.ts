@@ -3,7 +3,6 @@ export {
   getChannels,
   getChannelById,
   getChannelHitRate,
-  getChannelPredictions,
   getChannelProfile,
   getChannelAssetMatrix,
   getChannelSpecialty,

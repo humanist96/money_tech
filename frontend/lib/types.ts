@@ -247,11 +247,11 @@ export interface PredictionFeedItem {
   prediction_type: 'buy' | 'sell' | 'hold' | null
   reason: string | null
   predicted_at: string | null
-  is_accurate: boolean | null
-  direction_1w: boolean | null
-  direction_1m: boolean | null
-  direction_3m: boolean | null
-  direction_score: number | null
+  /** v2 verdicts per horizon: hit/miss/push/unevaluable, null until due. */
+  outcome_1w: string | null
+  outcome_1m: string | null
+  outcome_3m: string | null
+  excess_return_1m: number | null
 }
 
 export interface ChannelActivityData {
@@ -318,6 +318,11 @@ export interface HitRateLeaderboardItem {
   /** Mean return in excess of the benchmark, as a fraction. */
   avg_excess_return: number | null
   all_predictions: number
+  /**
+   * BTC 예측이 전체 비중복 예측에서 차지하는 비율(0~1). BTC는 벤치마크 없이
+   * 절대수익으로 판정되므로, 비중이 높은 채널의 기록은 척도가 섞여 있다 (§3.2).
+   */
+  btc_share: number | null
   grade: SkillGrade
   recent_predictions: Array<{
     prediction_type: string
@@ -678,7 +683,6 @@ export interface ActivePrediction {
   progress_pct: number | null
   predicted_at: string | null
   days_since: number
-  is_accurate: boolean | null
   /** v2 verdict at the 1-month horizon; null until the horizon comes due. */
   outcome_1m: string | null
   reason: string | null

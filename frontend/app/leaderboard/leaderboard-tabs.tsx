@@ -18,7 +18,10 @@ const VIEWS: Array<{ key: View; label: string; hint: string }> = [
 interface Props {
   leaderboard: HitRateLeaderboardItem[]
   typeStats: Array<{ channel_type: string; count: number; avg_pis: number | null; avg_hit_rate: number | null }>
-  weekly: { winners: WeeklyReportItem[]; losers: WeeklyReportItem[]; bestCall: WeeklyCall; worstCall: WeeklyCall }
+  weekly: {
+    winners: WeeklyReportItem[]; losers: WeeklyReportItem[]; bestCall: WeeklyCall; worstCall: WeeklyCall
+    periodStart: string | null; periodEnd: string | null
+  }
   hiddenGems: HiddenGemChannel[]
   horizon: Horizon
 }
@@ -80,6 +83,8 @@ export function LeaderboardTabs({ leaderboard, typeStats, weekly, hiddenGems, ho
           losers={weekly.losers}
           bestCall={weekly.bestCall}
           worstCall={weekly.worstCall}
+          periodStart={weekly.periodStart}
+          periodEnd={weekly.periodEnd}
         />
       )}
       {view === 'gems' && <HiddenGemsPanel channels={hiddenGems} />}

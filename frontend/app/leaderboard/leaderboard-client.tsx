@@ -87,6 +87,23 @@ function GradeBadge({ grade }: { grade: SkillGrade }) {
   )
 }
 
+/**
+ * BTC는 벤치마크 없이 절대수익으로 판정되므로, BTC 비중이 높은 채널의 적중률은
+ * 다른 채널과 척도가 다르다. 20% 이상일 때 배지로 가시화한다 (계획 §3.2).
+ */
+function BtcShareBadge({ share }: { share: number | null }) {
+  if (share == null || share < 0.2) return null
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+      style={{ background: '#f7931a1a', color: '#f7931a' }}
+      title="이 채널 예측 중 BTC 비율입니다. BTC는 벤치마크 없이 절대수익으로 판정되어 다른 예측과 척도가 다릅니다."
+    >
+      BTC {Math.round(share * 100)}%
+    </span>
+  )
+}
+
 export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   const [sortBy, setSortBy] = useState<SortKey>('all_predictions')
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -249,6 +266,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                         <span className="text-[10px] text-th-dim">{CATEGORY_LABELS[item.category] ?? item.category}</span>
                         <ChannelTypeBadge type={item.channel_type} />
                         <GradeBadge grade={item.grade} />
+                        <BtcShareBadge share={item.btc_share} />
                       </div>
                     </div>
                   </div>
