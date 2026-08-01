@@ -126,6 +126,8 @@ def backfill_history(conn, limit: int | None = None, days: int = 400) -> int:
         # Roughly one row per trading day; skip assets already loaded so the
         # job can be re-run after an interruption without redoing the work.
         if have > days * 0.5:
+            if i % 25 == 0:
+                logger.info("[%d/%d] %s: already loaded (%d rows)", i, len(assets), code, have)
             continue
 
         if asset_type == "stock":
@@ -136,8 +138,7 @@ def backfill_history(conn, limit: int | None = None, days: int = 400) -> int:
 
         stored = store_asset_prices(conn, code, asset_type, closes)
         total += stored
-        if stored:
-            logger.info("[%d/%d] %s: %d close(s)", i, len(assets), code, stored)
+        logger.info("[%d/%d] %s: %d close(s)", i, len(assets), code, stored)
 
     logger.info("Stored %d daily close(s)", total)
     return total

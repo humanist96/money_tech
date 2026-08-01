@@ -13,6 +13,7 @@ Rules enforced here:
 from __future__ import annotations
 
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -31,6 +32,24 @@ BENCHMARK_TICKERS = {"KOSPI": "^KS11", "KOSDAQ": "^KQ11"}
 # (holidays, suspended trading) before the point is treated as missing.
 MAX_DATE_SLACK_DAYS = 3
 
+# pykrx wraps endpoints that can hang indefinitely; a stalled ticker must not
+# stall the whole backfill.
+FETCH_TIMEOUT_SECONDS = 30
+_fetch_pool = ThreadPoolExecutor(max_workers=1)
+
+
+def _with_timeout(fn, *args, label: str = "fetch"):
+    """Run a blocking fetch, giving up rather than hanging the run."""
+    future = _fetch_pool.submit(fn, *args)
+    try:
+        return future.result(timeout=FETCH_TIMEOUT_SECONDS)
+    except FutureTimeout:
+        logger.warning("%s timed out after %ds", label, FETCH_TIMEOUT_SECONDS)
+        return {}
+    except Exception as e:
+        logger.warning("%s failed: %s", label, e)
+        return {}
+
 
 def today_kst() -> date:
     return datetime.now(KST).date()
@@ -47,6 +66,10 @@ def _pykrx():
 
 def fetch_stock_closes(code: str, start: date, end: date) -> dict[date, float]:
     """Adjusted daily closes for one ticker over a date range."""
+    return _with_timeout(_fetch_stock_closes_blocking, code, start, end, label=f"stock {code}")
+
+
+def _fetch_stock_closes_blocking(code: str, start: date, end: date) -> dict[date, float]:
     stock = _pykrx()
     if stock is None:
         return {}

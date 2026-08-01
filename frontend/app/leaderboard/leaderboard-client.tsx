@@ -133,8 +133,23 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
   const avgHitRate = pooledN > 0 ? Math.round((pooledHits / pooledN) * 100) : null
   const beatsMarket = leaderboard.filter(l => l.grade === 'beats_market').length
 
+  // The methodology change invalidated every previously published figure, and
+  // re-scoring runs as price history loads. Saying so is better than showing a
+  // half-filled board with no explanation.
+  const rebuilding = leaderboard.length > 0 && ranked.length / leaderboard.length < 0.3
+
   return (
     <div className="space-y-6">
+      {rebuilding && (
+        <div className="rounded-xl border border-[#ffb84d]/30 bg-[#ffb84d]/5 px-4 py-3 text-xs text-th-secondary">
+          <span className="font-semibold text-[#ffb84d]">재검증 중</span>
+          {' · '}
+          적중률 산정 기준을 <strong>벤치마크 대비 초과수익</strong>으로 바꾸면서 과거 수치를 전부 무효화하고 다시 계산하고 있습니다.
+          가격 이력이 채워지는 대로 평가가 완료되며, 표본 {MIN_SAMPLE_FOR_RANKING}건을 넘긴 채널부터 순위에 반영됩니다
+          (현재 {ranked.length}/{leaderboard.length}개 채널).
+        </div>
+      )}
+
       {/* Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard label="예측 채널" value={leaderboard.length} sub="예측 데이터 보유" color="#f97316" />
