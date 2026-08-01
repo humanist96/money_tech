@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, timedelta
 
+import requests
+
 from logger import logger
 from price_history import today_kst
 
@@ -168,6 +170,29 @@ def _fetch_session_quotes(codes: list[str], markets: dict[str, str],
     return out
 
 
+def _resolve_listing(stock_code: str) -> tuple[str | None, str | None]:
+    """Official name and market from Naver's quote API.
+
+    Yahoo serves the same price series under both .KS and .KQ — the suffix
+    that happened to respond says nothing about where the stock is listed
+    (that guess stored 두산/KOSPI as KOSDAQ). Naver actually knows.
+    """
+    try:
+        resp = requests.get(
+            f"https://m.stock.naver.com/api/stock/{stock_code}/basic",
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        body = resp.json()
+        market = (body.get("stockExchangeType") or {}).get("name")
+        name = body.get("stockName")
+        return name, market if market in ("KOSPI", "KOSDAQ") else None
+    except Exception as e:
+        logger.warning("Listing lookup failed for %s: %s", stock_code, e)
+        return None, None
+
+
 def _score(c: MoverCandidate) -> float:
     change = min(abs(c.change_pct), 30) / 30
     value = min(c.value_ratio, 5) / 5
@@ -241,6 +266,18 @@ def select_movers(conn, trade_date: date | None = None) -> list[MoverCandidate]:
         notable.extend(extra)
 
     selected = sorted(notable, key=lambda c: c.score, reverse=True)[:MAX_CARDS]
+
+    # Finalists the dictionary couldn't label get an authoritative lookup —
+    # a dozen cheap calls at most, and only for the cards actually published.
+    for c in selected:
+        if c.stock_code in markets:
+            continue
+        official_name, market = _resolve_listing(c.stock_code)
+        if market:
+            c.market = market
+        if official_name and not meta.get(c.stock_code, (None, None))[0]:
+            c.stock_name = official_name
+
     logger.info(
         "Selected %d mover(s) from %d creator-mentioned ticker(s)",
         len(selected), len(candidates),
