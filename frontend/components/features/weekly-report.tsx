@@ -4,11 +4,18 @@ import Link from "next/link"
 import type { WeeklyReportItem } from "@/lib/types"
 import { CATEGORY_COLORS } from "@/lib/types"
 
+export type WeeklyCall = {
+  channel_name: string
+  asset_name: string
+  prediction_type: string
+  return_pct: number | null
+} | null
+
 interface WeeklyReportProps {
   winners: WeeklyReportItem[]
   losers: WeeklyReportItem[]
-  bestCall: { channel_name: string; asset_name: string; prediction_type: string; return_pct: number | null } | null
-  worstCall: { channel_name: string; asset_name: string; prediction_type: string; return_pct: number | null } | null
+  bestCall: WeeklyCall
+  worstCall: WeeklyCall
 }
 
 function RankCard({

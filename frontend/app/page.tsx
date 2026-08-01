@@ -2,8 +2,8 @@ import {
   getChannels, getRecentVideosWithAssets, getDailyStats, getTotalVideoCount,
   getAssetConsensus, getAssetMentions,
   getRecentPredictions, getTopAssetSentiments,
-  getBuzzAlerts, getChannelPredictionProfiles,
-  getMarketSentimentGauge, getContrarianSignals,
+  getEnhancedBuzzAlerts, getChannelPredictionProfiles,
+  getMarketSentimentGauge, getContrarianSignals, getRiskScoreboard,
 } from "@/lib/queries"
 import type { Channel } from "@/lib/types"
 import { CATEGORY_LABELS } from "@/lib/types"
@@ -21,7 +21,7 @@ async function safeQuery<T>(name: string, fn: () => Promise<T>, fallback: T): Pr
 }
 
 async function getDashboardData() {
-  const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals] = await Promise.all([
+  const [channels, videos, stats, totalVideos, consensus, assetMentions, predictions, assetSentiments, buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores] = await Promise.all([
     safeQuery("getChannels", () => getChannels(), [] as Channel[]),
     safeQuery("getRecentVideosWithAssets", () => getRecentVideosWithAssets(15), []),
     safeQuery("getDailyStats", () => getDailyStats(30), []),
@@ -30,10 +30,11 @@ async function getDashboardData() {
     safeQuery("getAssetMentions", () => getAssetMentions(30), []),
     safeQuery("getRecentPredictions", () => getRecentPredictions(20), []),
     safeQuery("getTopAssetSentiments", () => getTopAssetSentiments(10, 30), []),
-    safeQuery("getBuzzAlerts", () => getBuzzAlerts(48), []),
+    safeQuery("getEnhancedBuzzAlerts", () => getEnhancedBuzzAlerts(48), []),
     safeQuery("getChannelPredictionProfiles", () => getChannelPredictionProfiles(), []),
     safeQuery("getMarketSentimentGauge", () => getMarketSentimentGauge(), { overall_score: 50, category_scores: [], historical_extremes: [], current_warning: null }),
     safeQuery("getContrarianSignals", () => getContrarianSignals(30, 75), []),
+    safeQuery("getRiskScoreboard", () => getRiskScoreboard(14), []),
   ])
 
   const today = new Date().toISOString().split("T")[0]
@@ -51,7 +52,7 @@ async function getDashboardData() {
   return {
     channels, videos, totalVideos, todayVideos, topCategory,
     consensus, assetMentions, predictions, assetSentiments,
-    buzzAlerts, predictionProfiles, marketGauge, contrarianSignals,
+    buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores,
   }
 }
 

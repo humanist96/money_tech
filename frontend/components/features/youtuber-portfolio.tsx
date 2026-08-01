@@ -9,20 +9,31 @@ interface YouTuberPortfolioProps {
   allChannels: Channel[]
 }
 
-const STORAGE_KEY = "moneytech_portfolio_channels"
-
-function getStoredChannels(): string[] {
-  if (typeof window === "undefined") return []
+async function fetchFollowedChannels(): Promise<string[]> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
+    const res = await fetch("/api/user/follows")
+    if (!res.ok) return []
+    const data = await res.json()
+    return Array.isArray(data.followed_channels) ? data.followed_channels : []
+  } catch (error) {
+    console.error("Failed to load followed channels:", error)
     return []
   }
 }
 
-function saveChannels(ids: string[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids))
+async function persistFollow(channelId: string, following: boolean): Promise<void> {
+  try {
+    const res = await fetch("/api/user/follows", {
+      method: following ? "POST" : "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channel_id: channelId }),
+    })
+    if (!res.ok) {
+      throw new Error(`follows API returned ${res.status}`)
+    }
+  } catch (error) {
+    console.error("Failed to persist followed channel:", error)
+  }
 }
 
 export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
@@ -33,9 +44,14 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
   const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
-    const stored = getStoredChannels()
-    if (stored.length > 0) {
-      setSelectedIds(stored)
+    let cancelled = false
+    fetchFollowedChannels().then((ids) => {
+      if (!cancelled && ids.length > 0) {
+        setSelectedIds(ids)
+      }
+    })
+    return () => {
+      cancelled = true
     }
   }, [])
 
@@ -62,11 +78,14 @@ export function YouTuberPortfolio({ allChannels }: YouTuberPortfolioProps) {
   }, [selectedIds, loadPortfolioData])
 
   const toggleChannel = (id: string) => {
-    const next = selectedIds.includes(id)
+    const isSelected = selectedIds.includes(id)
+    if (!isSelected && selectedIds.length >= 10) return
+
+    const next = isSelected
       ? selectedIds.filter(x => x !== id)
-      : selectedIds.length < 10 ? [...selectedIds, id] : selectedIds
+      : [...selectedIds, id]
     setSelectedIds(next)
-    saveChannels(next)
+    persistFollow(id, !isSelected)
   }
 
   const selectedChannels = allChannels.filter(c => selectedIds.includes(c.id))

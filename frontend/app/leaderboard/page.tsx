@@ -1,19 +1,28 @@
-import { getHitRateLeaderboard, getChannelTypeStats } from "@/lib/queries"
-import { LeaderboardClient } from "./leaderboard-client"
+import {
+  getHitRateLeaderboard, getChannelTypeStats, getWeeklyReport, getHiddenGemChannels,
+} from "@/lib/queries"
+import { LeaderboardTabs } from "./leaderboard-tabs"
 
 export const dynamic = "force-dynamic"
 
-export default async function LeaderboardPage() {
-  let leaderboard: Awaited<ReturnType<typeof getHitRateLeaderboard>> = []
-  let typeStats: Awaited<ReturnType<typeof getChannelTypeStats>> = []
+async function safeQuery<T>(name: string, fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
-    ;[leaderboard, typeStats] = await Promise.all([
-      getHitRateLeaderboard(),
-      getChannelTypeStats(),
-    ])
-  } catch {
-    // fallback to empty
+    return await fn()
+  } catch (e) {
+    console.error(`[Leaderboard] ${name} failed:`, e instanceof Error ? e.message : e)
+    return fallback
   }
+}
+
+export default async function LeaderboardPage() {
+  const [leaderboard, typeStats, weekly, hiddenGems] = await Promise.all([
+    safeQuery("getHitRateLeaderboard", () => getHitRateLeaderboard(), []),
+    safeQuery("getChannelTypeStats", () => getChannelTypeStats(), []),
+    safeQuery("getWeeklyReport", () => getWeeklyReport(), {
+      winners: [], losers: [], bestCall: null, worstCall: null,
+    }),
+    safeQuery("getHiddenGemChannels", () => getHiddenGemChannels(), []),
+  ])
 
   return (
     <div className="space-y-8">
@@ -47,7 +56,12 @@ export default async function LeaderboardPage() {
         </div>
       </div>
 
-      <LeaderboardClient leaderboard={leaderboard} typeStats={typeStats} />
+      <LeaderboardTabs
+        leaderboard={leaderboard}
+        typeStats={typeStats}
+        weekly={weekly}
+        hiddenGems={hiddenGems}
+      />
     </div>
   )
 }

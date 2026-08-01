@@ -1,18 +1,6 @@
 import { getDb } from '../db'
 import type { VideoWithChannel } from '../types'
 
-export async function getRecentVideos(limit = 20): Promise<VideoWithChannel[]> {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url, 'telegram_username', c.telegram_username) AS channels
-    FROM videos v
-    JOIN channels c ON v.channel_id = c.id
-    ORDER BY v.published_at DESC NULLS LAST
-    LIMIT ${limit}
-  `
-  return rows as unknown as VideoWithChannel[]
-}
-
 export async function getVideosByChannelId(channelId: string, limit = 50): Promise<VideoWithChannel[]> {
   const sql = getDb()
   const rows = await sql`
@@ -55,19 +43,6 @@ export async function getRecentVideosWithAssets(limit: number = 15) {
     channels: { name: v.channel_name, category: v.channel_category, thumbnail_url: v.channel_thumbnail },
     mentioned_assets: assetMap.get(v.id) || [],
   }))
-}
-
-export async function getAnalystReports(limit: number = 20): Promise<VideoWithChannel[]> {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT v.*, json_build_object('name', c.name, 'category', c.category, 'thumbnail_url', c.thumbnail_url, 'telegram_username', c.telegram_username) AS channels
-    FROM videos v
-    JOIN channels c ON v.channel_id = c.id
-    WHERE v.platform = 'analyst_report'
-    ORDER BY v.published_at DESC NULLS LAST
-    LIMIT ${limit}
-  `
-  return rows as unknown as VideoWithChannel[]
 }
 
 // Utility functions

@@ -2,8 +2,8 @@
 
 import type {
   Channel, AssetConsensus, PredictionFeedItem, TopAssetSentiment,
-  MarketSentimentGauge, VideoWithChannel, MentionedAsset, AssetMention, BuzzAlert,
-  PredictionProfile, ContrarianSignal,
+  MarketSentimentGauge, VideoWithChannel, MentionedAsset, AssetMention, BuzzAlertEnhanced,
+  PredictionProfile, ContrarianSignal, RiskScore,
 } from "@/lib/types"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { VideoFeed } from "@/components/dashboard/video-feed"
@@ -12,10 +12,12 @@ import { ChannelPredictionProfile } from "@/components/dashboard/channel-predict
 import { ConsensusScore } from "@/components/dashboard/consensus-score"
 import { PredictionFeed } from "@/components/dashboard/prediction-feed"
 import { AssetSentimentGrid } from "@/components/dashboard/asset-sentiment-grid"
-import { BuzzAlertBanner } from "@/components/dashboard/buzz-alert"
 import { ChannelTicker } from "@/components/dashboard/asset-ticker"
 import { MarketGaugePanel } from "@/components/features/market-gauge"
 import { ContrarianSignalPanel } from "@/components/features/contrarian-signal"
+import { EnhancedBuzzAlertPanel } from "@/components/features/enhanced-buzz-alert"
+import { RiskScoreboard } from "@/components/features/risk-scoreboard"
+import { YouTuberPortfolio } from "@/components/features/youtuber-portfolio"
 import { DashboardLayout, type DashboardSection } from "@/components/dashboard/dashboard-layout"
 
 interface DashboardContentProps {
@@ -28,16 +30,17 @@ interface DashboardContentProps {
   assetMentions: AssetMention[]
   predictions: PredictionFeedItem[]
   assetSentiments: TopAssetSentiment[]
-  buzzAlerts: BuzzAlert[]
+  buzzAlerts: BuzzAlertEnhanced[]
   predictionProfiles: PredictionProfile[]
   marketGauge: MarketSentimentGauge
   contrarianSignals: ContrarianSignal[]
+  riskScores: RiskScore[]
 }
 
 export function DashboardContent({
   channels, videos, totalVideos, todayVideos, topCategory,
   consensus, assetMentions, predictions, assetSentiments,
-  buzzAlerts, predictionProfiles, marketGauge, contrarianSignals,
+  buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores,
 }: DashboardContentProps) {
   const sections: DashboardSection[] = [
     {
@@ -62,8 +65,8 @@ export function DashboardContent({
     },
     {
       id: "buzz",
-      label: "버즈 알림",
-      content: <BuzzAlertBanner alerts={buzzAlerts} />,
+      label: "떡상 조기경보",
+      content: <EnhancedBuzzAlertPanel alerts={buzzAlerts} />,
     },
     {
       id: "stats",
@@ -90,6 +93,16 @@ export function DashboardContent({
           </div>
         </div>
       ),
+    },
+    {
+      id: "risk",
+      label: "종목 리스크 스코어보드",
+      content: <RiskScoreboard scores={riskScores} />,
+    },
+    {
+      id: "my-channels",
+      label: "내 채널",
+      content: <YouTuberPortfolio allChannels={channels} />,
     },
     {
       id: "mentions-profile",

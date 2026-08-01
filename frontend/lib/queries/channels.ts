@@ -24,12 +24,6 @@ export async function getChannelById(id: string): Promise<Channel | null> {
   return rows[0] ?? null
 }
 
-export async function getAllChannelsWithIds(): Promise<Channel[]> {
-  const sql = getDb()
-  const rows = await sql`SELECT * FROM channels ORDER BY subscriber_count DESC NULLS LAST`
-  return rows as Channel[]
-}
-
 export async function getChannelHitRate(channelId: string) {
   const sql = getDb()
   const rows = await sql`
@@ -178,16 +172,6 @@ export async function getChannelTypeStats() {
 }
 
 // Predictor Channels - only predictor/leader types
-export async function getPredictorChannels(): Promise<Channel[]> {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT * FROM channels
-    WHERE channel_type IN ('predictor', 'leader')
-    ORDER BY prediction_intensity_score DESC NULLS LAST
-  `
-  return rows as unknown as Channel[]
-}
-
 // Channel Prediction Profile - buy/sell/hold distribution per channel
 export async function getChannelPredictionProfiles() {
   const sql = getDb()
@@ -212,40 +196,3 @@ export async function getChannelPredictionProfiles() {
 }
 
 // Channel Specialties for all channels (used in channel list)
-export async function getAllChannelSpecialties(): Promise<Map<string, ChannelSpecialtyItem[]>> {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT
-      v.channel_id,
-      ma.asset_name,
-      ma.asset_code,
-      COUNT(*)::int AS mention_count
-    FROM mentioned_assets ma
-    JOIN videos v ON ma.video_id = v.id
-    GROUP BY v.channel_id, ma.asset_name, ma.asset_code
-    ORDER BY v.channel_id, mention_count DESC
-  `
-  const map = new Map<string, ChannelSpecialtyItem[]>()
-  for (const r of rows as any[]) {
-    const list = map.get(r.channel_id) || []
-    if (list.length < 5) {
-      list.push({ asset_name: r.asset_name, asset_code: r.asset_code, mention_count: r.mention_count, sentiment: 'neutral' })
-    }
-    map.set(r.channel_id, list)
-  }
-  return map
-}
-
-export async function getChannelsForComparison(ids: string[]) {
-  const sql = getDb()
-  const channels = await sql`
-    SELECT c.*,
-      (SELECT COUNT(*)::int FROM videos WHERE channel_id = c.id) as total_video_count,
-      (SELECT COUNT(*)::int FROM mentioned_assets ma JOIN videos v ON ma.video_id = v.id WHERE v.channel_id = c.id AND ma.sentiment = 'positive') as positive_mentions,
-      (SELECT COUNT(*)::int FROM mentioned_assets ma JOIN videos v ON ma.video_id = v.id WHERE v.channel_id = c.id AND ma.sentiment = 'negative') as negative_mentions,
-      (SELECT COUNT(*)::int FROM mentioned_assets ma JOIN videos v ON ma.video_id = v.id WHERE v.channel_id = c.id AND ma.sentiment = 'neutral') as neutral_mentions
-    FROM channels c
-    WHERE c.id = ANY(${ids})
-  `
-  return channels
-}

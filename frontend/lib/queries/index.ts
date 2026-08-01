@@ -2,7 +2,6 @@
 export {
   getChannels,
   getChannelById,
-  getAllChannelsWithIds,
   getChannelHitRate,
   getChannelPredictions,
   getChannelProfile,
@@ -10,18 +9,13 @@ export {
   getChannelSpecialty,
   getChannelActivity,
   getChannelTypeStats,
-  getPredictorChannels,
   getChannelPredictionProfiles,
-  getAllChannelSpecialties,
-  getChannelsForComparison,
 } from './channels'
 
 // Videos
 export {
-  getRecentVideos,
   getVideosByChannelId,
   getRecentVideosWithAssets,
-  getAnalystReports,
   formatViewCount,
   formatDuration,
   timeAgo,
@@ -31,12 +25,9 @@ export {
 export {
   getRecentPredictions,
   getHitRateLeaderboard,
-  getBacktestData,
   getWeeklyReport,
   getConsensusTimeline,
-  getAnalystConsensus,
   getActivePredictions,
-  getPredictionTimeline,
 } from './predictions'
 
 // Assets
@@ -56,25 +47,14 @@ export {
 export {
   getDailyStats,
   getTotalVideoCount,
-  getMarketTemperature,
   getMarketSentimentGauge,
-  getBuzzAlerts,
   getEnhancedBuzzAlerts,
   getContrarianSignals,
   getDailyBriefingData,
-  getHotKeywordsRanking,
 } from './dashboard'
 
 // Analytics
 export {
   getRiskScoreboard,
   getHiddenGemChannels,
-  getConflictingOpinions,
 } from './analytics'
-
-// Crowd
-export {
-  getCrowdSentiment,
-  getCrowdSentimentLatest,
-  getCrowdSentimentTrend,
-} from './crowd'

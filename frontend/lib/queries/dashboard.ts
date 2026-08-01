@@ -24,7 +24,9 @@ export async function getTotalVideoCount(): Promise<number> {
 }
 
 // Market Temperature - category sentiment aggregation
-export async function getMarketTemperature(days = 7): Promise<MarketTemperature[]> {
+// Enhanced Market Sentiment Gauge
+// Internal helper: shared by market sentiment gauge and daily briefing.
+async function getMarketTemperature(days = 7): Promise<MarketTemperature[]> {
   const sql = getDb()
   const rows = await sql`
     SELECT
@@ -48,7 +50,7 @@ export async function getMarketTemperature(days = 7): Promise<MarketTemperature[
   })) as MarketTemperature[]
 }
 
-// Enhanced Market Sentiment Gauge
+
 export async function getMarketSentimentGauge(): Promise<MarketSentimentGauge> {
   const sql = getDb()
   const categoryScores = await getMarketTemperature(7)
@@ -85,32 +87,6 @@ export async function getMarketSentimentGauge(): Promise<MarketSentimentGauge> {
 }
 
 // Buzz Alert - assets mentioned by 3+ channels in recent hours
-export async function getBuzzAlerts(hours = 12): Promise<BuzzAlert[]> {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT
-      ma.asset_name,
-      ma.asset_code,
-      ma.asset_type,
-      COUNT(DISTINCT v.channel_id)::int AS channel_count,
-      COUNT(*)::int AS mention_count,
-      ARRAY_AGG(DISTINCT c.name) AS channels,
-      MODE() WITHIN GROUP (ORDER BY ma.sentiment) AS dominant_sentiment,
-      MAX(v.published_at) AS latest_at
-    FROM mentioned_assets ma
-    JOIN videos v ON ma.video_id = v.id
-    JOIN channels c ON v.channel_id = c.id
-    WHERE v.published_at >= NOW() - INTERVAL '1 hour' * ${hours}
-      AND ma.asset_code IS NOT NULL
-      AND ma.sentiment IS NOT NULL
-    GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
-    HAVING COUNT(DISTINCT v.channel_id) >= 2
-    ORDER BY channel_count DESC, mention_count DESC
-    LIMIT 10
-  `
-  return rows as BuzzAlert[]
-}
-
 // Enhanced Buzz Alert - with growth rate
 export async function getEnhancedBuzzAlerts(hours = 48): Promise<BuzzAlertEnhanced[]> {
   const sql = getDb()
@@ -301,56 +277,3 @@ export async function getDailyBriefingData(): Promise<{
 }
 
 // Hot Keywords Ranking
-export async function getHotKeywordsRanking(): Promise<HotKeyword[]> {
-  const sql = getDb()
-  const todayStats = await sql`
-    SELECT top_keywords FROM daily_stats
-    WHERE date >= CURRENT_DATE - 1
-    ORDER BY date DESC
-  `
-  const yesterdayStats = await sql`
-    SELECT top_keywords FROM daily_stats
-    WHERE date >= CURRENT_DATE - 3 AND date < CURRENT_DATE - 1
-    ORDER BY date DESC
-  `
-
-  const todayMap = new Map<string, number>()
-  for (const s of todayStats as any[]) {
-    if (s.top_keywords) {
-      for (const kw of s.top_keywords) {
-        todayMap.set(kw.keyword, (todayMap.get(kw.keyword) ?? 0) + kw.count)
-      }
-    }
-  }
-
-  const yesterdayMap = new Map<string, number>()
-  for (const s of yesterdayStats as any[]) {
-    if (s.top_keywords) {
-      for (const kw of s.top_keywords) {
-        yesterdayMap.set(kw.keyword, (yesterdayMap.get(kw.keyword) ?? 0) + kw.count)
-      }
-    }
-  }
-
-  const todayRanked = Array.from(todayMap.entries())
-    .map(([keyword, count]) => ({ keyword, count }))
-    .sort((a, b) => b.count - a.count)
-
-  const yesterdayRanked = Array.from(yesterdayMap.entries())
-    .map(([keyword, count]) => ({ keyword, count }))
-    .sort((a, b) => b.count - a.count)
-
-  const yesterdayRankMap = new Map<string, number>()
-  yesterdayRanked.forEach((kw, i) => yesterdayRankMap.set(kw.keyword, i + 1))
-
-  return todayRanked.slice(0, 15).map((kw, i) => {
-    const prevRank = yesterdayRankMap.get(kw.keyword)
-    const prevCount = yesterdayMap.get(kw.keyword) ?? 0
-    return {
-      keyword: kw.keyword,
-      count: kw.count,
-      prev_count: prevCount,
-      rank_change: prevRank ? prevRank - (i + 1) : 99,
-    }
-  })
-}
