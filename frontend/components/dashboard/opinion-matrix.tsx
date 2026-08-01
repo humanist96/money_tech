@@ -23,8 +23,10 @@ export function OpinionMatrix({ data, title = "채널 x 종목 의견 매트릭�
     )
   }
 
-  const channels = [...new Set(data.map((d) => d.channel_name))]
-  const assets = [...new Set(data.map((d) => d.asset_name))]
+  // Defensive caps: the grid is channels x assets, so an oversized result set
+  // would render a combinatorial number of cells.
+  const channels = [...new Set(data.map((d) => d.channel_name))].slice(0, 20)
+  const assets = [...new Set(data.map((d) => d.asset_name))].slice(0, 15)
 
   const matrix = new Map<string, Map<string, { sentiment: string; count: number }>>()
   for (const d of data) {

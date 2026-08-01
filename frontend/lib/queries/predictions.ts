@@ -42,30 +42,31 @@ export async function getRecentPredictions(limit = 20): Promise<PredictionFeedIt
 // then fetches recent_predictions per channel (N+1 queries, but main query is instant).
 export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]> {
   const sql = getDb()
+  // One LATERAL join instead of a per-channel follow-up query.
   const rows = await sql`
-    SELECT * FROM mv_hit_rate_leaderboard
+    SELECT l.*, COALESCE(recent.predictions, '[]'::json) AS recent_predictions
+    FROM mv_hit_rate_leaderboard l
+    LEFT JOIN LATERAL (
+      SELECT json_agg(p_recent) AS predictions
+      FROM (
+        SELECT p.prediction_type, p.is_accurate, p.direction_1w, p.direction_1m, p.direction_3m,
+               p.direction_score::float, ma.asset_name
+        FROM predictions p
+        LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
+        WHERE p.channel_id = l.channel_id
+          AND p.prediction_type IN ('buy', 'sell')
+        ORDER BY p.predicted_at DESC NULLS LAST
+        LIMIT 5
+      ) p_recent
+    ) recent ON TRUE
   `
 
-  const result: HitRateLeaderboardItem[] = []
-  for (const r of rows as any[]) {
-    const recentPreds = await sql`
-      SELECT p.prediction_type, p.is_accurate, p.direction_1w, p.direction_1m, p.direction_3m,
-             p.direction_score::float, ma.asset_name
-      FROM predictions p
-      LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
-      WHERE p.channel_id = ${r.channel_id}
-        AND p.prediction_type IN ('buy', 'sell')
-      ORDER BY p.predicted_at DESC NULLS LAST
-      LIMIT 5
-    `
-    result.push({
-      ...r,
-      hit_rate: Number(r.hit_rate) || 0,
-      avg_crowd_accuracy: Number(r.avg_crowd_accuracy) || 0,
-      recent_predictions: recentPreds as any[],
-    })
-  }
-  return result
+  return (rows as any[]).map((r) => ({
+    ...r,
+    hit_rate: Number(r.hit_rate) || 0,
+    avg_crowd_accuracy: Number(r.avg_crowd_accuracy) || 0,
+    recent_predictions: r.recent_predictions ?? [],
+  })) as HitRateLeaderboardItem[]
 }
 
 // YouTuber Backtesting Simulator

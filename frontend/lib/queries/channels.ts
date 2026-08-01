@@ -84,31 +84,52 @@ export async function getChannelProfile(channelId: string) {
 }
 
 // Channel x Asset Opinion Matrix
-export async function getChannelAssetMatrix(days = 7): Promise<ChannelAssetOpinion[]> {
+// The matrix renders channels x assets, so both axes must stay bounded —
+// an unbounded result set grows quadratically and blows up the rendered page.
+export async function getChannelAssetMatrix(
+  days = 7,
+  assetLimit = 15,
+  channelLimit = 20
+): Promise<ChannelAssetOpinion[]> {
   const sql = getDb()
   const rows = await sql`
+    WITH recent AS (
+      SELECT ma.asset_name, ma.asset_code, ma.sentiment, v.channel_id
+      FROM mentioned_assets ma
+      JOIN videos v ON ma.video_id = v.id
+      WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
+        AND ma.sentiment IS NOT NULL
+        AND ma.asset_code IS NOT NULL
+    ),
+    top_assets AS (
+      SELECT asset_code
+      FROM recent
+      GROUP BY asset_code
+      HAVING COUNT(DISTINCT channel_id) >= 2
+      ORDER BY COUNT(*) DESC
+      LIMIT ${assetLimit}
+    ),
+    top_channels AS (
+      SELECT channel_id
+      FROM recent
+      WHERE asset_code IN (SELECT asset_code FROM top_assets)
+      GROUP BY channel_id
+      ORDER BY COUNT(*) DESC
+      LIMIT ${channelLimit}
+    )
     SELECT
       c.id AS channel_id,
       c.name AS channel_name,
-      ma.asset_name,
-      ma.asset_code,
-      ma.sentiment,
+      r.asset_name,
+      r.asset_code,
+      r.sentiment,
       COUNT(*)::int AS mention_count
-    FROM mentioned_assets ma
-    JOIN videos v ON ma.video_id = v.id
-    JOIN channels c ON v.channel_id = c.id
-    WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
-      AND ma.sentiment IS NOT NULL
-      AND ma.asset_code IN (
-        SELECT ma2.asset_code FROM mentioned_assets ma2
-        JOIN videos v2 ON ma2.video_id = v2.id
-        WHERE v2.published_at >= NOW() - INTERVAL '1 day' * ${days}
-          AND ma2.asset_code IS NOT NULL
-        GROUP BY ma2.asset_code
-        HAVING COUNT(DISTINCT v2.channel_id) >= 2
-      )
-    GROUP BY c.id, c.name, ma.asset_name, ma.asset_code, ma.sentiment
-    ORDER BY ma.asset_name, c.name
+    FROM recent r
+    JOIN channels c ON r.channel_id = c.id
+    WHERE r.asset_code IN (SELECT asset_code FROM top_assets)
+      AND r.channel_id IN (SELECT channel_id FROM top_channels)
+    GROUP BY c.id, c.name, r.asset_name, r.asset_code, r.sentiment
+    ORDER BY r.asset_name, c.name
   `
   return rows as ChannelAssetOpinion[]
 }
@@ -143,7 +164,9 @@ export async function getChannelActivity(days = 7): Promise<ChannelActivityData[
       c.id AS channel_id,
       c.name AS channel_name,
       c.category,
-      v.published_at::date AS date,
+      -- Cast to text: the driver returns Date objects for date columns, and the
+      -- heatmap dedupes its date axis with a Set, which never matches on objects.
+      v.published_at::date::text AS date,
       COUNT(*)::int AS video_count
     FROM videos v
     JOIN channels c ON v.channel_id = c.id

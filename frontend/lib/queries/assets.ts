@@ -142,7 +142,7 @@ export async function getSentimentTrend(days = 30): Promise<SentimentTrendPoint[
   const sql = getDb()
   const rows = await sql`
     SELECT
-      v.published_at::date AS date,
+      v.published_at::date::text AS date,
       c.category,
       COUNT(CASE WHEN ma.sentiment = 'positive' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS positive_pct,
       COUNT(CASE WHEN ma.sentiment = 'negative' THEN 1 END)::float / NULLIF(COUNT(*), 0) * 100 AS negative_pct,
@@ -165,7 +165,7 @@ export async function getMentionSpike(days = 30): Promise<{ asset_name: string; 
     SELECT
       ma.asset_name,
       ma.asset_code,
-      v.published_at::date AS date,
+      v.published_at::date::text AS date,
       COUNT(*)::int AS mention_count
     FROM mentioned_assets ma
     JOIN videos v ON ma.video_id = v.id

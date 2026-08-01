@@ -17,7 +17,17 @@ export function ActivityHeatmap({ data, title = "채널 활동량 히트맵" }: 
     )
   }
 
-  const channels = [...new Set(data.map((d) => d.channel_name))].sort()
+  // The grid is channels x dates; cap the channel axis so it stays readable
+  // (and bounded) as the channel roster grows.
+  const totalByChannel = new Map<string, number>()
+  for (const d of data) {
+    totalByChannel.set(d.channel_name, (totalByChannel.get(d.channel_name) ?? 0) + d.video_count)
+  }
+  const channels = [...totalByChannel.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30)
+    .map(([name]) => name)
+    .sort()
   const dates = [...new Set(data.map((d) => d.date))].sort()
   const maxCount = Math.max(...data.map((d) => d.video_count), 1)
 
