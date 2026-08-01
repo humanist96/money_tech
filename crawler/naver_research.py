@@ -10,17 +10,14 @@ from typing import Optional
 
 import requests
 
+from http_util import RateLimiter, USER_AGENT, clean_html
+
 # Correct URL: company_list.naver (not analyst_report_sub)
 NAVER_RESEARCH_LIST_URL = "https://finance.naver.com/research/company_list.naver"
 NAVER_RESEARCH_DETAIL_URL = "https://finance.naver.com/research/company_read.naver"
 
 MIN_REQUEST_INTERVAL = 2.0
-_last_request_time = 0.0
-
-USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
+_limiter = RateLimiter(MIN_REQUEST_INTERVAL)
 
 
 @dataclass
@@ -36,23 +33,6 @@ class AnalystReport:
     previous_target: Optional[float]
     report_url: str
     published_at: Optional[str]
-
-
-def _rate_limit() -> None:
-    """Enforce rate limiting between requests."""
-    global _last_request_time
-    elapsed = time.time() - _last_request_time
-    if elapsed < MIN_REQUEST_INTERVAL:
-        time.sleep(MIN_REQUEST_INTERVAL - elapsed)
-    _last_request_time = time.time()
-
-
-def _clean_html(html_text: str) -> str:
-    """Strip HTML tags and unescape entities."""
-    text = unescape(html_text)
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
 
 
 def _parse_price(price_str: str) -> Optional[float]:
@@ -74,7 +54,7 @@ def _fetch_report_detail(nid: str) -> tuple[Optional[str], Optional[float], Opti
     Returns:
         (recommendation, target_price, analyst_name)
     """
-    _rate_limit()
+    _limiter.wait()
 
     try:
         resp = requests.get(
@@ -128,7 +108,7 @@ def fetch_analyst_reports(page: int = 1) -> list[AnalystReport]:
     Returns:
         List of AnalystReport objects
     """
-    _rate_limit()
+    _limiter.wait()
 
     try:
         resp = requests.get(
@@ -171,7 +151,7 @@ def fetch_analyst_reports(page: int = 1) -> list[AnalystReport]:
             continue
 
         stock_code = stock_link.group(1)
-        asset_name = _clean_html(stock_link.group(2))
+        asset_name = clean_html(stock_link.group(2))
 
         # Cell 1: report title + link (nid)
         report_link = re.search(r'href="company_read\.naver\?nid=(\d+)[^"]*"[^>]*>([^<]+)', cells[1])
@@ -179,16 +159,16 @@ def fetch_analyst_reports(page: int = 1) -> list[AnalystReport]:
             continue
 
         nid = report_link.group(1)
-        title = _clean_html(report_link.group(2))
+        title = clean_html(report_link.group(2))
         report_url = f"https://finance.naver.com/research/company_read.naver?nid={nid}"
 
         # Cell 2: firm name
-        firm_name = _clean_html(cells[2])
+        firm_name = clean_html(cells[2])
 
         # Cell 3: PDF link (skip)
 
         # Cell 4: date
-        date_str = _clean_html(cells[4])
+        date_str = clean_html(cells[4])
         published_at = None
         if date_str:
             for fmt in ["%y.%m.%d", "%Y.%m.%d"]:

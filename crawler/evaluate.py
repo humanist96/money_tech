@@ -8,7 +8,6 @@ from db import get_conn, close_pool
 from logger import logger
 from price_collector import collect_prices_for_predictions, record_daily_prices
 from prediction_evaluator import evaluate_predictions, update_channel_hit_rates
-from comment_analyzer import analyze_video_comments, update_crowd_accuracy
 from channel_classifier import update_stale_classifications
 
 load_dotenv()
@@ -49,14 +48,6 @@ def main():
             update_channel_hit_rates(conn)
         except Exception as e:
             logger.error("Hit rate update failed: %s", e, exc_info=True)
-
-        logger.info("=== Comment Analysis ===")
-        try:
-            comment_results = analyze_video_comments(conn, max_videos=30)
-            logger.info("Comment analysis: %s", comment_results)
-            update_crowd_accuracy(conn)
-        except Exception as e:
-            logger.error("Comment analysis failed: %s", e, exc_info=True)
 
         logger.info("=== Channel Classification ===")
         try:

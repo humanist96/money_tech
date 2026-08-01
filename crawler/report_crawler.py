@@ -9,6 +9,7 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
+from collection_guard import require_min_collected
 from db import get_conn, close_pool
 from logger import logger
 from naver_research import fetch_multiple_pages, AnalystReport
@@ -262,6 +263,8 @@ def crawl_reports(max_pages: int = 3) -> None:
     logger.info("=== Report Crawl complete ===")
     logger.info("New reports: %d", total_new)
     logger.info("Updated reports: %d", total_updated)
+
+    require_min_collected("analyst_report", total_new + total_updated)
 
 
 if __name__ == "__main__":

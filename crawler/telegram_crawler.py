@@ -10,10 +10,10 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
-from asset_dictionary import find_assets_in_text, analyze_sentiment, analyze_sentiment_for_asset, generate_simple_summary
+from collection_guard import require_min_collected
 from db import get_conn, close_pool
 from logger import logger
-from prediction_detector import detect_predictions
+from nlp_pipeline import NLPPipeline
 from telegram_client import create_client, get_channel_messages, get_channel_info, TelegramMessage
 
 load_dotenv()
@@ -107,77 +107,26 @@ def upsert_telegram_message(cur, msg: TelegramMessage, channel_uuid: str) -> boo
         return True
 
 
+_nlp = NLPPipeline()
+
+
 def process_telegram_nlp(cur, conn, msg: TelegramMessage, channel_uuid: str) -> None:
     """Run NLP analysis on a Telegram message (same pipeline as YouTube/Blog)."""
     try:
-        combined_text = msg.text or ""
+        text = msg.text or ""
+        title = text.split("\n")[0][:100]
 
-        found_assets = find_assets_in_text(combined_text)
-        sentiment = analyze_sentiment(combined_text)
-
-        if found_assets:
-            cur.execute(
-                "SELECT id FROM videos WHERE channel_id = %s AND telegram_message_id = %s",
-                (channel_uuid, msg.message_id),
-            )
-            vid_row = cur.fetchone()
-            if vid_row:
-                vid_uuid = str(vid_row[0])
-                for asset in found_assets:
-                    asset_sentiment = analyze_sentiment_for_asset(combined_text, asset["asset_name"])
-                    cur.execute(
-                        """INSERT INTO mentioned_assets
-                        (video_id, asset_type, asset_name, asset_code, sentiment)
-                        VALUES (%s, %s, %s, %s, %s)
-                        ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                            sentiment = EXCLUDED.sentiment""",
-                        (
-                            vid_uuid,
-                            asset["asset_type"],
-                            asset["asset_name"],
-                            asset["asset_code"],
-                            asset_sentiment,
-                        ),
-                    )
-
-                # Detect predictions (with telegram-adapted context window)
-                preds = detect_predictions(combined_text, found_assets, platform="telegram")
-                for pred in preds:
-                    cur.execute(
-                        "SELECT id FROM mentioned_assets WHERE video_id = %s AND asset_name = %s",
-                        (vid_uuid, pred["asset_name"]),
-                    )
-                    ma_row = cur.fetchone()
-                    if ma_row:
-                        published_at = msg.date.strftime("%Y-%m-%dT%H:%M:%SZ") if msg.date else None
-                        cur.execute(
-                            """INSERT INTO predictions
-                            (video_id, channel_id, mentioned_asset_id, prediction_type, reason, predicted_at)
-                            VALUES (%s, %s, %s, %s, %s, %s)
-                            ON CONFLICT DO NOTHING""",
-                            (
-                                vid_uuid,
-                                channel_uuid,
-                                str(ma_row[0]),
-                                pred["prediction_type"],
-                                pred.get("reason", ""),
-                                published_at,
-                            ),
-                        )
-                if preds:
-                    logger.info("Detected %d predictions", len(preds))
-
-            conn.commit()
-            logger.info("Found %d assets mentioned", len(found_assets))
-
-        title = (msg.text or "").split("\n")[0][:100]
-        summary = generate_simple_summary(title, found_assets, sentiment)
         cur.execute(
-            """UPDATE videos SET summary = %s, sentiment = %s
-            WHERE channel_id = %s AND telegram_message_id = %s""",
-            (summary, sentiment, channel_uuid, msg.message_id),
+            "SELECT id FROM videos WHERE channel_id = %s AND telegram_message_id = %s",
+            (channel_uuid, msg.message_id),
         )
-        conn.commit()
+        vid_row = cur.fetchone()
+        if not vid_row:
+            return
+
+        result = _nlp.process(text, title, platform="telegram")
+        published_at = msg.date.strftime("%Y-%m-%dT%H:%M:%SZ") if msg.date else None
+        _nlp.store_results(cur, conn, str(vid_row[0]), channel_uuid, result, published_at)
     except Exception as e:
         logger.error("NLP analysis failed: %s", e, exc_info=True)
         conn.rollback()
@@ -199,8 +148,12 @@ async def _crawl_telegram_async() -> None:
     client = create_client()
 
     if not client:
-        logger.error("Failed to create Telegram client. Check env vars.")
-        return
+        # Missing/expired credentials must fail the job — returning quietly here
+        # made the run look successful while collecting nothing.
+        raise RuntimeError(
+            "Failed to create Telegram client. Check TELEGRAM_API_ID / "
+            "TELEGRAM_API_HASH / TELEGRAM_SESSION_STRING."
+        )
 
     total_new = 0
     total_updated = 0
@@ -259,6 +212,8 @@ async def _crawl_telegram_async() -> None:
     logger.info("=== Telegram Crawl complete ===")
     logger.info("New messages: %d", total_new)
     logger.info("Updated messages: %d", total_updated)
+
+    require_min_collected("telegram", total_new + total_updated)
 
 
 def crawl_telegram() -> None:

@@ -9,6 +9,7 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
+from collection_guard import require_min_collected
 from db import get_conn, close_pool
 from logger import logger
 from naver_blog import fetch_rss_posts, fetch_blog_post_content, fetch_blog_profile_image
@@ -138,19 +139,27 @@ def crawl_blogs() -> None:
                     channel_uuid = upsert_blogger(cur, blogger, category)
                     conn.commit()
 
-                    # Fetch and store profile image
-                    try:
-                        profile_img = fetch_blog_profile_image(blog_id)
-                        if profile_img:
-                            cur.execute(
-                                "UPDATE channels SET thumbnail_url = %s WHERE id = %s AND (thumbnail_url IS NULL OR thumbnail_url = '')",
-                                (profile_img, channel_uuid),
-                            )
-                            conn.commit()
-                            logger.info("Profile image: OK")
-                    except Exception as e:
-                        logger.error("Profile image fetch failed: %s", e, exc_info=True)
-                        conn.rollback()
+                    # Only fetch the profile image when it is actually missing —
+                    # it hits the same RSS feed as the post fetch below, so doing
+                    # it unconditionally doubled the requests per blogger.
+                    cur.execute(
+                        "SELECT thumbnail_url FROM channels WHERE id = %s",
+                        (channel_uuid,),
+                    )
+                    thumb_row = cur.fetchone()
+                    if not thumb_row or not thumb_row[0]:
+                        try:
+                            profile_img = fetch_blog_profile_image(blog_id)
+                            if profile_img:
+                                cur.execute(
+                                    "UPDATE channels SET thumbnail_url = %s WHERE id = %s",
+                                    (profile_img, channel_uuid),
+                                )
+                                conn.commit()
+                                logger.info("Profile image: OK")
+                        except Exception as e:
+                            logger.error("Profile image fetch failed: %s", e, exc_info=True)
+                            conn.rollback()
 
                     # Fetch RSS posts
                     posts = fetch_rss_posts(blog_id, max_posts=15)
@@ -207,6 +216,8 @@ def crawl_blogs() -> None:
     logger.info("=== Blog Crawl complete ===")
     logger.info("New posts: %d", total_new)
     logger.info("Updated posts: %d", total_updated)
+
+    require_min_collected("blog", total_new + total_updated)
 
 
 if __name__ == "__main__":

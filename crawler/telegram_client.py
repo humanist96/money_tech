@@ -8,6 +8,9 @@ from datetime import datetime
 from typing import Optional
 
 from dotenv import load_dotenv
+from telethon.errors import AuthKeyError, FloodWaitError, SessionExpiredError
+
+from logger import logger
 
 load_dotenv()
 
@@ -112,8 +115,12 @@ async def get_channel_messages(
                 message_url=msg_url,
             ))
 
+    except (FloodWaitError, AuthKeyError, SessionExpiredError):
+        # Rate limiting and dead sessions are pipeline-level failures: swallowing
+        # them makes the crawler report success while collecting nothing.
+        raise
     except Exception as e:
-        print(f"  Error fetching messages from @{username}: {e}")
+        logger.error("Error fetching messages from @%s: %s", username, e)
 
     return messages
 
@@ -138,6 +145,8 @@ async def get_channel_info(client, username: str) -> Optional[dict]:
             "username": username,
             "participants_count": getattr(entity, "participants_count", None),
         }
+    except (FloodWaitError, AuthKeyError, SessionExpiredError):
+        raise
     except Exception as e:
-        print(f"  Error fetching channel info for @{username}: {e}")
+        logger.error("Error fetching channel info for @%s: %s", username, e)
         return None

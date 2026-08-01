@@ -13,6 +13,7 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
+from collection_guard import require_min_collected
 from db import get_conn, close_pool
 from logger import logger
 from nlp_pipeline import NLPPipeline
@@ -394,15 +395,16 @@ def crawl() -> None:
                     conn.commit()
                     rate_limit_wait(0.2)
 
-            logger.info("=== Computing daily stats for %s ===", today)
-            compute_daily_stats(cur, today)
-            conn.commit()
-
     close_pool()
 
     logger.info("=== Crawl complete ===")
     logger.info("New videos: %d", total_new)
     logger.info("Updated videos: %d", total_updated)
+
+    # daily_stats is computed by the independent daily-stats job (compute_stats.py),
+    # which also backfills. Recomputing here only duplicated work at the tail of a
+    # job that already times out.
+    require_min_collected("youtube", total_new + total_updated)
 
 
 if __name__ == "__main__":

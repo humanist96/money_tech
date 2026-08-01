@@ -11,18 +11,13 @@ from typing import Optional
 
 import requests
 
+from http_util import RateLimiter, USER_AGENT, clean_html
+
 NAVER_RSS_URL = "https://rss.blog.naver.com/{blog_id}.xml"
 NAVER_SEARCH_API = "https://openapi.naver.com/v1/search/blog.json"
 NAVER_BLOG_POST_URL = "https://blog.naver.com/{blog_id}/{log_no}"
 
-# Rate limiting: 1 request per 2 seconds
-MIN_REQUEST_INTERVAL = 2.0
-_last_request_time = 0.0
-
-USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
+_limiter = RateLimiter(2.0)
 
 
 @dataclass
@@ -35,23 +30,6 @@ class BlogPost:
     content_text: str
     published_at: Optional[str]
     log_no: Optional[str]
-
-
-def _rate_limit() -> None:
-    """Enforce rate limiting between requests."""
-    global _last_request_time
-    elapsed = time.time() - _last_request_time
-    if elapsed < MIN_REQUEST_INTERVAL:
-        time.sleep(MIN_REQUEST_INTERVAL - elapsed)
-    _last_request_time = time.time()
-
-
-def _clean_html(html_text: str) -> str:
-    """Strip HTML tags and unescape entities."""
-    text = unescape(html_text)
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
 
 
 def _extract_log_no(link: str) -> Optional[str]:
@@ -89,7 +67,7 @@ def fetch_blog_profile_image(blog_id: str) -> Optional[str]:
     URL is converted to HTTPS and resized to 204x204.
     """
     url = NAVER_RSS_URL.format(blog_id=blog_id)
-    _rate_limit()
+    _limiter.wait()
 
     try:
         resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=15)
@@ -129,7 +107,7 @@ def fetch_rss_posts(blog_id: str, max_posts: int = 20) -> list[BlogPost]:
         List of BlogPost objects
     """
     url = NAVER_RSS_URL.format(blog_id=blog_id)
-    _rate_limit()
+    _limiter.wait()
 
     try:
         resp = requests.get(
@@ -154,9 +132,9 @@ def fetch_rss_posts(blog_id: str, max_posts: int = 20) -> list[BlogPost]:
         return posts
 
     for item in channel.findall("item")[:max_posts]:
-        title = _clean_html(item.findtext("title", ""))
+        title = clean_html(item.findtext("title", ""))
         link = item.findtext("link", "")
-        description = _clean_html(item.findtext("description", ""))
+        description = clean_html(item.findtext("description", ""))
         pub_date = item.findtext("pubDate", "")
 
         log_no = _extract_log_no(link)
@@ -188,7 +166,7 @@ def fetch_blog_post_content(blog_id: str, log_no: str) -> Optional[str]:
         Full text content or None
     """
     url = f"https://m.blog.naver.com/{blog_id}/{log_no}"
-    _rate_limit()
+    _limiter.wait()
 
     try:
         resp = requests.get(
@@ -218,7 +196,7 @@ def fetch_blog_post_content(blog_id: str, log_no: str) -> Optional[str]:
     for pattern in patterns:
         match = re.search(pattern, html, re.DOTALL)
         if match:
-            content = _clean_html(match.group(1))
+            content = clean_html(match.group(1))
             if len(content) > 50:
                 return content[:10000]  # Limit to 10K chars
 
@@ -234,7 +212,7 @@ def fetch_blog_post_content(blog_id: str, log_no: str) -> Optional[str]:
             re.DOTALL,
         )
         if post_match:
-            content = _clean_html(post_match.group(1))
+            content = clean_html(post_match.group(1))
             if len(content) > 50:
                 return content[:10000]
 
@@ -260,7 +238,7 @@ def search_blog_posts(
     Returns:
         List of search result dicts
     """
-    _rate_limit()
+    _limiter.wait()
 
     try:
         resp = requests.get(
@@ -282,9 +260,9 @@ def search_blog_posts(
     results = []
     for item in data.get("items", []):
         results.append({
-            "title": _clean_html(item.get("title", "")),
+            "title": clean_html(item.get("title", "")),
             "link": item.get("link", ""),
-            "description": _clean_html(item.get("description", "")),
+            "description": clean_html(item.get("description", "")),
             "bloggername": item.get("bloggername", ""),
             "bloggerlink": item.get("bloggerlink", ""),
             "postdate": item.get("postdate", ""),
