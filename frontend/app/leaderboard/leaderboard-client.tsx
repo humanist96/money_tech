@@ -13,7 +13,6 @@ interface PredictionDetail {
   predicted_at: string | null
   is_accurate: boolean | null
   target_price: number | null
-  crowd_accuracy: number | null
   actual_price_after_1w: number | null
   actual_price_after_1m: number | null
   asset_name: string
@@ -26,10 +25,6 @@ interface PredictionDetail {
   blog_post_url: string | null
   video_published_at: string | null
   video_thumbnail: string | null
-  comment_sentiment_score: number | null
-  comment_positive_count: number | null
-  comment_negative_count: number | null
-  comment_total_count: number | null
 }
 
 interface Props {
@@ -81,21 +76,15 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
     ? channelsWithEval.reduce((s, l) => s + (Number(l.hit_rate) || 0), 0) / channelsWithEval.length * 100
     : null
   const avgHitRate = avgHitRateRaw != null && !isNaN(avgHitRateRaw) ? Math.round(avgHitRateRaw) : null
-  const channelsWithCrowd = leaderboard.filter(l => l.crowd_evaluated > 0)
-  const avgCrowdRaw = channelsWithCrowd.length > 0
-    ? channelsWithCrowd.reduce((s, l) => s + (Number(l.avg_crowd_accuracy) || 0), 0) / channelsWithCrowd.length * 100
-    : null
-  const avgCrowd = avgCrowdRaw != null && !isNaN(avgCrowdRaw) ? Math.round(avgCrowdRaw) : null
 
   return (
     <div className="space-y-6">
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard label="예측 채널" value={leaderboard.length} sub="예측 데이터 보유" color="#f97316" />
         <StatCard label="총 예측" value={totalPredictions} sub="건 감지됨" color="#22c997" />
         <StatCard label="가격 검증" value={leaderboard.reduce((s, l) => s + l.total_predictions, 0)} sub="건 적중 평가" color="#7c6cf0" />
         <StatCard label="적중률" value={avgHitRate != null ? `${avgHitRate}%` : '수집중'} sub={channelsWithEval.length > 0 ? `${channelsWithEval.length}개 채널` : '1주~3개월 후 평가'} color="#3b82f6" />
-        <StatCard label="대중 반응" value={avgCrowd != null ? `${avgCrowd}%` : '수집중'} sub={channelsWithCrowd.length > 0 ? `${channelsWithCrowd.length}개 채널` : '댓글 분석 예정'} color="#e879f9" />
       </div>
 
       {/* Info Banner - evaluation methodology */}
@@ -105,13 +94,9 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
           <span className="text-[#3b82f6] font-bold shrink-0">A. 방향 적중률</span>
           <span>영상 발행일 기준 종목 가격 → 1주/1개월/3개월 후 방향성 비교. 매수→가격상승=적중, 매도→가격하락=적중. 가중평균: 1주(50%)+1개월(30%)+3개월(20%)</span>
         </div>
-        <div className="flex items-start gap-2">
-          <span className="text-[#e879f9] font-bold shrink-0">B. 대중 반응</span>
-          <span>영상 댓글 감성분석으로 시청자 반응 측정. 매수 예측에 긍정 댓글 많으면 대중 동의도 높음 (0~100%)</span>
-        </div>
-        <div className="text-th-dim mt-1">각 행을 클릭하면 예측 근거 영상, 가격 변동, 댓글 반응을 확인할 수 있습니다.</div>
+        <div className="text-th-dim mt-1">각 행을 클릭하면 예측 근거 영상과 가격 변동을 확인할 수 있습니다.</div>
         <div className="flex items-start gap-2 mt-2 pt-2 border-t border-th-border/50">
-          <span className="text-[#f97316] font-bold shrink-0">C. PIS (Prediction Intensity Score)</span>
+          <span className="text-[#f97316] font-bold shrink-0">B. PIS (Prediction Intensity Score)</span>
           <span>채널의 예측 적극성을 0~100으로 수치화. 5가지 지표 가중합산: 예측밀도(30%) + 액션키워드강도(25%) + 종목집중도(20%) + 목표가제시율(15%) + 감성편향도(10%). 높을수록 명확한 매매 의견을 자주 제시하는 채널</span>
         </div>
       </div>
@@ -202,17 +187,6 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                           : '#3a4a6a'
                       }}>
                         {item.total_predictions > 0 ? `${Math.round((Number(item.hit_rate) || 0) * 100)}%` : '-'}
-                      </div>
-                    </div>
-                    <div className="text-right w-12">
-                      <div className="text-[10px] text-[#e879f9]">대중</div>
-                      <div className="text-base font-bold tabular-nums" style={{
-                        fontFamily: 'var(--font-outfit)',
-                        color: item.crowd_evaluated > 0
-                          ? (item.avg_crowd_accuracy ?? 0) >= 0.6 ? '#e879f9' : '#5a6a88'
-                          : '#3a4a6a'
-                      }}>
-                        {item.crowd_evaluated > 0 ? `${Math.round((Number(item.avg_crowd_accuracy) || 0) * 100)}%` : '-'}
                       </div>
                     </div>
                     <div className="text-right w-10">
@@ -372,21 +346,6 @@ function PredictionDetailRow({ pred }: { pred: PredictionDetail }) {
               color: ((pred.actual_price_after_1m - pred.price_at_mention) / pred.price_at_mention) > 0 ? '#22c997' : '#ef4444'
             }}>
               1개월후: {((pred.actual_price_after_1m - pred.price_at_mention) / pred.price_at_mention * 100).toFixed(1)}%
-            </span>
-          )}
-          {pred.comment_total_count != null && pred.comment_total_count > 0 && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#e879f9]/10 text-[#e879f9]">
-              댓글 {pred.comment_total_count}건
-              {pred.comment_sentiment_score != null && (
-                <span className="font-bold">
-                  ({pred.comment_sentiment_score > 0 ? '+' : ''}{(pred.comment_sentiment_score * 100).toFixed(0)}%)
-                </span>
-              )}
-            </span>
-          )}
-          {pred.crowd_accuracy != null && (
-            <span className="text-[#e879f9] font-medium">
-              대중동의: {Math.round(pred.crowd_accuracy * 100)}%
             </span>
           )}
         </div>

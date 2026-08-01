@@ -64,7 +64,6 @@ export async function getHitRateLeaderboard(): Promise<HitRateLeaderboardItem[]>
   return (rows as any[]).map((r) => ({
     ...r,
     hit_rate: Number(r.hit_rate) || 0,
-    avg_crowd_accuracy: Number(r.avg_crowd_accuracy) || 0,
     recent_predictions: r.recent_predictions ?? [],
   })) as HitRateLeaderboardItem[]
 }

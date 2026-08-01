@@ -6,9 +6,32 @@ on:
   workflow_dispatch:  # 수동 실행
 
 jobs:
+  # Applies any migration the live database has not seen yet. Every crawl job
+  # depends on this, so schema drift can no longer accumulate silently.
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      - name: Apply pending migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scripts/migrate.py
+
   youtube:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    needs: migrate
 
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     # ~5s per blogger after the profile-fetch fix; 153 bloggers fits comfortably.
     timeout-minutes: 30
+    needs: migrate
 
     steps:
       - uses: actions/checkout@v4
@@ -60,6 +84,7 @@ jobs:
   telegram:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    needs: migrate
 
     steps:
       - uses: actions/checkout@v4
@@ -85,6 +110,7 @@ jobs:
   analyst-report:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    needs: migrate
 
     steps:
       - uses: actions/checkout@v4
@@ -107,6 +133,7 @@ jobs:
   daily-stats:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: migrate
     # Independent of the slow channel loop. Backfills the last 14 KST days so any
     # missed window self-heals after a youtube job timeout.
     steps:

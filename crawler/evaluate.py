@@ -28,6 +28,20 @@ def refresh_materialized_views(conn):
         cur.close()
 
 
+def prune_log_tables(conn):
+    """Apply retention to append-only tables (api_usage_log, search_cache)."""
+    logger.info("Pruning log tables...")
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT prune_log_tables()")
+        conn.commit()
+    except Exception as e:
+        logger.error("Log pruning failed: %s", e, exc_info=True)
+        conn.rollback()
+    finally:
+        cur.close()
+
+
 def main():
     with get_conn() as conn:
         logger.info("=== Price Collection ===")
@@ -61,6 +75,12 @@ def main():
             refresh_materialized_views(conn)
         except Exception as e:
             logger.error("Materialized view refresh failed: %s", e, exc_info=True)
+
+        logger.info("=== Log Retention ===")
+        try:
+            prune_log_tables(conn)
+        except Exception as e:
+            logger.error("Log pruning failed: %s", e, exc_info=True)
 
         logger.info("=== Evaluation pipeline complete ===")
 
