@@ -27,6 +27,8 @@ export async function GET(request: Request) {
       JOIN channels c ON v.channel_id = c.id
       WHERE v.published_at >= NOW() - INTERVAL '7 days'
         AND ma.sentiment IS NOT NULL
+        AND ma.asset_type IN ('stock', 'coin')   -- 자산군 스코프 (A5-5)
+        AND c.is_active
       GROUP BY c.category
     `
 
@@ -58,6 +60,7 @@ export async function GET(request: Request) {
         WHERE ma.asset_code = ${assetCode}
           AND v.published_at >= NOW() - INTERVAL '7 days'
           AND ma.sentiment IS NOT NULL
+          AND ma.asset_type IN ('stock', 'coin')
         GROUP BY ma.asset_name, ma.asset_code
       `
       if ((assetRows as any[]).length > 0) {

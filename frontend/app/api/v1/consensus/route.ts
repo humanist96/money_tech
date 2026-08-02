@@ -35,6 +35,8 @@ export async function GET(request: Request) {
       LEFT JOIN predictions p ON p.video_id = v.id AND p.mentioned_asset_id = ma.id
       WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
         AND ma.sentiment IS NOT NULL
+        AND ma.asset_type IN ('stock', 'coin')   -- 자산군 스코프 (A5-5)
+        AND c.is_active
       GROUP BY ma.asset_name, ma.asset_code, ma.asset_type
       HAVING COUNT(DISTINCT v.channel_id) >= ${minChannels}
       ORDER BY COUNT(DISTINCT v.channel_id) DESC, COUNT(*) DESC

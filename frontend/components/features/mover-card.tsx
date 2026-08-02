@@ -150,6 +150,31 @@ export function MoverCard({ mover }: { mover: DailyMover }) {
 
       {open && (
         <div className="border-t border-th-border/50 px-5 py-3 space-y-2">
+          {/* factors first: the LLM's decomposition of *why*, with the evidence
+              numbers it leaned on. Raw evidence below is the audit trail. */}
+          {mover.factors?.length > 0 && (
+            <div className="mb-3 space-y-1.5">
+              {mover.factors.map((f, i) => {
+                const meta = EVIDENCE_META[f.type] ?? { label: f.type, color: "#5a6a88" }
+                return (
+                  <div key={i} className="flex items-start gap-2 text-[11px]">
+                    <span
+                      className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-medium"
+                      style={{ background: `${meta.color}26`, color: meta.color }}
+                    >
+                      {meta.label}
+                    </span>
+                    <span className="text-th-primary flex-1">{f.description}</span>
+                    {f.evidence_refs?.length > 0 && (
+                      <span className="shrink-0 text-[9px] text-th-dim tabular-nums">
+                        [{f.evidence_refs.join(", ")}]
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
           {mover.evidence.map((e) => {
             const meta = EVIDENCE_META[e.type] ?? { label: e.type, color: "#5a6a88" }
             const external = e.source_url?.startsWith("http")

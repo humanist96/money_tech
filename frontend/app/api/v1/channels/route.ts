@@ -17,9 +17,12 @@ export async function GET(request: Request) {
   const sql = getDb()
 
   try {
+    // is_active is the single source of truth for scope: real-estate channels
+    // were deactivated in 020, so ?category=real_estate returns nothing rather
+    // than serving an asset class the product no longer covers (A5-5).
     const countRows = category
-      ? await sql`SELECT COUNT(*)::int AS total FROM channels WHERE category = ${category}`
-      : await sql`SELECT COUNT(*)::int AS total FROM channels`
+      ? await sql`SELECT COUNT(*)::int AS total FROM channels WHERE is_active AND category = ${category}`
+      : await sql`SELECT COUNT(*)::int AS total FROM channels WHERE is_active`
     const total = (countRows[0] as { total: number }).total
 
     const rows = category
@@ -28,7 +31,7 @@ export async function GET(request: Request) {
                  thumbnail_url, channel_type, hit_rate, prediction_intensity_score,
                  created_at
           FROM channels
-          WHERE category = ${category}
+          WHERE is_active AND category = ${category}
           ORDER BY subscriber_count DESC NULLS LAST
           LIMIT ${limit} OFFSET ${offset}
         `
@@ -37,6 +40,7 @@ export async function GET(request: Request) {
                  thumbnail_url, channel_type, hit_rate, prediction_intensity_score,
                  created_at
           FROM channels
+          WHERE is_active
           ORDER BY subscriber_count DESC NULLS LAST
           LIMIT ${limit} OFFSET ${offset}
         `

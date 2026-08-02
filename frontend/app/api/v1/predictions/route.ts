@@ -42,6 +42,8 @@ export async function GET(request: Request) {
       LEFT JOIN mentioned_assets ma ON p.mentioned_asset_id = ma.id
       WHERE p.prediction_type IN ('buy', 'sell')
         AND p.predicted_at >= NOW() - INTERVAL '1 day' * ${days}
+        AND (ma.asset_type IS NULL OR ma.asset_type IN ('stock', 'coin'))
+        AND c.is_active
         ${assetCode ? sql`AND ma.asset_code = ${assetCode}` : sql``}
         ${direction ? sql`AND p.prediction_type = ${direction}` : sql``}
       ORDER BY p.predicted_at DESC
