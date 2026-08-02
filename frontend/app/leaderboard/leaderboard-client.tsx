@@ -88,6 +88,25 @@ function GradeBadge({ grade }: { grade: SkillGrade }) {
 }
 
 /**
+ * 표본이 랭킹 문턱을 갓 넘긴 구간(10 <= n < 30)을 표시한다. Wilson 하한이
+ * 50%를 넘겨 "시장보다 잘 맞힘"으로 분류되더라도 n=11에서의 그 판정과
+ * n=76에서의 판정은 무게가 다르다 — 등급만 보고 같게 읽히는 것을 막는다
+ * (계획 3.5).
+ */
+function SampleBadge({ n }: { n: number }) {
+  if (n >= 30 || n < MIN_SAMPLE_FOR_RANKING) return null
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+      style={{ background: '#f59e0b1a', color: '#f59e0b' }}
+      title={`평가 표본 ${n}건. 30건 미만이라 순위가 쉽게 흔들립니다.`}
+    >
+      표본 적음 {n}건
+    </span>
+  )
+}
+
+/**
  * BTC는 벤치마크 없이 절대수익으로 판정되므로, BTC 비중이 높은 채널의 적중률은
  * 다른 채널과 척도가 다르다. 20% 이상일 때 배지로 가시화한다 (계획 §3.2).
  */
@@ -266,6 +285,7 @@ export function LeaderboardClient({ leaderboard, typeStats }: Props) {
                         <span className="text-[10px] text-th-dim">{CATEGORY_LABELS[item.category] ?? item.category}</span>
                         <ChannelTypeBadge type={item.channel_type} />
                         <GradeBadge grade={item.grade} />
+                        <SampleBadge n={item.n_effective} />
                         <BtcShareBadge share={item.btc_share} />
                       </div>
                     </div>

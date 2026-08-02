@@ -53,7 +53,8 @@ export function DashboardContent({
   const moversLabel = (() => {
     if (!moversDate) return "등락 원인"
     const days = Math.round((Date.now() - new Date(moversDate).getTime()) / 86400000)
-    if (days <= 1) return "어제 왜 움직였나"
+    if (days === 1) return "어제 왜 움직였나"
+    if (days === 0) return "오늘 왜 움직였나"
     return `${moversDate.slice(5).replace("-", "/")} 왜 움직였나`
   })()
 

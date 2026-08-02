@@ -24,6 +24,17 @@ export default async function MoversPage({
     console.error("[Movers] load failed:", e instanceof Error ? e.message : e)
   }
 
+  // "어제"라고 부를 수 있는 건 직전 거래일 데이터일 때뿐이다. 파이프라인이
+  // 한 세션을 거르거나(휴장·크론 실패) 당일 16:40 배치가 막 돌았을 때는
+  // 날짜를 밝힌다 — 어느 쪽이든 "어제"는 사실이 아니다.
+  const headingLabel = (() => {
+    if (!tradeDate) return "등락 원인 분석"
+    const days = Math.round((Date.now() - new Date(tradeDate).getTime()) / 86400000)
+    if (days === 1) return "어제 왜 움직였나"
+    if (days === 0) return "오늘 왜 움직였나"
+    return `${tradeDate.slice(5).replace("-", "/")} 왜 움직였나`
+  })()
+
   return (
     <div className="space-y-8">
       <div className="relative">
@@ -37,7 +48,7 @@ export default async function MoversPage({
                 </svg>
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: "var(--font-outfit)" }}>
-                어제 왜 움직였나
+                {headingLabel}
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-2xl">
