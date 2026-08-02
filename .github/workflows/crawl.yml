@@ -180,12 +180,15 @@ jobs:
       # its own — daily snapshots only cover "today". The backfill's skip
       # heuristic makes this cheap when there is nothing to repair, and
       # evaluate.py's requeue step then reopens verdicts the new prices unlock.
+      # 120 days, not 60: the 3-month horizon scores t0+90, so a window shorter
+      # than that can never restore a t0 price the evaluator still needs — the
+      # gap it is meant to repair would stay open by construction.
       - name: Repair price-history gaps
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           cd crawler
-          python backfill_prices.py --history --days 60
+          python backfill_prices.py --history --days 120
 
       - name: Collect prices & evaluate predictions
         env:
