@@ -1,0 +1,55 @@
+name: Monthly Detection Audit
+
+# Plan 3.7 asks for a monthly stratified audit of 50 detections, judged by a
+# human. The judging cannot be automated without defeating its purpose, so this
+# workflow automates everything else: it publishes the current precision figures
+# and uploads a ready-to-label sample as an artifact. Download it, fill the
+# `label` column, and load it back with:
+#     python crawler/audit_detections.py --import labelled.csv
+on:
+  schedule:
+    - cron: '0 0 1 * *'   # 1st of each month, 00:00 UTC
+  workflow_dispatch:
+    inputs:
+      sample:
+        description: 'Sample size'
+        required: false
+        default: '50'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      # Runs first so the figures reflect whatever was labelled last cycle,
+      # even if the export below finds nothing new to sample.
+      - name: Precision report
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd crawler
+          python audit_detections.py --report
+
+      - name: Export sample for labelling
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd crawler
+          python audit_detections.py --export ../detection-sample.csv --sample ${{ github.event.inputs.sample || '50' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: detection-sample
+          path: detection-sample.csv
+          retention-days: 90

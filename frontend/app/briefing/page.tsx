@@ -29,11 +29,11 @@ export default async function BriefingPage() {
                 </svg>
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-th-primary glow-text" style={{ fontFamily: 'var(--font-outfit)' }}>
-                AI 일일 브리핑
+                일일 브리핑
               </h1>
             </div>
             <p className="text-th-dim text-sm max-w-lg">
-              어제 업로드된 재테크 영상 핵심 내용을 AI가 종합 요약합니다. 10개 채널 볼 시간을 3분으로 압축하세요.
+              어제 업로드된 콘텐츠의 언급 종목·의견을 집계합니다. 10개 채널 볼 시간을 3분으로 압축하세요.
             </p>
           </div>
         </div>

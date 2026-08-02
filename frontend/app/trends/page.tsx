@@ -1,10 +1,9 @@
 import {
-  getDailyStats, getSentimentTrend, getMentionSpike,
+  getDailyStats, getSentimentTrend,
   getChannelAssetMatrix, getChannelActivity, getAssetCorrelations,
 } from "@/lib/queries"
 import type { DailyStat } from "@/lib/types"
 import { SentimentTrendChart } from "@/components/charts/sentiment-trend-chart"
-import { MentionSpikeChart } from "@/components/charts/mention-spike-chart"
 import { OpinionMatrix } from "@/components/dashboard/opinion-matrix"
 import { ActivityHeatmap } from "@/components/charts/activity-heatmap"
 import { CorrelationNetwork } from "@/components/charts/correlation-network"
@@ -15,10 +14,9 @@ export const dynamic = "force-dynamic"
 
 async function getTrendData() {
   try {
-    const [stats, sentimentTrend, mentionSpikes, opinionMatrix, channelActivity, correlations] = await Promise.all([
+    const [stats, sentimentTrend, opinionMatrix, channelActivity, correlations] = await Promise.all([
       getDailyStats(30),
       getSentimentTrend(30),
-      getMentionSpike(30),
       getChannelAssetMatrix(30),
       getChannelActivity(30),
       getAssetCorrelations(30, 2),
@@ -33,17 +31,17 @@ async function getTrendData() {
     }
     const categoryData = Object.entries(catCounts).map(([category, count]) => ({ category, count }))
 
-    return { stats, sentimentTrend, mentionSpikes, opinionMatrix, channelActivity, correlations, categoryData }
+    return { stats, sentimentTrend, opinionMatrix, channelActivity, correlations, categoryData }
   } catch {
     return {
-      stats: [] as DailyStat[], sentimentTrend: [], mentionSpikes: [],
+      stats: [] as DailyStat[], sentimentTrend: [],
       opinionMatrix: [], channelActivity: [], correlations: [], categoryData: [],
     }
   }
 }
 
 export default async function TrendsPage() {
-  const { stats, sentimentTrend, mentionSpikes, opinionMatrix, channelActivity, correlations, categoryData } = await getTrendData()
+  const { stats, sentimentTrend, opinionMatrix, channelActivity, correlations, categoryData } = await getTrendData()
 
   return (
     <div className="space-y-8">
@@ -64,11 +62,8 @@ export default async function TrendsPage() {
       {/* Sentiment Trend Chart */}
       <SentimentTrendChart data={sentimentTrend} />
 
-      {/* Row: Category Bar + Mention Spikes */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <CategoryBarChart data={categoryData} title="최근 7일 카테고리별 영상" />
-        <MentionSpikeChart data={mentionSpikes} />
-      </div>
+      {/* 언급 스파이크는 대시보드 버즈와 중복이라 제거(계획 §2.1) */}
+      <CategoryBarChart data={categoryData} title="최근 7일 카테고리별 영상" />
 
       {/* Correlation Network */}
       <CorrelationNetwork data={correlations} />

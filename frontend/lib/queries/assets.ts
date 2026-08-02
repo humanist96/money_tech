@@ -2,7 +2,7 @@ import { getDb } from '../db'
 import type {
   AssetMention, AssetConsensus, AssetCorrelation,
   TopAssetSentiment, AssetTimelineEntry,
-  SentimentTrendPoint, MentionSpikeData,
+  SentimentTrendPoint,
 } from '../types'
 
 export async function getAssetMentions(days: number = 7): Promise<AssetMention[]> {
@@ -160,52 +160,6 @@ export async function getSentimentTrend(days = 30): Promise<SentimentTrendPoint[
     ORDER BY date ASC
   `
   return rows as SentimentTrendPoint[]
-}
-
-// Mention Spike Timeline
-export async function getMentionSpike(days = 30): Promise<{ asset_name: string; asset_code: string; data: MentionSpikeData[] }[]> {
-  const sql = getDb()
-  const rows = await sql`
-    SELECT
-      ma.asset_name,
-      ma.asset_code,
-      v.published_at::date::text AS date,
-      COUNT(*)::int AS mention_count
-    FROM mentioned_assets ma
-    JOIN videos v ON ma.video_id = v.id
-    WHERE v.published_at >= NOW() - INTERVAL '1 day' * ${days}
-      AND ma.asset_code IS NOT NULL
-      AND ma.asset_type IN ('stock', 'coin')
-    GROUP BY ma.asset_name, ma.asset_code, v.published_at::date
-    ORDER BY ma.asset_name, date
-  `
-  const grouped = new Map<string, { asset_name: string; asset_code: string; data: any[] }>()
-  for (const r of rows as any[]) {
-    const key = r.asset_code || r.asset_name
-    if (!grouped.has(key)) {
-      grouped.set(key, { asset_name: r.asset_name, asset_code: r.asset_code, data: [] })
-    }
-    grouped.get(key)!.data.push({ date: r.date, mention_count: r.mention_count })
-  }
-
-  const result: { asset_name: string; asset_code: string; data: MentionSpikeData[] }[] = []
-  for (const [, entry] of grouped) {
-    const avg = entry.data.reduce((s: number, d: any) => s + d.mention_count, 0) / Math.max(entry.data.length, 1)
-    if (avg < 1) continue
-    const hasSpike = entry.data.some((d: any) => d.mention_count >= avg * 2)
-    if (!hasSpike && entry.data.length < 3) continue
-    entry.data = entry.data.map((d: any) => ({
-      ...d,
-      avg_count: Math.round(avg * 10) / 10,
-      is_spike: d.mention_count >= avg * 2,
-    }))
-    result.push(entry)
-  }
-  return result.sort((a, b) => {
-    const aMax = Math.max(...a.data.map(d => d.mention_count))
-    const bMax = Math.max(...b.data.map(d => d.mention_count))
-    return bMax - aMax
-  }).slice(0, 8)
 }
 
 // Asset Correlation Network - co-occurrence of assets in same video

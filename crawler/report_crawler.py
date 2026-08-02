@@ -154,10 +154,14 @@ def process_report_prediction(cur, conn, report: AnalystReport, channel_uuid: st
         # Insert prediction with target price and confidence
         if pred_type:
             cur.execute(
+                # detection_method is the stratification key for the precision
+                # audit; leaving it NULL here made analyst calls invisible to
+                # per-source measurement (they were 99.8% of the table).
                 """INSERT INTO predictions
                 (video_id, channel_id, mentioned_asset_id, prediction_type,
-                 target_price, previous_target_price, confidence, reason, predicted_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 target_price, previous_target_price, confidence, reason,
+                 predicted_at, detection_method)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'report')
                 ON CONFLICT DO NOTHING""",
                 (
                     vid_uuid,

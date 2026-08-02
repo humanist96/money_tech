@@ -54,7 +54,7 @@ export function DailyBriefingPanel({ topMentioned, conflicts, newRecommendations
             </div>
             <div>
               <h3 className="font-bold text-th-primary text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>
-                AI 일일 마켓 브리핑
+                일일 마켓 브리핑
               </h3>
               <p className="text-[10px] text-th-dim">{today}</p>
             </div>

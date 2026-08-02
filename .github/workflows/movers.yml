@@ -13,9 +13,32 @@ on:
         required: false
 
 jobs:
+  # crawl.yml has the same gate. Without it this workflow can run against a
+  # database that has never seen 019 (daily_movers) — the schema it writes to.
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r crawler/requirements.txt
+
+      - name: Apply pending migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scripts/migrate.py
+
   movers:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    needs: migrate
 
     steps:
       - uses: actions/checkout@v4

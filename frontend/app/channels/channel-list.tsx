@@ -327,7 +327,7 @@ export function ChannelList({ channels }: ChannelListProps) {
         return (
           ch.name.toLowerCase().includes(q) ||
           (ch.description ?? "").toLowerCase().includes(q) ||
-          CATEGORY_LABELS[ch.category].includes(q)
+          (CATEGORY_LABELS[ch.category] ?? ch.category).includes(q)
         )
       })
       .sort((a, b) => {

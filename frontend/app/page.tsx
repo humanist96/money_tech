@@ -35,7 +35,7 @@ async function getDashboardData() {
     safeQuery("getMarketSentimentGauge", () => getMarketSentimentGauge(), { overall_score: 50, category_scores: [], historical_extremes: [], current_warning: null }),
     safeQuery("getContrarianSignals", () => getContrarianSignals(30, 75), []),
     safeQuery("getRiskScoreboard", () => getRiskScoreboard(14), []),
-    safeQuery("getTopMovers", () => getTopMovers(2), []),
+    safeQuery("getTopMovers", () => getTopMovers(3), []),
   ])
 
   const today = new Date().toISOString().split("T")[0]

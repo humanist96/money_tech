@@ -37,7 +37,6 @@ export {
   getAssetTimeline,
   getTopAssetSentiments,
   getSentimentTrend,
-  getMentionSpike,
   getAssetCorrelations,
   getAssetPriceHistory,
 } from './assets'

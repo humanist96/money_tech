@@ -423,7 +423,13 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                     counts["unevaluable"] += 1
                     continue
 
-                price_t0, _ = base
+                # The date the price actually came from, not the nominal t0.
+                # Both ends must be read on the same session or the excess
+                # picks up a day of index movement that no one predicted —
+                # KOSPI moved -17.2% and +17.9% on consecutive days in this
+                # very sample, so a one-session slip is worth more than most
+                # calls (G42).
+                price_t0, base_date = base
 
                 if is_delisted:
                     # Treated as a resolved outcome: a delisted holding is the
@@ -456,7 +462,7 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                 benchmark_return = None
                 band = BANDS[horizon]
                 if benchmark_code:
-                    b0 = asof_from_index(benchmarks.get(benchmark_code), t0)
+                    b0 = asof_from_index(benchmarks.get(benchmark_code), base_date)
                     bh = asof_from_index(benchmarks.get(benchmark_code), eval_date)
                     if b0 and bh and b0[0] > 0:
                         benchmark_return = bh[0] / b0[0] - 1

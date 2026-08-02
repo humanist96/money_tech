@@ -230,13 +230,6 @@ export interface SentimentTrendPoint {
   neutral_pct: number
 }
 
-export interface MentionSpikeData {
-  date: string
-  mention_count: number
-  avg_count: number
-  is_spike: boolean
-}
-
 export interface PredictionFeedItem {
   id: string
   channel_name: string

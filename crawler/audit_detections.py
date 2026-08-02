@@ -6,13 +6,23 @@ a stratified random sample of recent predictions, shows the surrounding text,
 and records a human judgement per detection path so precision can be tracked
 separately for keyword, LLM and report detection.
 
+The audit itself stays manual — a human deciding whether a detection is real
+is the whole point (plan 3.7). What is automated is everything around it:
+--export writes the stratified sample to CSV, --import loads the labelled file
+back, and --report prints precision per path. That way the monthly loop can be
+scheduled (sample out, report published) without pretending a machine can
+grade its own detections.
+
 Usage:
-    python crawler/audit_detections.py --sample 50
+    python crawler/audit_detections.py --sample 50            # interactive
+    python crawler/audit_detections.py --export sample.csv    # for offline labelling
+    python crawler/audit_detections.py --import labelled.csv
     python crawler/audit_detections.py --report
 """
 from __future__ import annotations
 
 import argparse
+import csv
 import sys
 
 from db import get_conn, close_pool
@@ -136,15 +146,72 @@ def print_report(conn) -> None:
     print()
 
 
+def export_sample(conn, size: int, path: str) -> int:
+    """Write the stratified sample to CSV for offline labelling."""
+    with conn.cursor() as cur:
+        sample = fetch_sample(cur, size)
+
+    with open(path, "w", newline="", encoding="utf-8") as fh:
+        writer = csv.writer(fh)
+        writer.writerow([
+            "prediction_id", "detection_method", "prediction_type", "reason",
+            "asset_name", "context_text", "video_title", "channel_name",
+            "label",  # fill with: correct | wrong_direction | not_a_prediction | wrong_asset
+        ])
+        for row in sample:
+            pid, method, ptype, reason, asset, context, title, channel = row
+            writer.writerow([
+                pid, method or "unknown", ptype, (reason or "")[:200], asset,
+                (context or "")[:500], (title or "")[:200], channel, "",
+            ])
+
+    logger.info("Exported %d prediction(s) to %s", len(sample), path)
+    return len(sample)
+
+
+def import_labels(conn, path: str) -> int:
+    """Load a labelled CSV back into detection_audit."""
+    valid = set(LABELS.values())
+    imported = 0
+
+    with open(path, newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            label = (row.get("label") or "").strip()
+            if not label:
+                continue
+            if label not in valid:
+                logger.warning("Skipping %s: unknown label %r", row.get("prediction_id"), label)
+                continue
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO detection_audit (prediction_id, detection_method, label)
+                       VALUES (%s, %s, %s)
+                       ON CONFLICT (prediction_id) DO UPDATE SET
+                           label = EXCLUDED.label, audited_at = NOW()""",
+                    (row["prediction_id"], row.get("detection_method") or "unknown", label),
+                )
+            conn.commit()
+            imported += 1
+
+    logger.info("Imported %d label(s) from %s", imported, path)
+    return imported
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sample", type=int, default=50, help="predictions to review")
     parser.add_argument("--report", action="store_true", help="print precision per detector")
+    parser.add_argument("--export", metavar="CSV", help="write sample to CSV for offline labelling")
+    parser.add_argument("--import", dest="import_path", metavar="CSV", help="load labelled CSV")
     args = parser.parse_args()
 
     with get_conn() as conn:
         if args.report:
             print_report(conn)
+        elif args.export:
+            export_sample(conn, args.sample, args.export)
+        elif args.import_path:
+            import_labels(conn, args.import_path)
         else:
             run_audit(conn, args.sample)
 
