@@ -549,6 +549,10 @@ def update_channel_stats(conn) -> int:
               AND COALESCE(p.detection_method, 'unknown') NOT IN (
                   SELECT COALESCE(da.detection_method, 'unknown')
                   FROM detection_audit da
+                  -- 사람이 판정한 라벨만 제품 동작을 바꾼다. LLM 보조
+                  -- 라벨로 채널을 리더보드에서 빼면, 검증되지 않은 판정이
+                  -- 지표를 결정하게 된다(계획 §3.7의 '수동 감사' 전제).
+                  WHERE da.auditor = 'human'
                   GROUP BY 1
                   HAVING COUNT(*) >= %s
                      AND COUNT(*) FILTER (WHERE da.label = 'correct')::float

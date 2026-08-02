@@ -1,0 +1,51 @@
+prediction_id,detection_method,prediction_type,reason,asset_name,context_text,video_title,channel_name,label
+5aeaaa63-e84a-41b1-a21a-a5217cb352cd,keyword,buy,진입,SK,,8월 3일 장 전 코멘트,급등테마뉴스,correct
+79628259-2fa8-4b38-bc71-1232d455d46a,keyword,buy,진입,SK하이닉스,,8월 3일 장 전 코멘트,급등테마뉴스,correct
+08b04474-906b-473c-943b-c28761a2df88,keyword,buy,진입,삼성전자,,8월 3일 장 전 코멘트,급등테마뉴스,correct
+17a0110b-734e-4ac0-93c7-40f5c8a7bdc7,keyword,buy,"매수, 진입, 매도",대치,,">>**단 하루 7.2조 원, 외국인 금요일 순매수 사상 최대! CITI, 한국 증시 자금 흐름 역풍은 이미 사라져**",급등테마뉴스,wrong_asset
+8a266db7-da4d-4033-aad8-0a81a88c0fed,llm,hold,반도체 시장의 불확실성으로 보유 추천,SK하이닉스,,"[✏️ 복습용 풀버전] 코스피 -33% 하락 공포의 7월, 우리는 어떻게 대응해야 할까?  | 증시각도기 곽상준",증시각도기tv,correct
+7ee4b05c-9221-4a5d-b43c-5d168caa816f,llm,buy,외국계 대량 매수와 저평가로 안전마진 확보,기아,,"기아 주가 전망, PBR 0.83배에 외국계 폭풍 매수, 벤저민 그레이엄 관점 적정주가는?",경제적 자유를 위하여,correct
+7e44b3a0-d3ec-469f-90bf-88d065590a72,llm,buy,하반기 우상향 반등 예측 및 RWA 생태계 확장 가능성,온도파이낸스,,"온도파이낸스(Ondo Finance, ONDO) 향후 시세 예측 및 RWA 섹터 실전 투자·리스크 대응 전략 완벽 가이드",작은재미,correct
+d0b361f7-760e-4b6c-b936-5f8136e995c6,llm,hold,현재 박스권 움직임으로 관망 추천,솔라나,,솔라나 코인 시세 분석과 앞으로의 전망,이제이 재테크,correct
+3b1fbef9-c7c5-4c9f-baef-0e037d3aa99b,llm,buy,KDDX 7.8조 수주와 방산 모멘텀으로 주가 상승 기대,한화오션,,폭락 후 7% 급등 이유! 한화오션 지금 사도 될까? KDDX 7.8조 수주와 미국 방산 MRO 모멘텀 분석,인생공부의 주식노트,correct
+d282169e-dbcb-402a-91c7-287896e5a998,llm,sell,주가가 10만 원대까지 하락하여 부정적인 전망,LG전자,,"""다신 주식 안 할게요"" LG전자 주가 목표가 구조대 이때 온다는데",대중과 멀어지는 삶,wrong_direction
+3193f20f-e8e3-46f6-8274-8a15c2dae199,llm,buy,상반기 호실적과 하반기 성장 기대감,LG CNS,,"""상반기 호실적 터졌다"" LG CNS 주가 폭발하나","파이어족의 경제, 금융 이야기",correct
+0cb9f95e-aa28-4d91-bea2-79e0f14f1432,llm,buy,우주 AI 시장의 성장 가능성에 따른 투자 추천,스페이스X,,"우주 AI 10년 뒤 5경원 시장 된다, '이 주식' 결국 황제주가 됩니다 (이재훈 작가)",김작가TV,wrong_asset
+c3ba88bb-a442-41c9-8b76-fc34771d1a16,llm,buy,양자컴퓨터 관련 종목 반등 및 높은 수익률,SOL미국양자컴퓨팅TOP10,,"""아이온큐서 뼈아팠던 손절"" 그리고 양자컴퓨터 ETF 갈아탄 이유",서울 자가에 사는 지델롱의 주담대 갚는 이야기,correct
+59516ec5-c375-44a7-9cea-69f22b989803,llm,buy,"목표주가 80,000원으로 현재가 대비 상승 여력 84%",LIG아큐버,,[종합 투자 분석 리포트] LIG아큐버(구 이노와이어리스) | 073490 · KOSDAQ,은성의 홍익세상,correct
+46140275-7b87-4040-bc31-4bde468fbd28,llm,buy,기술적 분석에 따르면 눌림목 분할 매수에 적합한 타점으로 보임,TIGER 미국S&P500,,[ETF 투자 분석] TIGER 미국S&P500(360750)(0114)[기준일 - 2026.07.31],"디앤디웍스, ETF 수사, 유용한 정보 제공",correct
+3bda27c7-e7be-48c5-b11a-2b1b89fb43e4,llm,buy,주가 조정으로 밸류에이션 부담 해소,현대자동차,,현대자동차 주가 “40만원 아래로” 분할매수 시작합니다,에르메의 재테크북,correct
+5d20e4c6-21bc-45f2-842e-2bcfca78facf,llm,buy,최근 급등세로 인해 투자 매력 증가,솔레이어,,최근 솔레이어 급등 바이낸스 솔레이어 코인 가격 최신 분석,Bong soonga님의블로그,correct
+676e516f-5bda-444b-bcd3-d27856168c41,llm,hold,주가 변동성이 크고 하락 우려가 존재함,삼성전자,,"""월요일 삼성전자 주가 -9% 폭락해"" 배당금 지급일 이후 다 판다는데",대중과 멀어지는 삶,correct
+81ca5920-ad4e-4ce5-aa28-1412b5f854bd,llm,buy,바닥권 탈출 신호와 강한 반등으로 매수 타이밍 적합,KODEX 2차전지산업,,[ETF 투자 분석] KODEX 2차전지산업(305720)(0108)[기준일 - 2026.07.31],"디앤디웍스, ETF 수사, 유용한 정보 제공",correct
+8637fe7d-f32b-4a65-b91d-cd90ab6b5490,report,buy,Buy,더블유게임즈,,[키움증권] 게임공장으로 변모,키움증권,correct
+09423e85-7c43-4f71-9f72-eb6b9641a977,report,buy,매수,SGC에너지,,[DS투자증권] 의심은 접어두고 매수로 대응할 시점,DS투자증권,correct
+b100b1ef-5f4e-4051-ac1c-c40902d9df9a,report,buy,Buy,아이씨티케이,,[하나증권] ICTK가 자타공인 양자산업 주도업체가 되었습..,하나증권,correct
+d79629fe-01af-47a3-975b-419c443885eb,report,buy,매수,GS건설,,[IBK투자증권] Top-pick으로 제시,IBK투자증권,correct
+ebc8a15f-cb08-41a3-923a-e27953712433,report,buy,Buy,오리온,,"[유안타증권] 안정적인 성장, 하반기 수익성 개선 기대",유안타증권,correct
+eccd1402-d2b7-4ac2-a04e-920d03e7535d,report,buy,매수,BNK금융지주,,[신한투자증권] 일회성 비용으로 컨센서스 하회,신한투자증권,correct
+a4d30d1a-ad0a-416f-ac91-8e376f6e4e63,report,buy,매수,현대위아,,"[신한투자증권] 단기 실적은 감속, 전환 스토리는 가속",신한투자증권,correct
+d23c80cb-4aab-4719-a110-daf3fcf0e977,report,buy,Buy,신한지주,,[하나증권] M&A 이슈가 단기 주가 흐름에 영향을 미칠 전..,하나증권,correct
+05e87430-5315-44b1-a661-9587e926ff1e,report,buy,Buy,SK바이오팜,,[하나증권] 매출이 이렇게 좋은데 주가가 너무해(2Q26 Pr..,하나증권,correct
+8f2a0afd-7bd0-4df0-ab65-d7e8227ae33d,report,buy,Buy,넷마블,,[교보증권] 낮아진 눈높이에서 아직은 제한된 시야,교보증권,correct
+17de315f-b35d-4078-a24d-a658ecf963db,report,buy,매수,대웅제약,,"[SK증권] 2Q26 Re: 나보타 수출증가, 컨센 상회",SK증권,correct
+4692d9eb-39b4-4423-bc26-abbae430e5d1,report,buy,Buy,JB금융지주,,[유안타증권] 2026년 총주주환원율은 무조건 50% 달성,유안타증권,correct
+6d5962d7-1bfb-43cc-9d0a-b59c9e00facd,report,buy,Buy,한온시스템,,[유안타증권] 2Q26F Pre: 수익성 개선 방향성 확인 구간,유안타증권,correct
+106e285a-d783-4aa5-8f1f-184702165b31,report,buy,Buy,실리콘투,,"[하나증권] 견조한 유럽, 기대되는 중남미",하나증권,correct
+eb3b4993-23de-47ce-92d5-cea4c16d281e,report,buy,Buy,OCI홀딩스,,[키움증권] 용이 어찌 못 속의 물건이랴,키움증권,correct
+af12f79e-39fd-4125-9213-557120b6a7b2,unknown,sell,"매수, 매도, 하락할",SK하이닉스,,“이거 맞나?..” 하이닉스 주가 폭락때 5억 추매한 압구정 주민,에르메의 재테크북,wrong_direction
+973845fb-7964-4a1c-b2a6-d737622242b5,unknown,buy,"매수, 진입",강남,,"시황을 보면, 정책과 시장이 정반대 방향으로 달리고 있는 게 그대로 드러납니다!",빠숑 (김학렬),wrong_asset
+da09c2a2-8f9b-4a02-8251-e05c5207f97d,unknown,buy,반등,다우존스,,"미국 증시 나스닥 3.1% 폭등! 반도체 바닥 치고 반격, 오늘 국장 수혜주는?",인생공부의 주식노트,not_a_prediction
+3a48216e-663c-45b5-9559-81f1f8df1fb1,unknown,sell,,메타,,모든 버블의 끝은 산업이 아닌 금융에서 시작된다,살아있는 것을 보라!,not_a_prediction
+2f22a902-401c-4e0d-b309-b7853ceabbc4,unknown,buy,진입,SK하이닉스,,[리플 XRP 엑스알피] SK하이닉스 40조 상륙 !! 리플 자동 급등 트리거 발동 !!,오늘의 코인뉴스,wrong_asset
+1558317e-79af-4d28-b7e3-9e43a5205ea8,unknown,sell,"매수, 위험, 대기",파이코인,,[파이버스코인 전망] 파이버스 홀더님들 지금 이 영상 꼭 보세요.. 이 지지선 깨지면 순식간에 밀립니다 #파이버스 #파이버스코인 #파이코인 #파이코인거래,오늘의대박코인,wrong_asset
+3a6f6867-1881-40ad-8ae4-ef99a6c74709,unknown,buy,"매수, 반등",마이크론,,"마이크론 +4.5% SK하이닉스ADR +27%, 하루 만에 돌아온 반도체 반등 이유[2026.07.14]",찬바람이불면,not_a_prediction
+05c06d7a-f1ba-4821-9065-07cec492bb9f,unknown,sell,,두산에너빌리티,,"[0728 모닝한투] 하락의 이유를 찾는 반도체, 미 증시는 혼조! 그들에겐 빅테크가 있고 우리에겐 없다",한국투자증권,not_a_prediction
+7d7f5da2-cbf3-4cbb-86e7-cb3938f46252,unknown,buy,"매수, 매도",AMD,,[국내주식 마감시황]삼성전자가 구해주나 싶었지만… (7/30),제일주식정보,not_a_prediction
+02c3cdc6-be83-4e2c-9f92-1e5fa50c8715,unknown,buy,,삼성전자,,폭락한 삼성전자 심상치 않다. 월요일 벌어질 무시무시한 일｜김민수 대표 풀버전,달란트투자,not_a_prediction
+b0b95e7a-4e30-40c9-9988-231d619fd2f8,unknown,buy,"사야, 반등",삼성중공업,,7월 증시 반등 시작? 삼성전자·SK하이닉스부터 조선·방산까지! 지금 사야 할 업종과 종목! / 정경민 IBK투자증권 분당지점 팀장 #삼성전자 #SK하이닉스 #반도체,이데일리TV,correct
+29a4ff1c-8ba9-41f7-84fb-69ab44782119,unknown,buy,"매수, 대기",강서,,"집값을 못 잡은 것도 문제지만,정부가 스스로 한 약속조차 못 지킨다는 것! 이것이 신뢰를 무너뜨립니다!",빠숑,wrong_asset
+2f42a144-a608-48fc-a9cd-88c9235c7237,unknown,sell,"매수, 고점, 대기",삼성전자,,삼성전자 주가 20만원에 매수 대기중인 사람들 ㄷㄷ,에르메의 재테크북,wrong_direction
+27479e6a-59c7-4eb9-ad7e-464cdb5b1257,unknown,buy,"매수, 저점 매수, 바닥",LG에너지솔루션,,"LG에너지솔루션, 바닥에서 +4%! 진짜 호재가 나왔다",처음처럼 주식일기장,correct
+ba355dc7-13ec-4c86-a3dd-4bbcccf8e780,unknown,hold,"매수, 매도, 조심",네이버,,"[7월 27일 마감 시황 리포트] 오르지도 무너지지도 않은 채, '물의 사흘'이 시작됐다",은성의 홍익세상,not_a_prediction
+1985a825-cf29-4be2-bdc1-b75b8dde6699,unknown,buy,"매수, 진입, 매도, 보수적",톤,,"[0730 모닝한투] 마이크로소프트, 급락 선반영이 증시 살릴까? 미 30년물 금리 급등과 반도체주 급락 부담 지속",한국투자증권,wrong_asset

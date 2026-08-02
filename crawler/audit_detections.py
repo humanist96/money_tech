@@ -102,7 +102,7 @@ def fetch_sample(cur, size: int) -> list[tuple]:
     return picked[:size]
 
 
-def run_audit(conn, size: int) -> int:
+def run_audit(conn, size: int, auditor: str = "human") -> int:
     with conn.cursor() as cur:
         sample = fetch_sample(cur, size)
 
@@ -132,7 +132,7 @@ def run_audit(conn, size: int) -> int:
         if choice not in LABELS:
             continue
 
-        record_label(conn, pid, method, LABELS[choice])
+        record_label(conn, pid, method, LABELS[choice], auditor)
         audited += 1
 
     print(f"\n{audited} prediction(s) audited.")
@@ -142,15 +142,15 @@ def run_audit(conn, size: int) -> int:
 def print_report(conn) -> None:
     with conn.cursor() as cur:
         cur.execute(
-            """SELECT detection_method,
+            """SELECT auditor, detection_method,
                       COUNT(*)::int AS n,
                       COUNT(*) FILTER (WHERE label = 'correct')::int AS correct,
                       COUNT(*) FILTER (WHERE label = 'wrong_direction')::int AS wrong_dir,
                       COUNT(*) FILTER (WHERE label = 'not_a_prediction')::int AS not_pred,
                       COUNT(*) FILTER (WHERE label = 'wrong_asset')::int AS wrong_asset
                FROM detection_audit
-               GROUP BY detection_method
-               ORDER BY detection_method"""
+               GROUP BY auditor, detection_method
+               ORDER BY auditor, detection_method"""
         )
         rows = cur.fetchall()
 
@@ -158,29 +158,31 @@ def print_report(conn) -> None:
         print("No audit data yet. Run with --sample first.")
         return
 
-    print(f"\n{'method':<12} {'n':>5} {'precision':>10}  {'wrong_dir':>9} {'not_pred':>9} {'wrong_asset':>11}")
-    print("-" * 62)
-    for method, n, correct, wrong_dir, not_pred, wrong_asset in rows:
+    print(f"\n{'auditor':<14} {'method':<12} {'n':>5} {'precision':>10}  {'wrong_dir':>9} {'not_pred':>9} {'wrong_asset':>11}")
+    print("-" * 78)
+    for auditor, method, n, correct, wrong_dir, not_pred, wrong_asset in rows:
         precision = correct / n if n else 0
         if n < MIN_AUDIT_SAMPLE:
             flag = f"  <- 표본 {n}/{MIN_AUDIT_SAMPLE}, 판정 유보"
         elif precision < PRECISION_FLOOR:
-            flag = "  <- 노출 보류 (precision < 70%)"
+            flag = ("  <- 노출 보류 (precision < 70%)" if auditor == "human"
+                    else "  <- 참고 수치, 게이트 미반영")
         else:
-            flag = ""
-        print(f"{method:<12} {n:>5} {precision:>9.1%}  {wrong_dir:>9} {not_pred:>9} {wrong_asset:>11}{flag}")
+            flag = "" if auditor == "human" else "  (참고)"
+        print(f"{auditor:<14} {method:<12} {n:>5} {precision:>9.1%}  {wrong_dir:>9} {not_pred:>9} {wrong_asset:>11}{flag}")
     print()
 
 
-def record_label(conn, prediction_id, method: str | None, label: str) -> None:
-    """Persist one human judgement. Shared by the interactive and CSV paths."""
+def record_label(conn, prediction_id, method: str | None, label: str,
+                 auditor: str = "human") -> None:
+    """Persist one judgement. Shared by the interactive and CSV paths."""
     with conn.cursor() as cur:
         cur.execute(
-            """INSERT INTO detection_audit (prediction_id, detection_method, label)
-               VALUES (%s, %s, %s)
+            """INSERT INTO detection_audit (prediction_id, detection_method, label, auditor)
+               VALUES (%s, %s, %s, %s)
                ON CONFLICT (prediction_id) DO UPDATE SET
-                   label = EXCLUDED.label, audited_at = NOW()""",
-            (prediction_id, method or "unknown", label),
+                   label = EXCLUDED.label, auditor = EXCLUDED.auditor, audited_at = NOW()""",
+            (prediction_id, method or "unknown", label, auditor),
         )
     conn.commit()
 
@@ -208,7 +210,7 @@ def export_sample(conn, size: int, path: str) -> int:
     return len(sample)
 
 
-def import_labels(conn, path: str) -> int:
+def import_labels(conn, path: str, auditor: str = "human") -> int:
     """Load a labelled CSV back into detection_audit."""
     valid = set(LABELS.values())
     rows: list[tuple] = []
@@ -221,7 +223,8 @@ def import_labels(conn, path: str) -> int:
             if label not in valid:
                 logger.warning("Skipping %s: unknown label %r", row.get("prediction_id"), label)
                 continue
-            rows.append((row["prediction_id"], row.get("detection_method") or "unknown", label))
+            rows.append((row["prediction_id"], row.get("detection_method") or "unknown",
+                         label, auditor))
 
     # 한 번에 적재한다 — 행마다 커밋하면 50건 감사가 왕복 50번이 되고,
     # 중간 실패 시 절반만 반영된 상태로 남는다.
@@ -229,10 +232,10 @@ def import_labels(conn, path: str) -> int:
         with conn.cursor() as cur:
             execute_values(
                 cur,
-                """INSERT INTO detection_audit (prediction_id, detection_method, label)
+                """INSERT INTO detection_audit (prediction_id, detection_method, label, auditor)
                    VALUES %s
                    ON CONFLICT (prediction_id) DO UPDATE SET
-                       label = EXCLUDED.label, audited_at = NOW()""",
+                       label = EXCLUDED.label, auditor = EXCLUDED.auditor, audited_at = NOW()""",
                 rows,
             )
         conn.commit()
@@ -248,6 +251,8 @@ def main() -> int:
     parser.add_argument("--report", action="store_true", help="print precision per detector")
     parser.add_argument("--export", metavar="CSV", help="write sample to CSV for offline labelling")
     parser.add_argument("--import", dest="import_path", metavar="CSV", help="load labelled CSV")
+    parser.add_argument("--auditor", default="human", choices=["human", "llm-assisted"],
+                        help="라벨 출처. 게이트는 human만 반영한다")
     args = parser.parse_args()
 
     with get_conn() as conn:
@@ -256,9 +261,9 @@ def main() -> int:
         elif args.export:
             export_sample(conn, args.sample, args.export)
         elif args.import_path:
-            import_labels(conn, args.import_path)
+            import_labels(conn, args.import_path, args.auditor)
         else:
-            run_audit(conn, args.sample)
+            run_audit(conn, args.sample, args.auditor)
 
     close_pool()
     return 0
