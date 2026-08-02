@@ -20,11 +20,14 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+from psycopg2.extras import execute_values
+
 from logger import logger
 from price_history import (
     MAX_DATE_SLACK_DAYS,
-    get_benchmark_asof,
-    get_price_asof,
+    asof_from_index,
+    load_benchmark_index,
+    load_price_index,
     today_kst,
 )
 
@@ -146,44 +149,97 @@ def _fetch_pending(cur, limit: int | None = None) -> list[tuple]:
         sql += " LIMIT %s"
         params.append(limit)
     cur.execute(sql, params)
-    return cur.fetchall()
+    rows = cur.fetchall()
+
+    # asset_dictionary is unique on (asset_name, asset_type), not on
+    # asset_code, so an alias stored as its own row would multiply a
+    # prediction across the join. Callers batch these rows into a single
+    # upsert, where a repeated key is a hard error, so the invariant of one
+    # row per prediction is enforced here rather than assumed.
+    seen = set()
+    unique_rows = []
+    for row in rows:
+        if row[0] in seen:
+            continue
+        seen.add(row[0])
+        unique_rows.append(row)
+    if len(unique_rows) != len(rows):
+        logger.warning(
+            "Dropped %d duplicate pending row(s) — check asset_dictionary for repeated asset_code",
+            len(rows) - len(unique_rows),
+        )
+    return unique_rows
 
 
-def _existing_horizons(cur, prediction_id) -> set[str]:
+def _existing_horizons_bulk(cur, prediction_ids: list) -> dict:
+    """Already-scored horizons for every pending prediction, in one statement."""
+    if not prediction_ids:
+        return {}
     cur.execute(
-        """SELECT horizon FROM prediction_evaluations
-           WHERE prediction_id = %s AND evaluation_version = %s""",
-        (prediction_id, EVALUATION_VERSION),
+        # psycopg2 hands UUID columns back as str, so the array needs an
+        # explicit cast to match the uuid column type.
+        """SELECT prediction_id, horizon FROM prediction_evaluations
+           WHERE evaluation_version = %s AND prediction_id = ANY(%s::uuid[])""",
+        (EVALUATION_VERSION, [str(pid) for pid in prediction_ids]),
     )
-    return {row[0] for row in cur.fetchall()}
+    done: dict = {}
+    for prediction_id, horizon in cur.fetchall():
+        done.setdefault(prediction_id, set()).add(horizon)
+    return done
 
 
-def _record(cur, prediction_id, horizon: str, **fields) -> None:
-    cur.execute(
-        """INSERT INTO prediction_evaluations
-           (prediction_id, horizon, eval_date, price_t0, price_th, asset_return,
-            benchmark_code, benchmark_return, excess_return, outcome,
-            unevaluable_reason, evaluation_version)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-           ON CONFLICT (prediction_id, horizon, evaluation_version) DO UPDATE SET
-               eval_date = EXCLUDED.eval_date,
-               price_t0 = EXCLUDED.price_t0,
-               price_th = EXCLUDED.price_th,
-               asset_return = EXCLUDED.asset_return,
-               benchmark_code = EXCLUDED.benchmark_code,
-               benchmark_return = EXCLUDED.benchmark_return,
-               excess_return = EXCLUDED.excess_return,
-               outcome = EXCLUDED.outcome,
-               unevaluable_reason = EXCLUDED.unevaluable_reason,
-               evaluated_at = NOW()""",
-        (
-            prediction_id, horizon, fields.get("eval_date"),
-            fields.get("price_t0"), fields.get("price_th"), fields.get("asset_return"),
-            fields.get("benchmark_code"), fields.get("benchmark_return"),
-            fields.get("excess_return"), fields["outcome"],
-            fields.get("unevaluable_reason"), EVALUATION_VERSION,
-        ),
+_RECORD_COLUMNS = (
+    "prediction_id", "horizon", "eval_date", "price_t0", "price_th",
+    "asset_return", "benchmark_code", "benchmark_return", "excess_return",
+    "outcome", "unevaluable_reason", "evaluation_version",
+)
+
+
+def _pending_record(prediction_id, horizon: str, **fields) -> tuple:
+    """One evaluation row, buffered until the next flush."""
+    return (
+        prediction_id, horizon, fields.get("eval_date"),
+        fields.get("price_t0"), fields.get("price_th"), fields.get("asset_return"),
+        fields.get("benchmark_code"), fields.get("benchmark_return"),
+        fields.get("excess_return"), fields["outcome"],
+        fields.get("unevaluable_reason"), EVALUATION_VERSION,
     )
+
+
+def _flush(cur, records: list[tuple], processed_ids: list) -> None:
+    """Write one batch of evaluations and mark their predictions evaluated."""
+    if records:
+        execute_values(
+            cur,
+            f"""INSERT INTO prediction_evaluations ({", ".join(_RECORD_COLUMNS)})
+               VALUES %s
+               ON CONFLICT (prediction_id, horizon, evaluation_version) DO UPDATE SET
+                   eval_date = EXCLUDED.eval_date,
+                   price_t0 = EXCLUDED.price_t0,
+                   price_th = EXCLUDED.price_th,
+                   asset_return = EXCLUDED.asset_return,
+                   benchmark_code = EXCLUDED.benchmark_code,
+                   benchmark_return = EXCLUDED.benchmark_return,
+                   excess_return = EXCLUDED.excess_return,
+                   outcome = EXCLUDED.outcome,
+                   unevaluable_reason = EXCLUDED.unevaluable_reason,
+                   evaluated_at = NOW()""",
+            records,
+        )
+
+    if processed_ids:
+        # Reads the rows just inserted above, so a prediction scored in this
+        # batch is marked here rather than waiting for the next run.
+        cur.execute(
+            """UPDATE predictions p SET evaluation_status = 'evaluated'
+               WHERE p.id = ANY(%s::uuid[])
+                 AND p.evaluation_status IS DISTINCT FROM 'evaluated'
+                 AND EXISTS (SELECT 1 FROM prediction_evaluations pe
+                             WHERE pe.prediction_id = p.id
+                               AND pe.evaluation_version = %s
+                               AND pe.outcome IN ('hit','miss','push'))""",
+            ([str(pid) for pid in processed_ids], EVALUATION_VERSION),
+        )
 
 
 def requeue_unevaluable(conn) -> int:
@@ -256,15 +312,30 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
     with conn.cursor() as cur:
         pending = _fetch_pending(cur, limit)
         logger.info("Evaluating %d prediction(s)", len(pending))
+        if not pending:
+            return counts
+
+        # Three statements up front instead of a dozen per prediction. Scoring
+        # needs only a handful of as-of prices each, but issuing them one at a
+        # time against a remote database made the job latency-bound: it spent
+        # ~0.5s per prediction and never finished inside the CI timeout. The
+        # whole price history is a few megabytes.
+        done_by_prediction = _existing_horizons_bulk(cur, [row[0] for row in pending])
+        prices = load_price_index(cur, sorted({row[4] for row in pending if row[4]}))
+        benchmarks = load_benchmark_index(cur)
+
+        records: list[tuple] = []
+        batch_ids: list = []
 
         for processed, (pred_id, ptype, t0, channel_id, asset_code,
                         asset_type, market, is_delisted, target_price) in enumerate(pending, 1):
             if t0 is None:
                 continue
 
-            done = _existing_horizons(cur, pred_id)
+            done = done_by_prediction.get(pred_id, set())
             benchmark_code = resolve_benchmark(asset_type, market, asset_code)
-            base = get_price_asof(cur, asset_code, t0)
+            base = asof_from_index(prices.get(asset_code), t0)
+            batch_ids.append(pred_id)
 
             # An analyst call often carries only a target price, no verb. The
             # target relative to the price at publication is the direction.
@@ -281,8 +352,8 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                     continue
 
                 if base is None:
-                    _record(cur, pred_id, horizon, outcome="unevaluable",
-                            unevaluable_reason="no_price_at_t0")
+                    records.append(_pending_record(pred_id, horizon, outcome="unevaluable",
+                                                  unevaluable_reason="no_price_at_t0"))
                     counts["unevaluable"] += 1
                     continue
 
@@ -292,24 +363,25 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                     # Treated as a resolved outcome: a delisted holding is the
                     # worst case for a buy call and the best case for a sell.
                     outcome = "miss" if ptype == "buy" else "hit" if ptype == "sell" else "miss"
-                    _record(cur, pred_id, horizon, eval_date=target, price_t0=price_t0,
-                            price_th=0, asset_return=-1.0, benchmark_code=benchmark_code,
-                            excess_return=-1.0, outcome=outcome,
-                            unevaluable_reason="delisted")
+                    records.append(_pending_record(
+                        pred_id, horizon, eval_date=target, price_t0=price_t0,
+                        price_th=0, asset_return=-1.0, benchmark_code=benchmark_code,
+                        excess_return=-1.0, outcome=outcome,
+                        unevaluable_reason="delisted"))
                     counts[outcome] += 1
                     continue
 
-                later = get_price_asof(cur, asset_code, target)
+                later = asof_from_index(prices.get(asset_code), target)
                 if later is None:
-                    _record(cur, pred_id, horizon, outcome="unevaluable",
-                            unevaluable_reason="no_price_at_horizon")
+                    records.append(_pending_record(pred_id, horizon, outcome="unevaluable",
+                                                  unevaluable_reason="no_price_at_horizon"))
                     counts["unevaluable"] += 1
                     continue
 
                 price_th, eval_date = later
                 if price_t0 <= 0:
-                    _record(cur, pred_id, horizon, outcome="unevaluable",
-                            unevaluable_reason="invalid_base_price")
+                    records.append(_pending_record(pred_id, horizon, outcome="unevaluable",
+                                                  unevaluable_reason="invalid_base_price"))
                     counts["unevaluable"] += 1
                     continue
 
@@ -318,8 +390,8 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                 benchmark_return = None
                 band = BANDS[horizon]
                 if benchmark_code:
-                    b0 = get_benchmark_asof(cur, benchmark_code, t0)
-                    bh = get_benchmark_asof(cur, benchmark_code, eval_date)
+                    b0 = asof_from_index(benchmarks.get(benchmark_code), t0)
+                    bh = asof_from_index(benchmarks.get(benchmark_code), eval_date)
                     if b0 and bh and b0[0] > 0:
                         benchmark_return = bh[0] / b0[0] - 1
                     else:
@@ -331,27 +403,20 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                 excess = asset_return - (benchmark_return or 0.0)
                 outcome = classify(ptype, excess, band)
 
-                _record(cur, pred_id, horizon, eval_date=eval_date, price_t0=price_t0,
-                        price_th=price_th, asset_return=asset_return,
-                        benchmark_code=benchmark_code, benchmark_return=benchmark_return,
-                        excess_return=excess, outcome=outcome)
+                records.append(_pending_record(
+                    pred_id, horizon, eval_date=eval_date, price_t0=price_t0,
+                    price_th=price_th, asset_return=asset_return,
+                    benchmark_code=benchmark_code, benchmark_return=benchmark_return,
+                    excess_return=excess, outcome=outcome))
                 counts[outcome] += 1
 
-            cur.execute(
-                """UPDATE predictions SET evaluation_status = CASE
-                       WHEN EXISTS (SELECT 1 FROM prediction_evaluations pe
-                                    WHERE pe.prediction_id = %s
-                                      AND pe.evaluation_version = %s
-                                      AND pe.outcome IN ('hit','miss','push'))
-                       THEN 'evaluated' ELSE evaluation_status END
-                   WHERE id = %s""",
-                (pred_id, EVALUATION_VERSION, pred_id),
-            )
-
             if processed % COMMIT_EVERY == 0:
+                _flush(cur, records, batch_ids)
                 conn.commit()
+                records, batch_ids = [], []
                 logger.info("  evaluated %d/%d", processed, len(pending))
 
+        _flush(cur, records, batch_ids)
         conn.commit()
 
     logger.info("Evaluation counts: %s", counts)
@@ -389,16 +454,28 @@ def update_channel_stats(conn) -> int:
         )
         rows = cur.fetchall()
 
+        stats = []
         for (channel_id, horizon, n_eff, n_hits, n_push, n_unev,
              n_buy, n_sell, n_hold, n_absolute, avg_excess, std_excess) in rows:
             hit_rate = (n_hits / n_eff) if n_eff else None
             low, high = wilson_interval(n_hits, n_eff)
-            cur.execute(
+            stats.append((
+                channel_id, horizon, n_eff, n_hits, n_push, n_unev,
+                n_buy, n_sell, n_hold, n_absolute,
+                hit_rate, low if n_eff else None, high if n_eff else None,
+                avg_excess, std_excess, EVALUATION_VERSION,
+            ))
+
+        if stats:
+            # One statement rather than one per channel/horizon pair, for the
+            # same latency reason as the evaluation loop above.
+            execute_values(
+                cur,
                 """INSERT INTO channel_stats
                    (channel_id, horizon, n_effective, n_hits, n_push, n_unevaluable,
                     n_buy, n_sell, n_hold, n_absolute, hit_rate, wilson_low, wilson_high,
-                    avg_excess_return, excess_std, evaluation_version, updated_at)
-                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
+                    avg_excess_return, excess_std, evaluation_version)
+                   VALUES %s
                    ON CONFLICT (channel_id, horizon, evaluation_version) DO UPDATE SET
                        n_effective = EXCLUDED.n_effective,
                        n_hits = EXCLUDED.n_hits,
@@ -414,10 +491,7 @@ def update_channel_stats(conn) -> int:
                        avg_excess_return = EXCLUDED.avg_excess_return,
                        excess_std = EXCLUDED.excess_std,
                        updated_at = NOW()""",
-                (channel_id, horizon, n_eff, n_hits, n_push, n_unev,
-                 n_buy, n_sell, n_hold, n_absolute,
-                 hit_rate, low if n_eff else None, high if n_eff else None,
-                 avg_excess, std_excess, EVALUATION_VERSION),
+                stats,
             )
 
         # channels.hit_rate / trust_score keep feeding existing views; they now

@@ -5,6 +5,14 @@ on:
     - cron: '0 */6 * * *'  # 매 6시간 (0, 6, 12, 18시 UTC)
   workflow_dispatch:  # 수동 실행
 
+# Two overlapping runs write the same prediction and evaluation rows, which is
+# how the evaluate job hit "deadlock detected" and lost a whole pass. Queue the
+# second run instead of cancelling: a crawl in flight has already spent its API
+# quota and should be allowed to finish.
+concurrency:
+  group: crawler
+  cancel-in-progress: false
+
 jobs:
   # Applies any migration the live database has not seen yet. Every crawl job
   # depends on this, so schema drift can no longer accumulate silently.

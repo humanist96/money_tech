@@ -13,6 +13,7 @@ Rules enforced here:
 from __future__ import annotations
 
 import time
+from bisect import bisect_right
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -210,6 +211,62 @@ def get_benchmark_asof(cur, benchmark_code: str, target: date) -> tuple[float, d
     )
     row = cur.fetchone()
     return (float(row[0]), row[1]) if row else None
+
+
+# --- In-memory as-of lookup -------------------------------------------------
+#
+# Scoring a prediction needs a handful of as-of prices, and issuing each as its
+# own statement against a remote database made evaluation latency-bound rather
+# than work-bound. The whole price history is a few megabytes, so the evaluator
+# loads it once and resolves lookups locally. The functions below must agree
+# with get_price_asof / get_benchmark_asof exactly — same backward-only search,
+# same slack window.
+
+Series = list[tuple[date, float]]
+
+
+def _index_rows(rows) -> dict[str, Series]:
+    """Group (key, date, value) rows into per-key series sorted by date."""
+    index: dict[str, Series] = {}
+    for key, recorded_date, value in rows:
+        index.setdefault(key, []).append((recorded_date, float(value)))
+    for series in index.values():
+        series.sort()
+    return index
+
+
+def load_price_index(cur, asset_codes: list[str]) -> dict[str, Series]:
+    """Every stored close for the given assets, keyed by asset code."""
+    if not asset_codes:
+        return {}
+    cur.execute(
+        """SELECT asset_code, recorded_date, price FROM asset_prices
+           WHERE asset_code = ANY(%s)""",
+        (list(asset_codes),),
+    )
+    return _index_rows(cur.fetchall())
+
+
+def load_benchmark_index(cur) -> dict[str, Series]:
+    """Every stored benchmark close, keyed by benchmark code."""
+    cur.execute("SELECT benchmark_code, recorded_date, close_price FROM benchmark_prices")
+    return _index_rows(cur.fetchall())
+
+
+def asof_from_index(series: Series | None, target: date) -> tuple[float, date] | None:
+    """Closing price on `target`, or the nearest earlier one within the slack
+    window — the in-memory equivalent of get_price_asof."""
+    if not series:
+        return None
+    # Dates are unique per key, so an upper sentinel on the value component
+    # places the split point directly after the last entry dated <= target.
+    position = bisect_right(series, (target, float("inf"))) - 1
+    if position < 0:
+        return None
+    found_date, price = series[position]
+    if found_date < target - timedelta(days=MAX_DATE_SLACK_DAYS):
+        return None
+    return (price, found_date)
 
 
 def load_benchmark_history(conn, days: int = 400) -> int:
