@@ -673,7 +673,12 @@ export interface ActivePrediction {
   mentioned_price: number | null
   target_price: number | null
   current_price: number | null
+  /** 계획 3.4: (P(t0+90) - P(t0)) / (TP - P(t0)), -100~200%로 클램프. */
   progress_pct: number | null
+  /** t0+90이 지나 확정된 값인지, 아직 진행 중인 잠정치인지. */
+  progress_is_final: boolean
+  /** 진행률 분자로 쓴 가격의 실제 거래일. */
+  progress_asof: string | null
   predicted_at: string | null
   days_since: number
   /** v2 verdict at the 1-month horizon; null until the horizon comes due. */

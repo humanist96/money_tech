@@ -278,17 +278,23 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
       EXTRACT(DAY FROM NOW() - p.predicted_at)::int AS days_since,
       pe.outcome AS outcome_1m,
       p.reason,
+      -- 계획 3.4: clamp((P(t0+90) - P(t0)) / (TP - P(t0)), -1, 2).
+      -- 분자의 기준 시점은 t0+90이며, 아직 오지 않았으면 최신가로 진행
+      -- 상황을 보여준다(정보성 표기, 랭킹 미반영). 어느 쪽인지는
+      -- progress_is_final로 구분해 UI가 단정하지 않게 한다.
       CASE
         WHEN ma.price_at_mention IS NOT NULL
           AND p.target_price IS NOT NULL
           AND p.target_price != ma.price_at_mention
-          AND latest_price.price IS NOT NULL
+          AND progress_price.price IS NOT NULL
         THEN LEAST(GREATEST(
-          ((latest_price.price - ma.price_at_mention) / (p.target_price - ma.price_at_mention) * 100)::float,
+          ((progress_price.price - ma.price_at_mention) / (p.target_price - ma.price_at_mention) * 100)::float,
           -100
         ), 200)
         ELSE NULL
-      END AS progress_pct
+      END AS progress_pct,
+      (p.predicted_at::date + 90) <= CURRENT_DATE AS progress_is_final,
+      progress_price.recorded_date::text AS progress_asof
     FROM predictions p
     LEFT JOIN prediction_evaluations pe
            ON pe.prediction_id = p.id
@@ -303,8 +309,17 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
       ORDER BY ap.recorded_date DESC
       LIMIT 1
     ) latest_price ON true
+    LEFT JOIN LATERAL (
+      SELECT ap.price, ap.recorded_date
+      FROM asset_prices ap
+      WHERE ap.asset_code = ma.asset_code
+        AND ap.recorded_date <= LEAST(p.predicted_at::date + 90, CURRENT_DATE)
+      ORDER BY ap.recorded_date DESC
+      LIMIT 1
+    ) progress_price ON true
     WHERE p.prediction_type IN ('buy', 'sell', 'hold')
-      AND p.predicted_at >= NOW() - INTERVAL '30 days'
+      -- 3개월 호라이즌이 아직 열려 있는 예측까지가 '진행 중'이다.
+      AND p.predicted_at >= NOW() - INTERVAL '90 days'
       AND (ma.asset_type IS NULL OR ma.asset_type IN ('stock', 'coin'))
     ORDER BY p.predicted_at DESC
     LIMIT ${limit}
@@ -322,6 +337,8 @@ export async function getActivePredictions(limit = 30): Promise<ActivePrediction
     target_price: r.target_price != null ? Number(r.target_price) : null,
     current_price: r.current_price != null ? Number(r.current_price) : null,
     progress_pct: r.progress_pct != null ? Math.round(Number(r.progress_pct) * 10) / 10 : null,
+    progress_is_final: Boolean(r.progress_is_final),
+    progress_asof: r.progress_asof ?? null,
     predicted_at: r.predicted_at,
     days_since: Number(r.days_since) || 0,
     outcome_1m: r.outcome_1m ?? null,

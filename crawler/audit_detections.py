@@ -30,6 +30,12 @@ from psycopg2.extras import execute_values
 from db import get_conn, close_pool
 from logger import logger
 
+# 계획 §3.7: 이 아래로 떨어진 감지 경로는 노출을 보류한다.
+PRECISION_FLOOR = 0.70
+# 그보다 표본이 적으면 판정 자체를 하지 않는다 — 3건 중 1건 틀렸다고
+# 경로를 통째로 막으면 감사가 오히려 지표를 망친다.
+MIN_AUDIT_SAMPLE = 20
+
 LABELS = {
     "1": "correct",
     "2": "wrong_direction",
@@ -67,12 +73,29 @@ def fetch_sample(cur, size: int) -> list[tuple]:
         SELECT id, detection_method, prediction_type, reason,
                asset_name, context_text, title, channel_name
         FROM ranked
-        WHERE rn <= %s
-        ORDER BY detection_method, rn
-        """,
-        (max(1, size // 3),),
+        ORDER BY rn, detection_method
+        """
     )
-    return cur.fetchall()
+    pool = cur.fetchall()
+
+    # 층별 균등 배분하되, 모집단이 얕은 층(keyword 10건·llm 72건 규모)의
+    # 잔여 몫은 다른 층으로 넘긴다. `size // 3`을 4개 층에 적용하던 이전
+    # 코드는 --sample 50에 최대 64행을 뽑았고, 그마저 얕은 층에서는
+    # 채워지지 않아 실제 표본이 계획(50건)과 어긋났다.
+    by_method: dict[str, list[tuple]] = {}
+    for row in pool:
+        by_method.setdefault(row[1] or "unknown", []).append(row)
+
+    picked: list[tuple] = []
+    remaining_strata = sorted(by_method, key=lambda m: len(by_method[m]))
+    left = size
+    for i, method in enumerate(remaining_strata):
+        quota = max(1, left // (len(remaining_strata) - i))
+        take = by_method[method][:quota]
+        picked.extend(take)
+        left -= len(take)
+
+    return picked[:size]
 
 
 def run_audit(conn, size: int) -> int:
@@ -135,7 +158,12 @@ def print_report(conn) -> None:
     print("-" * 62)
     for method, n, correct, wrong_dir, not_pred, wrong_asset in rows:
         precision = correct / n if n else 0
-        flag = "  <- below 70%" if precision < 0.7 else ""
+        if n < MIN_AUDIT_SAMPLE:
+            flag = f"  <- 표본 {n}/{MIN_AUDIT_SAMPLE}, 판정 유보"
+        elif precision < PRECISION_FLOOR:
+            flag = "  <- 노출 보류 (precision < 70%)"
+        else:
+            flag = ""
         print(f"{method:<12} {n:>5} {precision:>9.1%}  {wrong_dir:>9} {not_pred:>9} {wrong_asset:>11}{flag}")
     print()
 

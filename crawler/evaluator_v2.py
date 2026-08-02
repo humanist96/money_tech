@@ -47,6 +47,12 @@ ABSOLUTE_BAND_MULTIPLIER = 2.0
 
 MIN_SAMPLE_FOR_RANKING = 10
 
+# 계획 §3.7: 감사 precision이 이 아래인 감지 경로는 리더보드 집계에서 뺀다.
+# 감사 표본이 MIN_AUDIT_SAMPLE 미만이면 판정을 유보한다 — 데이터가 없다고
+# 경로를 막으면 지표가 열리기도 전에 표본이 사라진다.
+PRECISION_FLOOR = 0.70
+MIN_AUDIT_SAMPLE = 20
+
 # Commit every N predictions. A single transaction across the whole backlog
 # held one connection open long enough for the server to drop it, and took all
 # completed work down with it.
@@ -537,9 +543,20 @@ def update_channel_stats(conn) -> int:
             FROM prediction_evaluations pe
             JOIN predictions p ON p.id = pe.prediction_id
             WHERE pe.evaluation_version = %s AND NOT p.is_duplicate
+              -- 노출 보류 게이트: 감사에서 precision이 문턱 아래로 확인된
+              -- 감지 경로의 예측은 순위 집계에 넣지 않는다. 감사 표본이
+              -- 얕으면(또는 없으면) 판정을 유보하고 그대로 집계한다.
+              AND COALESCE(p.detection_method, 'unknown') NOT IN (
+                  SELECT COALESCE(da.detection_method, 'unknown')
+                  FROM detection_audit da
+                  GROUP BY 1
+                  HAVING COUNT(*) >= %s
+                     AND COUNT(*) FILTER (WHERE da.label = 'correct')::float
+                         / NULLIF(COUNT(*), 0) < %s
+              )
             GROUP BY p.channel_id, pe.horizon
             """,
-            (EVALUATION_VERSION,),
+            (EVALUATION_VERSION, MIN_AUDIT_SAMPLE, PRECISION_FLOOR),
         )
         rows = cur.fetchall()
 

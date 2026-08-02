@@ -272,6 +272,7 @@ class NLPPipeline:
     ) -> None:
         """Store results for YouTube, blog, and Telegram content."""
         detection_method = result.detection_method
+        contradictions = 0
         if result.assets:
             for asset in result.assets:
                 asset_sentiment = result.asset_sentiments.get(
@@ -330,12 +331,31 @@ class NLPPipeline:
                         )
                         is_duplicate = bool(cur.fetchone()[0])
 
+                    # 021의 유니크 인덱스는 (video, asset)당 한 건만 살려둔다.
+                    # 지금까지 이 자리가 bare `DO NOTHING`이라, 같은 영상에서
+                    # 같은 종목에 반대 방향이 나오면 **두 번째가 행 없이
+                    # 사라졌다** — 첫 콜만 평가되니 헤징이 적중률을 부풀리는
+                    # 것을 막지 못했다. 계획 §3.3은 "둘 다 모순 예측으로 평가
+                    # 제외"이므로, 충돌 시 기존 행을 contradictory로 승격해
+                    # 함께 표본에서 빼고 그 사실을 남긴다 (G33).
                     cur.execute(
                         """INSERT INTO predictions
                         (video_id, channel_id, mentioned_asset_id, prediction_type, reason,
                          predicted_at, detection_method, is_duplicate)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT DO NOTHING""",
+                        ON CONFLICT (video_id, mentioned_asset_id) WHERE NOT is_duplicate
+                        DO UPDATE SET
+                            evaluation_status = CASE
+                                WHEN predictions.prediction_type
+                                     IS DISTINCT FROM EXCLUDED.prediction_type
+                                THEN 'contradictory'
+                                ELSE predictions.evaluation_status END,
+                            is_duplicate = CASE
+                                WHEN predictions.prediction_type
+                                     IS DISTINCT FROM EXCLUDED.prediction_type
+                                THEN TRUE
+                                ELSE predictions.is_duplicate END
+                        RETURNING evaluation_status""",
                         (
                             video_uuid,
                             channel_uuid,
@@ -347,8 +367,18 @@ class NLPPipeline:
                             is_duplicate,
                         ),
                     )
+                    written = cur.fetchone()
+                    if written and written[0] == "contradictory":
+                        contradictions += 1
             if result.predictions:
                 logger.info(f"    Detected {len(result.predictions)} predictions")
+            if contradictions:
+                # 조용히 버리지 않는다 — 헤징이 얼마나 들어오는지가 감지기
+                # 품질의 신호다.
+                logger.info(
+                    "    %d contradictory prediction(s) excluded (buy/sell on same asset)",
+                    contradictions,
+                )
 
             conn.commit()
             logger.info(f"    Found {len(result.assets)} assets mentioned")

@@ -159,8 +159,15 @@ function PredictionCard({ prediction }: { prediction: ActivePrediction }) {
           <span
             className={`font-semibold tabular-nums ${prediction.progress_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
             style={{ fontFamily: 'var(--font-outfit)' }}
+            title={
+              prediction.progress_is_final
+                ? `발행 90일 시점(${prediction.progress_asof}) 가격 기준 목표가 진행률`
+                : `아직 90일이 지나지 않아 최신 가격(${prediction.progress_asof}) 기준 잠정치입니다`
+            }
           >
             {prediction.progress_pct > 0 ? '+' : ''}{prediction.progress_pct.toFixed(1)}%
+            {/* 확정과 잠정을 같은 모양으로 보여주면 둘 다 확정으로 읽힌다. */}
+            {!prediction.progress_is_final && <span className="text-th-dim font-normal"> (잠정)</span>}
           </span>
         )}
         <span className="flex items-center gap-1 text-th-secondary">
