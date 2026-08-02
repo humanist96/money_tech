@@ -40,38 +40,26 @@ DUPLICATE_WINDOW_DAYS = 30
 
 
 def backfill_market(conn) -> int:
-    """Tag each stock in asset_dictionary with its listing market.
+    """Tag each Korean stock in asset_dictionary with its listing market.
 
-    KRX's bulk ticker-list endpoints now require account credentials, so the
-    market is read per ticker from Yahoo, where Korean listings carry a .KS
-    (KOSPI) or .KQ (KOSDAQ) suffix.
+    Yahoo suffix-probing was abandoned: Yahoo serves the same series under
+    both .KS and .KQ, so whichever suffix happened to answer said nothing
+    about the listing (that guess mislabelled 두산 and missed 한미반도체's
+    KOSPI transfer). Naver's quote API states the market outright.
     """
-    try:
-        import yfinance as yf
-    except ImportError:
-        logger.warning("yfinance not installed — skipping market backfill")
-        return 0
+    from movers_selector import resolve_listing
 
     updated = 0
     with conn.cursor() as cur:
         cur.execute(
             """SELECT asset_code FROM asset_dictionary
-               WHERE asset_type = 'stock' AND asset_code IS NOT NULL AND market IS NULL"""
+               WHERE asset_type = 'stock' AND asset_code ~ '^[0-9]{6}$' AND market IS NULL"""
         )
         codes = [row[0] for row in cur.fetchall()]
 
     logger.info("Resolving market for %d ticker(s)", len(codes))
     for code in codes:
-        market = None
-        for suffix, name in ((".KS", "KOSPI"), (".KQ", "KOSDAQ")):
-            try:
-                hist = yf.Ticker(f"{code}{suffix}").history(period="5d")
-                if hist is not None and not hist.empty:
-                    market = name
-                    break
-            except Exception:
-                continue
-
+        _, market = resolve_listing(code)
         if market:
             with conn.cursor() as cur:
                 cur.execute(
@@ -80,6 +68,7 @@ def backfill_market(conn) -> int:
                 )
             conn.commit()
             updated += 1
+        time.sleep(0.2)
 
     logger.info("Market backfilled for %d ticker(s)", updated)
     return updated

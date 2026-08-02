@@ -32,8 +32,8 @@ BENCHMARK_TICKERS = {"KOSPI": "^KS11", "KOSDAQ": "^KQ11"}
 # (holidays, suspended trading) before the point is treated as missing.
 MAX_DATE_SLACK_DAYS = 3
 
-# pykrx wraps endpoints that can hang indefinitely; a stalled ticker must not
-# stall the whole backfill.
+# Upstream fetches can hang; a stalled ticker must not stall the whole
+# backfill.
 FETCH_TIMEOUT_SECONDS = 30
 _fetch_pool = ThreadPoolExecutor(max_workers=1)
 
@@ -55,31 +55,35 @@ def today_kst() -> date:
     return datetime.now(KST).date()
 
 
-def _pykrx():
-    try:
-        from pykrx import stock
-        return stock
-    except ImportError:
-        logger.warning("pykrx not installed — stock history unavailable")
-        return None
-
-
 def fetch_stock_closes(code: str, start: date, end: date) -> dict[date, float]:
     """Adjusted daily closes for one ticker over a date range."""
     return _with_timeout(_fetch_stock_closes_blocking, code, start, end, label=f"stock {code}")
 
 
 def _fetch_stock_closes_blocking(code: str, start: date, end: date) -> dict[date, float]:
-    stock = _pykrx()
-    if stock is None:
-        return {}
+    """pykrx was dropped here: its adjusted-price path reads Naver's legacy
+    fchart host, which GitHub runners cannot reach. Yahoo serves Korean
+    tickers under .KS regardless of actual listing (it aliases .KS/.KQ to the
+    same series), and history() adjusts for splits/dividends by default —
+    the property evaluation depends on."""
     try:
-        df = stock.get_market_ohlcv(
-            start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code, adjusted=True
+        import yfinance as yf
+    except ImportError:
+        logger.warning("yfinance not installed — stock history unavailable")
+        return {}
+
+    symbol = f"{code}.KS" if code.isdigit() and len(code) == 6 else code
+    try:
+        df = yf.Ticker(symbol).history(
+            start=start.isoformat(), end=(end + timedelta(days=1)).isoformat()
         )
         if df is None or df.empty:
             return {}
-        return {idx.date(): float(row["종가"]) for idx, row in df.iterrows() if row["종가"]}
+        return {
+            idx.date(): float(close)
+            for idx, close in df["Close"].items()
+            if close and close > 0
+        }
     except Exception as e:
         logger.warning("Stock history fetch failed for %s: %s", code, e)
         return {}

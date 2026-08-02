@@ -170,7 +170,7 @@ def _fetch_session_quotes(codes: list[str], markets: dict[str, str],
     return out
 
 
-def _resolve_listing(stock_code: str) -> tuple[str | None, str | None]:
+def resolve_listing(stock_code: str) -> tuple[str | None, str | None]:
     """Official name and market from Naver's quote API.
 
     Yahoo serves the same price series under both .KS and .KQ — the suffix
@@ -272,7 +272,7 @@ def select_movers(conn, trade_date: date | None = None) -> list[MoverCandidate]:
     for c in selected:
         if c.stock_code in markets:
             continue
-        official_name, market = _resolve_listing(c.stock_code)
+        official_name, market = resolve_listing(c.stock_code)
         if market:
             c.market = market
         if official_name and not meta.get(c.stock_code, (None, None))[0]:

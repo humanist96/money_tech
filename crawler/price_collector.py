@@ -2,11 +2,14 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime
 
 import requests
 
+from http_util import RateLimiter
 from logger import logger
+
+# ~500 tickers per evaluate run; keep the pace neighbourly.
+_naver_limiter = RateLimiter(0.15)
 
 # CoinGecko symbol mapping
 COINGECKO_IDS = {
@@ -87,24 +90,54 @@ def get_coin_price(symbol: str) -> float | None:
     return prices.get(symbol)
 
 
+NAVER_TREND_API = "https://m.stock.naver.com/api/stock/{code}/trend"
+
+
 def get_stock_price(code: str, date_str: str | None = None) -> float | None:
-    """Fetch Korean stock closing price. Uses pykrx if available, else returns None."""
-    try:
-        from pykrx import stock
-        if date_str is None:
-            date_str = datetime.now().strftime("%Y%m%d")
-        else:
-            date_str = date_str.replace("-", "")
-        df = stock.get_market_ohlcv(date_str, date_str, code)
-        if df.empty:
-            return None
-        return float(df["종가"].iloc[0])
-    except ImportError:
-        logger.warning("pykrx not installed, skipping stock price")
+    """Closing price for a Korean ticker on the given KST date.
+
+    pykrx was dropped: its adjusted-price path fetches from Naver's legacy
+    fchart host, which GitHub runners cannot reach — every call hung ~4.5
+    minutes before failing, which is what was eating the evaluate job's
+    timeout. The mobile API answers in milliseconds and already serves the
+    movers pipeline from the same runners.
+
+    US tickers return None immediately; fchart never served them either, so
+    nothing regresses — their prices come from price_history's range fetch.
+    """
+    if not (code.isdigit() and len(code) == 6):
         return None
+
+    # The recorded_date this pairs with is computed in KST; using the
+    # runner's local date (UTC) here labelled yesterday's close as today
+    # on early-morning-KST runs.
+    from price_history import today_kst
+    target = date_str.replace("-", "") if date_str else today_kst().strftime("%Y%m%d")
+
+    _naver_limiter.wait()
+    try:
+        resp = requests.get(
+            NAVER_TREND_API.format(code=code),
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        rows = resp.json()
     except Exception as e:
         logger.warning("Stock price fetch failed for %s: %s", code, e)
         return None
+
+    # The API serves roughly the last ten sessions; a date outside that
+    # window (or a non-trading day) records nothing rather than borrowing
+    # a neighbouring session's close.
+    row = next((r for r in rows if isinstance(r, dict) and r.get("bizdate") == target), None)
+    if not row:
+        return None
+    try:
+        price = float(str(row.get("closePrice") or "0").replace(",", ""))
+    except ValueError:
+        return None
+    return price if price > 0 else None
 
 
 def record_daily_prices(conn) -> int:
