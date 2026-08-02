@@ -439,7 +439,18 @@ class NLPPipeline:
                  target_price, previous_target_price, confidence, reason, predicted_at,
                  detection_method)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'report')
-                ON CONFLICT DO NOTHING""",
+                ON CONFLICT (video_id, mentioned_asset_id) WHERE NOT is_duplicate
+                DO UPDATE SET
+                    evaluation_status = CASE
+                        WHEN predictions.prediction_type
+                             IS DISTINCT FROM EXCLUDED.prediction_type
+                        THEN 'contradictory'
+                        ELSE predictions.evaluation_status END,
+                    is_duplicate = CASE
+                        WHEN predictions.prediction_type
+                             IS DISTINCT FROM EXCLUDED.prediction_type
+                        THEN TRUE
+                        ELSE predictions.is_duplicate END""",
                 (
                     video_uuid,
                     channel_uuid,
