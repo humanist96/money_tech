@@ -10,6 +10,7 @@ from asset_dictionary import (
     find_assets_in_text,
     analyze_sentiment,
     analyze_sentiment_for_asset,
+    extract_asset_context,
     generate_simple_summary,
 )
 
@@ -81,7 +82,7 @@ class NLPPipeline:
         if use_llm and self._llm.available:
             llm_result = self._llm.analyze(text, title, platform)
             if llm_result:
-                return self._convert_llm_result(llm_result, title)
+                return self._convert_llm_result(llm_result, title, text)
 
         # Fallback to keyword-based
         return self._process_general(text, title, platform)
@@ -97,6 +98,9 @@ class NLPPipeline:
             asset_sentiments[asset["asset_name"]] = analyze_sentiment_for_asset(
                 text, asset["asset_name"]
             )
+            # 감사자가 "이 감지가 옳은가"를 판단할 근거. 없으면 제목과
+            # 키워드로 추정할 수밖에 없다.
+            asset["context_text"] = extract_asset_context(text, asset["asset_name"])
 
         preds: list[dict] = []
         if found_assets:
@@ -112,7 +116,7 @@ class NLPPipeline:
             summary=summary,
         )
 
-    def _convert_llm_result(self, llm_result: dict, title: str) -> NLPResult:
+    def _convert_llm_result(self, llm_result: dict, title: str, text: str = "") -> NLPResult:
         """Convert LLM JSON output to NLPResult format."""
         # Map LLM assets to standard format
         assets: list[dict] = []
@@ -132,6 +136,9 @@ class NLPPipeline:
                 "asset_type": asset_type,
                 "asset_name": asset_name,
                 "asset_code": asset_code,
+                # LLM이 뽑은 종목명이 원문에 그대로 없으면 None이 된다 —
+                # 그 자체가 감사에 유용한 신호(종목 오귀속 후보)다.
+                "context_text": extract_asset_context(text, asset_name) if text else None,
             })
             asset_sentiments[asset_name] = sentiment
 
@@ -280,16 +287,20 @@ class NLPPipeline:
                 )
                 cur.execute(
                     """INSERT INTO mentioned_assets
-                    (video_id, asset_type, asset_name, asset_code, sentiment)
-                    VALUES (%s, %s, %s, %s, %s)
+                    (video_id, asset_type, asset_name, asset_code, sentiment, context_text)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                        sentiment = EXCLUDED.sentiment""",
+                        sentiment = EXCLUDED.sentiment,
+                        -- 재크롤로 문맥이 사라지지 않게: 새 값이 없으면 유지
+                        context_text = COALESCE(EXCLUDED.context_text,
+                                                mentioned_assets.context_text)""",
                     (
                         video_uuid,
                         asset["asset_type"],
                         asset["asset_name"],
                         asset["asset_code"],
                         asset_sentiment,
+                        asset.get("context_text"),
                     ),
                 )
 
@@ -407,17 +418,21 @@ class NLPPipeline:
         asset = result.assets[0]
 
         # Upsert mentioned asset
+        # 리포트는 구조화 소스라 원문 스니펫 대신 판정 근거 자체가 문맥이다.
         cur.execute(
             """INSERT INTO mentioned_assets
-            (video_id, asset_type, asset_name, asset_code, sentiment)
-            VALUES (%s, 'stock', %s, %s, %s)
+            (video_id, asset_type, asset_name, asset_code, sentiment, context_text)
+            VALUES (%s, 'stock', %s, %s, %s, %s)
             ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                sentiment = EXCLUDED.sentiment""",
+                sentiment = EXCLUDED.sentiment,
+                context_text = COALESCE(EXCLUDED.context_text,
+                                        mentioned_assets.context_text)""",
             (
                 video_uuid,
                 asset["asset_name"],
                 asset["asset_code"],
                 result.sentiment,
+                result.summary or None,
             ),
         )
 

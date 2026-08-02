@@ -128,16 +128,24 @@ def process_report_prediction(cur, conn, report: AnalystReport, channel_uuid: st
 
         # Upsert mentioned asset
         cur.execute(
+            # 감사자가 볼 근거: 리포트의 투자의견·목표가 자체가 문맥이다.
             """INSERT INTO mentioned_assets
-            (video_id, asset_type, asset_name, asset_code, sentiment)
-            VALUES (%s, 'stock', %s, %s, %s)
+            (video_id, asset_type, asset_name, asset_code, sentiment, context_text)
+            VALUES (%s, 'stock', %s, %s, %s, %s)
             ON CONFLICT (video_id, asset_name) DO UPDATE SET
-                sentiment = EXCLUDED.sentiment""",
+                sentiment = EXCLUDED.sentiment,
+                context_text = COALESCE(EXCLUDED.context_text,
+                                        mentioned_assets.context_text)""",
             (
                 vid_uuid,
                 report.asset_name,
                 report.asset_code,
                 "positive" if pred_type == "buy" else "negative" if pred_type == "sell" else "neutral",
+                " | ".join(filter(None, [
+                    f"{report.firm_name} {report.title}" if report.title else report.firm_name,
+                    f"의견={report.recommendation}" if report.recommendation else None,
+                    f"목표가={report.target_price:,.0f}원" if report.target_price else None,
+                ])) or None,
             ),
         )
 

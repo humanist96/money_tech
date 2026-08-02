@@ -170,18 +170,42 @@ def analyze_sentiment(text: str) -> str:
     return "neutral"
 
 
+# 감성 판정은 좁은 창으로 충분하지만, 감사자가 "이게 정말 예측인가"를
+# 판단하려면 문장 앞뒤가 더 필요하다. 두 용도의 창을 분리해 둔다.
+SENTIMENT_WINDOW = 100
+CONTEXT_WINDOW = 250
+
+
+def extract_asset_context(text: str, asset_name: str, window: int = CONTEXT_WINDOW) -> str | None:
+    """종목 언급 주변 원문. 감지가 옳았는지 사람이 판단할 근거가 된다.
+
+    이 값이 없으면 감사자는 영상 제목과 키워드만 보고 추정할 수밖에 없다 —
+    2026-08-02 첫 감사 50건이 전부 그 상태였고, 그것이 감사 신뢰도의
+    상한을 정했다.
+    """
+    idx = text.find(asset_name)
+    if idx == -1:
+        return None
+    start = max(0, idx - window)
+    end = min(len(text), idx + len(asset_name) + window)
+    snippet = text[start:end].strip()
+    # 잘린 지점을 표시해 감사자가 문장 중간임을 알 수 있게 한다.
+    if start > 0:
+        snippet = "…" + snippet
+    if end < len(text):
+        snippet = snippet + "…"
+    return snippet or None
+
+
 def analyze_sentiment_for_asset(text: str, asset_name: str) -> str:
     """Analyze sentiment in text context around a specific asset mention."""
     idx = text.find(asset_name)
     if idx == -1:
         return analyze_sentiment(text)
 
-    # Extract ~100 chars around the asset mention for context-specific analysis
-    start = max(0, idx - 100)
-    end = min(len(text), idx + len(asset_name) + 100)
-    context = text[start:end]
-
-    return analyze_sentiment(context)
+    start = max(0, idx - SENTIMENT_WINDOW)
+    end = min(len(text), idx + len(asset_name) + SENTIMENT_WINDOW)
+    return analyze_sentiment(text[start:end])
 
 
 def generate_simple_summary(title: str, assets: list[dict], sentiment: str) -> str:
