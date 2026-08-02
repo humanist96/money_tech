@@ -265,13 +265,17 @@ def mark_duplicates(conn) -> int:
             UPDATE predictions p
             SET evaluation_status = 'contradictory', is_duplicate = TRUE
             WHERE p.id IN (
+                -- 양쪽을 다 잡는다. p1을 buy로 고정하면 sell 행은 라이브로
+                -- 남아 그대로 평가됐다 — 주석이 말하는 "neither side"와
+                -- 계획 §3.3 "둘 다 모순 예측으로 평가 제외"에 어긋난다.
                 SELECT p1.id
                 FROM predictions p1
                 JOIN predictions p2
                   ON p1.video_id = p2.video_id
                  AND p1.mentioned_asset_id = p2.mentioned_asset_id
-                 AND p1.prediction_type = 'buy'
-                 AND p2.prediction_type = 'sell'
+                 AND p1.prediction_type IN ('buy', 'sell')
+                 AND p2.prediction_type IN ('buy', 'sell')
+                 AND p1.prediction_type <> p2.prediction_type
             )
             AND p.evaluation_status <> 'contradictory'
             """

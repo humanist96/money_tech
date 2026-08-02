@@ -68,6 +68,10 @@ def fetch_sample(cur, size: int) -> list[tuple]:
             JOIN videos v ON v.id = p.video_id
             JOIN channels c ON c.id = p.channel_id
             WHERE p.predicted_at >= NOW() - INTERVAL '30 days'
+              -- 중복·모순으로 평가에서 빠진 행을 감사해봐야 리더보드에
+              -- 반영되지 않는다. 코퍼스의 79.9%가 여기 해당하므로 필터가
+              -- 없으면 50건 중 대부분이 측정과 무관한 라벨이 된다.
+              AND NOT p.is_duplicate
               AND NOT EXISTS (SELECT 1 FROM detection_audit da WHERE da.prediction_id = p.id)
         )
         SELECT id, detection_method, prediction_type, reason,
