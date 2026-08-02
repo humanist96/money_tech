@@ -1,4 +1,5 @@
-import { getLatestMoversDate, getMoversByDate } from "@/lib/queries"
+import { getMoversByDate } from "@/lib/queries"
+import { moversHeading } from "@/lib/movers-label"
 import { MoversClient } from "./movers-client"
 
 export const dynamic = "force-dynamic"
@@ -16,24 +17,16 @@ export default async function MoversPage({
   try {
     // Falling back to the latest stored session means holidays need no special
     // case: there simply is no newer row.
-    tradeDate = params.date ?? (await getLatestMoversDate())
-    if (tradeDate) {
-      movers = await getMoversByDate(tradeDate)
-    }
+    movers = await getMoversByDate(params.date ?? null)
+    tradeDate = params.date ?? movers[0]?.trade_date ?? null
   } catch (e) {
     console.error("[Movers] load failed:", e instanceof Error ? e.message : e)
   }
 
-  // "어제"라고 부를 수 있는 건 직전 거래일 데이터일 때뿐이다. 파이프라인이
-  // 한 세션을 거르거나(휴장·크론 실패) 당일 16:40 배치가 막 돌았을 때는
-  // 날짜를 밝힌다 — 어느 쪽이든 "어제"는 사실이 아니다.
-  const headingLabel = (() => {
-    if (!tradeDate) return "등락 원인 분석"
-    const days = Math.round((Date.now() - new Date(tradeDate).getTime()) / 86400000)
-    if (days === 1) return "어제 왜 움직였나"
-    if (days === 0) return "오늘 왜 움직였나"
-    return `${tradeDate.slice(5).replace("-", "/")} 왜 움직였나`
-  })()
+  // 요청 파라미터가 아니라 **실제로 반환된 행**의 날짜로 라벨을 만든다.
+  // ?date=로 빈 날짜를 조회했을 때 제목만 "어제"로 단언하는 것이
+  // 이 라벨이 막으려던 거짓말이다.
+  const headingLabel = moversHeading(movers[0]?.trade_date ?? null, "등락 원인 분석")
 
   return (
     <div className="space-y-8">

@@ -19,6 +19,7 @@ import { EnhancedBuzzAlertPanel } from "@/components/features/enhanced-buzz-aler
 import { RiskScoreboard } from "@/components/features/risk-scoreboard"
 import { YouTuberPortfolio } from "@/components/features/youtuber-portfolio"
 import { MoverCard } from "@/components/features/mover-card"
+import { moversHeading } from "@/lib/movers-label"
 import Link from "next/link"
 import { DashboardLayout, type DashboardSection } from "@/components/dashboard/dashboard-layout"
 
@@ -46,17 +47,7 @@ export function DashboardContent({
   buzzAlerts, predictionProfiles, marketGauge, contrarianSignals, riskScores,
   topMovers,
 }: DashboardContentProps) {
-  // "어제"는 movers가 직전 거래일 것일 때만 참이다. 파이프라인이 한 세션을
-  // 거르면(휴장·크론 실패) 이틀 전 데이터가 그대로 걸리므로, 그때는 날짜를
-  // 밝힌다 — 오래된 데이터를 "어제"로 단언하는 쪽이 더 나쁘다.
-  const moversDate = topMovers[0]?.trade_date ?? null
-  const moversLabel = (() => {
-    if (!moversDate) return "등락 원인"
-    const days = Math.round((Date.now() - new Date(moversDate).getTime()) / 86400000)
-    if (days === 1) return "어제 왜 움직였나"
-    if (days === 0) return "오늘 왜 움직였나"
-    return `${moversDate.slice(5).replace("-", "/")} 왜 움직였나`
-  })()
+  const moversLabel = moversHeading(topMovers[0]?.trade_date ?? null)
 
   const sections: DashboardSection[] = [
     {
@@ -86,8 +77,6 @@ export function DashboardContent({
     },
     {
       id: "movers",
-      // The pipeline can miss a session (holiday, failed cron), and calling
-      // two-day-old data "yesterday" is worse than saying the date.
       label: moversLabel,
       content: topMovers.length > 0 ? (
         <div className="space-y-2">

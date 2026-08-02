@@ -9,8 +9,8 @@ const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 
 export async function POST(request: NextRequest) {
   // LLM 호출 라우트: 인증 + 시간당 한도(비용 계층 llm)
-  const guard = await guardRoute('search/analyze', 'llm')
-  if (!guard.ok) return guard.response
+  const denied = await guardRoute('search/analyze', 'llm')
+  if (denied) return denied
 
   const body = await request.json()
   const { videoId } = body

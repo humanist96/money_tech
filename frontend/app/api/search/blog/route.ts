@@ -24,8 +24,8 @@ export interface BlogSearchResult {
 }
 
 export async function GET(request: NextRequest) {
-  const guard = await guardRoute('search/blog', 'external')
-  if (!guard.ok) return guard.response
+  const denied = await guardRoute('search/blog', 'external')
+  if (denied) return denied
 
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()

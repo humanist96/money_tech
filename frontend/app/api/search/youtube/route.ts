@@ -7,8 +7,8 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY!
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 
 export async function GET(request: NextRequest) {
-  const guard = await guardRoute('search/youtube', 'external')
-  if (!guard.ok) return guard.response
+  const denied = await guardRoute('search/youtube', 'external')
+  if (denied) return denied
 
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()

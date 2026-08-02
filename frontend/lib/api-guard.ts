@@ -24,63 +24,55 @@ export const RATE_LIMITS = {
 
 export type RateTier = keyof typeof RATE_LIMITS
 
-interface GuardOk {
-  ok: true
-  userId: string
-}
-interface GuardFail {
-  ok: false
-  response: NextResponse
-}
-
 /**
- * Verifies the session and records the call against the hourly window.
+ * Verifies the session and books the call against the hourly window.
  *
- * Returns the user on success, or a ready-to-return response on failure.
- * The usage row is written *before* the handler runs so a request that dies
+ * Returns a response to return as-is when the caller is rejected, or null when
+ * the handler may proceed.
+ *
+ * Count and insert are one statement, not two: the driver is HTTP, so each
+ * round trip to Singapore costs ~85ms on a warm connection, and a separate
+ * check-then-write also lets two concurrent instances both pass on the last
+ * slot. Booking happens before the handler runs, so a request that dies
  * mid-flight still counts — otherwise a failing upstream becomes free retries.
  */
-export async function guardRoute(route: string, tier: RateTier): Promise<GuardOk | GuardFail> {
+export async function guardRoute(route: string, tier: RateTier): Promise<NextResponse | null> {
   const user = await getCurrentUser()
   if (!user?.id) {
-    return {
-      ok: false,
-      response: NextResponse.json({ error: 'Login required' }, { status: 401 }),
-    }
+    return NextResponse.json({ error: 'Login required' }, { status: 401 })
   }
 
   const limit = RATE_LIMITS[tier]
-  const sql = getDb()
 
   try {
-    const rows = await sql`
-      SELECT COUNT(*)::int AS count
-      FROM user_api_usage
-      WHERE user_id = ${user.id}
-        AND route = ${route}
-        AND created_at >= NOW() - INTERVAL '1 hour'
+    const rows = await getDb()`
+      WITH window_usage AS (
+        SELECT COUNT(*)::int AS used
+        FROM user_api_usage
+        WHERE user_id = ${user.id}
+          AND route = ${route}
+          AND created_at >= NOW() - INTERVAL '1 hour'
+      ), booked AS (
+        INSERT INTO user_api_usage (user_id, route)
+        SELECT ${user.id}, ${route} FROM window_usage WHERE used < ${limit}
+        RETURNING 1
+      )
+      SELECT EXISTS (SELECT 1 FROM booked) AS allowed FROM window_usage
     `
-    const used = (rows[0] as { count: number }).count
+    const allowed = (rows[0] as { allowed: boolean } | undefined)?.allowed ?? true
 
-    if (used >= limit) {
-      return {
-        ok: false,
-        response: NextResponse.json(
-          { error: `Rate limit exceeded: ${limit} requests/hour for ${route}` },
-          { status: 429, headers: { 'Retry-After': '3600' } },
-        ),
-      }
+    if (!allowed) {
+      return NextResponse.json(
+        { error: `Rate limit exceeded: ${limit} requests/hour for ${route}` },
+        { status: 429, headers: { 'Retry-After': '3600' } },
+      )
     }
-
-    await sql`
-      INSERT INTO user_api_usage (user_id, route) VALUES (${user.id}, ${route})
-    `
-    return { ok: true, userId: user.id }
+    return null
   } catch (error) {
     // A counter failure must not take the feature down, but it must be loud:
     // silently degrading to "unlimited" is how this gap survived in the first
     // place.
     console.error(`[api-guard] rate limit check failed for ${route}:`, error)
-    return { ok: true, userId: user.id }
+    return null
   }
 }

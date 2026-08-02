@@ -25,6 +25,8 @@ import argparse
 import csv
 import sys
 
+from psycopg2.extras import execute_values
+
 from db import get_conn, close_pool
 from logger import logger
 
@@ -103,15 +105,7 @@ def run_audit(conn, size: int) -> int:
         if choice not in LABELS:
             continue
 
-        with conn.cursor() as cur:
-            cur.execute(
-                """INSERT INTO detection_audit (prediction_id, detection_method, label)
-                   VALUES (%s, %s, %s)
-                   ON CONFLICT (prediction_id) DO UPDATE SET
-                       label = EXCLUDED.label, audited_at = NOW()""",
-                (pid, method or "unknown", LABELS[choice]),
-            )
-        conn.commit()
+        record_label(conn, pid, method, LABELS[choice])
         audited += 1
 
     print(f"\n{audited} prediction(s) audited.")
@@ -146,6 +140,19 @@ def print_report(conn) -> None:
     print()
 
 
+def record_label(conn, prediction_id, method: str | None, label: str) -> None:
+    """Persist one human judgement. Shared by the interactive and CSV paths."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """INSERT INTO detection_audit (prediction_id, detection_method, label)
+               VALUES (%s, %s, %s)
+               ON CONFLICT (prediction_id) DO UPDATE SET
+                   label = EXCLUDED.label, audited_at = NOW()""",
+            (prediction_id, method or "unknown", label),
+        )
+    conn.commit()
+
+
 def export_sample(conn, size: int, path: str) -> int:
     """Write the stratified sample to CSV for offline labelling."""
     with conn.cursor() as cur:
@@ -172,7 +179,7 @@ def export_sample(conn, size: int, path: str) -> int:
 def import_labels(conn, path: str) -> int:
     """Load a labelled CSV back into detection_audit."""
     valid = set(LABELS.values())
-    imported = 0
+    rows: list[tuple] = []
 
     with open(path, newline="", encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
@@ -182,16 +189,22 @@ def import_labels(conn, path: str) -> int:
             if label not in valid:
                 logger.warning("Skipping %s: unknown label %r", row.get("prediction_id"), label)
                 continue
-            with conn.cursor() as cur:
-                cur.execute(
-                    """INSERT INTO detection_audit (prediction_id, detection_method, label)
-                       VALUES (%s, %s, %s)
-                       ON CONFLICT (prediction_id) DO UPDATE SET
-                           label = EXCLUDED.label, audited_at = NOW()""",
-                    (row["prediction_id"], row.get("detection_method") or "unknown", label),
-                )
-            conn.commit()
-            imported += 1
+            rows.append((row["prediction_id"], row.get("detection_method") or "unknown", label))
+
+    # 한 번에 적재한다 — 행마다 커밋하면 50건 감사가 왕복 50번이 되고,
+    # 중간 실패 시 절반만 반영된 상태로 남는다.
+    if rows:
+        with conn.cursor() as cur:
+            execute_values(
+                cur,
+                """INSERT INTO detection_audit (prediction_id, detection_method, label)
+                   VALUES %s
+                   ON CONFLICT (prediction_id) DO UPDATE SET
+                       label = EXCLUDED.label, audited_at = NOW()""",
+                rows,
+            )
+        conn.commit()
+    imported = len(rows)
 
     logger.info("Imported %d label(s) from %s", imported, path)
     return imported

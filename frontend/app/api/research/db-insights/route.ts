@@ -4,8 +4,8 @@ import { getDb } from '@/lib/db'
 import type { DbInsight } from '@/lib/research-types'
 
 export async function GET(request: NextRequest) {
-  const guard = await guardRoute('research/db-insights', 'internal')
-  if (!guard.ok) return guard.response
+  const denied = await guardRoute('research/db-insights', 'internal')
+  if (denied) return denied
 
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()

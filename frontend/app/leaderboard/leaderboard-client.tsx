@@ -56,6 +56,22 @@ const GRADE_LABELS: Record<SkillGrade, { label: string; color: string; hint: str
   insufficient: { label: '평가 유보', color: '#3a4a6a', hint: `표본 ${MIN_SAMPLE_FOR_RANKING}건 미만` },
 }
 
+/** 리더보드 배지의 공통 껍데기. 색만 받고 나머지는 한 곳에서 관리한다. */
+function Pill({ color, title, children }: { color: string; title?: string; children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+      style={{ background: `${color}1a`, color }}
+      title={title}
+    >
+      {children}
+    </span>
+  )
+}
+
+/** 이 위로는 표본이 충분해 표시하지 않는다. */
+const LOW_SAMPLE_CEILING = 30
+
 /** Shows the interval, not just the point estimate: width is the uncertainty. */
 function ConfidenceBar({ low, high, point }: { low: number | null; high: number | null; point: number | null }) {
   if (low == null || high == null || point == null) {
@@ -76,15 +92,7 @@ function ConfidenceBar({ low, high, point }: { low: number | null; high: number 
 
 function GradeBadge({ grade }: { grade: SkillGrade }) {
   const g = GRADE_LABELS[grade]
-  return (
-    <span
-      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
-      style={{ background: `${g.color}1a`, color: g.color }}
-      title={g.hint}
-    >
-      {g.label}
-    </span>
-  )
+  return <Pill color={g.color} title={g.hint}>{g.label}</Pill>
 }
 
 /**
@@ -94,15 +102,11 @@ function GradeBadge({ grade }: { grade: SkillGrade }) {
  * (계획 3.5).
  */
 function SampleBadge({ n }: { n: number }) {
-  if (n >= 30 || n < MIN_SAMPLE_FOR_RANKING) return null
+  if (n >= LOW_SAMPLE_CEILING || n < MIN_SAMPLE_FOR_RANKING) return null
   return (
-    <span
-      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
-      style={{ background: '#f59e0b1a', color: '#f59e0b' }}
-      title={`평가 표본 ${n}건. 30건 미만이라 순위가 쉽게 흔들립니다.`}
-    >
+    <Pill color="#f59e0b" title={`평가 표본 ${n}건. ${LOW_SAMPLE_CEILING}건 미만이라 순위가 쉽게 흔들립니다.`}>
       표본 적음 {n}건
-    </span>
+    </Pill>
   )
 }
 
@@ -113,13 +117,9 @@ function SampleBadge({ n }: { n: number }) {
 function BtcShareBadge({ share }: { share: number | null }) {
   if (share == null || share < 0.2) return null
   return (
-    <span
-      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
-      style={{ background: '#f7931a1a', color: '#f7931a' }}
-      title="이 채널 예측 중 BTC 비율입니다. BTC는 벤치마크 없이 절대수익으로 판정되어 다른 예측과 척도가 다릅니다."
-    >
+    <Pill color="#f7931a" title="이 채널 예측 중 BTC 비율입니다. BTC는 벤치마크 없이 절대수익으로 판정되어 다른 예측과 척도가 다릅니다.">
       BTC {Math.round(share * 100)}%
-    </span>
+    </Pill>
   )
 }
 

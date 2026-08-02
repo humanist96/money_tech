@@ -3,6 +3,7 @@
 // 검색 결과 표시 컴포넌트. search-client.tsx가 800줄 규칙을 넘겨(801줄)
 // 분리했다 — 상태·데이터 로딩은 본체에 남기고, 순수 표시 계층만 옮겼다.
 import type { SearchResult, VideoAnalysis, SearchReport, BlogSearchResult } from '@/lib/types'
+import { formatDuration, formatViewCount, timeAgo } from '@/lib/queries'
 
 export function BlogCard({ item }: { item: BlogSearchResult }) {
   return (
@@ -89,8 +90,8 @@ export function VideoCard({
 
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-3 text-xs text-th-dim">
-              <span>조회수 {formatCount(result.viewCount)}</span>
-              <span>{formatDate(result.publishedAt)}</span>
+              <span>조회수 {formatViewCount(result.viewCount)}</span>
+              <span>{timeAgo(result.publishedAt)}</span>
             </div>
             <button
               onClick={onAnalyze}
@@ -326,32 +327,4 @@ export function Spinner() {
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
   )
-}
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  const s = seconds % 60
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-  return `${m}:${String(s).padStart(2, '0')}`
-}
-
-function formatCount(count: number): string {
-  if (count >= 10000) return `${(count / 10000).toFixed(1)}만`
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}천`
-  return String(count)
-}
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return '오늘'
-  if (diffDays === 1) return '어제'
-  if (diffDays < 7) return `${diffDays}일 전`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}주 전`
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)}개월 전`
-  return `${Math.floor(diffDays / 365)}년 전`
 }

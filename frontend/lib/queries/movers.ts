@@ -13,7 +13,11 @@ export async function getLatestMoversDate(): Promise<string | null> {
   return rows.length > 0 ? (rows[0] as { trade_date: string }).trade_date : null
 }
 
-export async function getMoversByDate(tradeDate: string): Promise<DailyMover[]> {
+/**
+ * 특정 거래일의 movers. `tradeDate`가 null이면 최신 세션을 한 번의 쿼리로
+ * 함께 해결한다 — MAX(trade_date)를 따로 물어보면 왕복이 두 번이 된다.
+ */
+export async function getMoversByDate(tradeDate: string | null): Promise<DailyMover[]> {
   const sql = getDb()
   const rows = await sql`
     SELECT
@@ -37,7 +41,7 @@ export async function getMoversByDate(tradeDate: string): Promise<DailyMover[]> 
       investor_flow,
       llm_model
     FROM daily_movers
-    WHERE trade_date = ${tradeDate}::date
+    WHERE trade_date = COALESCE(${tradeDate}::date, (SELECT MAX(trade_date) FROM daily_movers))
     ORDER BY selection_score DESC NULLS LAST
   `
   return rows as DailyMover[]
