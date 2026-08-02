@@ -27,7 +27,15 @@ KST = ZoneInfo("Asia/Seoul")
 
 # Index history comes from Yahoo rather than pykrx: the KRX index endpoints now
 # require account credentials, while individual ticker OHLCV still works.
-BENCHMARK_TICKERS = {"KOSPI": "^KS11", "KOSDAQ": "^KQ11"}
+# Each asset is measured against an index quoted in its own currency — the
+# comparison is of returns, so KRW and USD series coexist without conversion.
+# Scoring a US listing against KOSPI is what this pair is here to stop (G41).
+BENCHMARK_TICKERS = {
+    "KOSPI": "^KS11",
+    "KOSDAQ": "^KQ11",
+    "NASDAQ": "^IXIC",
+    "SP500": "^GSPC",
+}
 
 # How far past the target date a price may be borrowed when a market was closed
 # (holidays, suspended trading) before the point is treated as missing.
@@ -91,7 +99,19 @@ def _fetch_stock_closes_blocking(code: str, start: date, end: date) -> dict[date
 
 
 def fetch_index_closes(benchmark_code: str, start: date, end: date) -> dict[date, float]:
-    """Daily closes for a Korean market index."""
+    """Daily closes for one market index, guarded by the same timeout as tickers.
+
+    Four indices are now fetched per run; an unguarded hang on any one of them
+    stalls the whole evaluate job, which is the failure the ticker path already
+    protects against.
+    """
+    return _with_timeout(
+        _fetch_index_closes_blocking, benchmark_code, start, end,
+        label=f"index {benchmark_code}",
+    )
+
+
+def _fetch_index_closes_blocking(benchmark_code: str, start: date, end: date) -> dict[date, float]:
     ticker = BENCHMARK_TICKERS.get(benchmark_code)
     if ticker is None:
         return {}

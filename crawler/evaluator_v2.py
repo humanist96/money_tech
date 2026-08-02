@@ -77,9 +77,23 @@ def resolve_benchmark(asset_type: str, market: str | None, asset_code: str | Non
     that mostly talks about BTC.
     """
     if asset_type == "stock":
-        if market and market.upper() == "KOSDAQ":
+        listing = (market or "").upper()
+        if listing == "KOSDAQ":
             return "KOSDAQ"
-        return "KOSPI"
+        if listing == "NASDAQ":
+            return "NASDAQ"
+        if listing == "NYSE":
+            return "SP500"
+        if listing == "KOSPI":
+            return "KOSPI"
+        # Market unknown. Only a six-digit code is certainly a Korean listing;
+        # anything else gets an absolute verdict rather than being measured
+        # against KOSPI, which is how 32 US tickers were scored against a
+        # Korean index for months (G41).
+        code = asset_code or ""
+        if code.isdigit() and len(code) == 6:
+            return "KOSPI"
+        return None
     if asset_type == "coin":
         if (asset_code or "").upper() == "BTC":
             return None  # judged on absolute return with a widened band
@@ -268,9 +282,15 @@ def requeue_stale_benchmarks(conn) -> int:
                   AND pe.outcome IN ('hit', 'miss', 'push')
                   AND pe.benchmark_code IS DISTINCT FROM (
                       CASE
-                          WHEN ma.asset_type = 'stock'
-                               AND upper(COALESCE(ad.market, '')) = 'KOSDAQ' THEN 'KOSDAQ'
-                          WHEN ma.asset_type = 'stock' THEN 'KOSPI'
+                          WHEN ma.asset_type = 'stock' THEN
+                              CASE upper(COALESCE(ad.market, ''))
+                                  WHEN 'KOSDAQ' THEN 'KOSDAQ'
+                                  WHEN 'NASDAQ' THEN 'NASDAQ'
+                                  WHEN 'NYSE' THEN 'SP500'
+                                  WHEN 'KOSPI' THEN 'KOSPI'
+                                  ELSE CASE WHEN ma.asset_code ~ '^[0-9]{6}$'
+                                            THEN 'KOSPI' ELSE NULL END
+                              END
                           WHEN ma.asset_type = 'coin'
                                AND upper(ma.asset_code) = 'BTC' THEN NULL
                           WHEN ma.asset_type = 'coin' THEN 'BTC'
