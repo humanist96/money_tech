@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { guardRoute } from '@/lib/api-guard'
 import { getDb } from '@/lib/db'
 import type { SearchResult } from '@/lib/types'
 
@@ -6,6 +7,9 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY!
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 
 export async function GET(request: NextRequest) {
+  const guard = await guardRoute('search/youtube', 'external')
+  if (!guard.ok) return guard.response
+
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()
   const sortBy = searchParams.get('sortBy') === 'date' ? 'date' : 'relevance'

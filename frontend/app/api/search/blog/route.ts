@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { guardRoute } from '@/lib/api-guard'
 
 const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID
 const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET
@@ -23,6 +24,9 @@ export interface BlogSearchResult {
 }
 
 export async function GET(request: NextRequest) {
+  const guard = await guardRoute('search/blog', 'external')
+  if (!guard.ok) return guard.response
+
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()
   const sortBy = searchParams.get('sortBy') === 'date' ? 'date' : 'sim'

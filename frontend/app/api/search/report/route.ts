@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { getDb } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth-helpers'
+import { guardRoute } from '@/lib/api-guard'
 import type { VideoAnalysis, SearchReport } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
-  const user = await getCurrentUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Login required' }, { status: 401 })
-  }
+  // LLM 호출 라우트: 인증 + 시간당 한도(비용 계층 llm)
+  const guard = await guardRoute('search/report', 'llm')
+  if (!guard.ok) return guard.response
 
   const body = await request.json()
   const { videoIds } = body

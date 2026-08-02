@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { guardRoute } from '@/lib/api-guard'
 import { getDb } from '@/lib/db'
 import type { DbInsight } from '@/lib/research-types'
 
 export async function GET(request: NextRequest) {
+  const guard = await guardRoute('research/db-insights', 'internal')
+  if (!guard.ok) return guard.response
+
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()
 

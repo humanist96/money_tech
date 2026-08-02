@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { guardRoute } from '@/lib/api-guard'
 import type { NewsItem } from '@/lib/research-types'
 
 export async function GET(request: NextRequest) {
+  const guard = await guardRoute('research/news', 'external')
+  if (!guard.ok) return guard.response
+
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim()
   const maxResults = Math.min(Number(searchParams.get('maxResults') || 10), 20)
