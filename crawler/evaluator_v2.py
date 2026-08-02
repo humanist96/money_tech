@@ -206,6 +206,11 @@ _RECORD_COLUMNS = (
     "prediction_id", "horizon", "eval_date", "price_t0", "price_th",
     "asset_return", "benchmark_code", "benchmark_return", "excess_return",
     "outcome", "unevaluable_reason", "evaluation_version",
+    # 실제로 채택된 거래일. t0/t0+h에 시세가 없으면 슬랙 범위 안에서
+    # 직전 거래일을 빌리는데, 자산과 벤치마크가 서로 다른 세션을 잡으면
+    # 초과수익이 왜곡된다. 그 왜곡을 사후에 셀 수 있게 남긴다 (G42).
+    "price_t0_date", "price_th_date",
+    "benchmark_t0_date", "benchmark_th_date",
 )
 
 
@@ -217,6 +222,8 @@ def _pending_record(prediction_id, horizon: str, **fields) -> tuple:
         fields.get("benchmark_code"), fields.get("benchmark_return"),
         fields.get("excess_return"), fields["outcome"],
         fields.get("unevaluable_reason"), EVALUATION_VERSION,
+        fields.get("price_t0_date"), fields.get("price_th_date"),
+        fields.get("benchmark_t0_date"), fields.get("benchmark_th_date"),
     )
 
 
@@ -237,6 +244,10 @@ def _flush(cur, records: list[tuple], processed_ids: list) -> None:
                    excess_return = EXCLUDED.excess_return,
                    outcome = EXCLUDED.outcome,
                    unevaluable_reason = EXCLUDED.unevaluable_reason,
+                   price_t0_date = EXCLUDED.price_t0_date,
+                   price_th_date = EXCLUDED.price_th_date,
+                   benchmark_t0_date = EXCLUDED.benchmark_t0_date,
+                   benchmark_th_date = EXCLUDED.benchmark_th_date,
                    evaluated_at = NOW()""",
             records,
         )
@@ -439,6 +450,7 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                         pred_id, horizon, eval_date=target, price_t0=price_t0,
                         price_th=0, asset_return=-1.0, benchmark_code=benchmark_code,
                         excess_return=-1.0, outcome=outcome,
+                        price_t0_date=base_date,
                         unevaluable_reason="delisted"))
                     counts[outcome] += 1
                     continue
@@ -460,12 +472,14 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                 asset_return = price_th / price_t0 - 1
 
                 benchmark_return = None
+                benchmark_t0_date = benchmark_th_date = None
                 band = BANDS[horizon]
                 if benchmark_code:
                     b0 = asof_from_index(benchmarks.get(benchmark_code), base_date)
                     bh = asof_from_index(benchmarks.get(benchmark_code), eval_date)
                     if b0 and bh and b0[0] > 0:
                         benchmark_return = bh[0] / b0[0] - 1
+                        benchmark_t0_date, benchmark_th_date = b0[1], bh[1]
                     else:
                         benchmark_code = None
 
@@ -479,7 +493,10 @@ def evaluate_predictions(conn, limit: int | None = None) -> dict[str, int]:
                     pred_id, horizon, eval_date=eval_date, price_t0=price_t0,
                     price_th=price_th, asset_return=asset_return,
                     benchmark_code=benchmark_code, benchmark_return=benchmark_return,
-                    excess_return=excess, outcome=outcome))
+                    excess_return=excess, outcome=outcome,
+                    price_t0_date=base_date, price_th_date=eval_date,
+                    benchmark_t0_date=benchmark_t0_date,
+                    benchmark_th_date=benchmark_th_date))
                 counts[outcome] += 1
 
             if processed % COMMIT_EVERY == 0:
