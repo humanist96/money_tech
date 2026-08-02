@@ -40,7 +40,19 @@ DUPLICATE_WINDOW_DAYS = 30
 
 
 def backfill_market(conn) -> int:
-    """Tag each Korean stock in asset_dictionary with its listing market.
+    """Tag every Korean stock the evaluator benchmarks with its listing market.
+
+    Scoped by what actually gets evaluated, not by what the dictionary happens
+    to contain. `resolve_benchmark()` falls back to KOSPI whenever the market
+    is unknown, so a KOSDAQ ticker missing from the dictionary is scored
+    against an index that moved ~54pp differently over three months — a
+    structural miss no channel can avoid. Measured 2026-08-02: of 429 evaluated
+    tickers the dictionary knew 76, and 140 of the remainder were KOSDAQ names
+    being judged against KOSPI.
+
+    Tickers absent from the dictionary are inserted with is_active = false:
+    that supplies a benchmark without widening keyword detection, which is a
+    separate decision with its own precision trade-off.
 
     Yahoo suffix-probing was abandoned: Yahoo serves the same series under
     both .KS and .KQ, so whichever suffix happened to answer said nothing
@@ -52,22 +64,43 @@ def backfill_market(conn) -> int:
     updated = 0
     with conn.cursor() as cur:
         cur.execute(
-            """SELECT asset_code FROM asset_dictionary
-               WHERE asset_type = 'stock' AND asset_code ~ '^[0-9]{6}$' AND market IS NULL"""
+            """
+            SELECT DISTINCT ma.asset_code
+            FROM mentioned_assets ma
+            JOIN predictions p ON p.mentioned_asset_id = ma.id
+            LEFT JOIN asset_dictionary ad ON ad.asset_code = ma.asset_code
+            WHERE ma.asset_type = 'stock'
+              AND ma.asset_code ~ '^[0-9]{6}$'
+              AND ad.market IS NULL
+            ORDER BY 1
+            """
         )
         codes = [row[0] for row in cur.fetchall()]
 
     logger.info("Resolving market for %d ticker(s)", len(codes))
-    for code in codes:
-        _, market = resolve_listing(code)
+    for i, code in enumerate(codes, 1):
+        name, market = resolve_listing(code)
         if market:
             with conn.cursor() as cur:
                 cur.execute(
-                    "UPDATE asset_dictionary SET market = %s WHERE asset_code = %s",
+                    "UPDATE asset_dictionary SET market = %s, updated_at = NOW() WHERE asset_code = %s",
                     (market, code),
                 )
+                if cur.rowcount == 0:
+                    cur.execute(
+                        """INSERT INTO asset_dictionary
+                               (asset_name, asset_code, asset_type, market, is_active)
+                           VALUES (%s, %s, 'stock', %s, false)
+                           ON CONFLICT (asset_name, asset_type) DO UPDATE
+                               SET market = EXCLUDED.market,
+                                   asset_code = EXCLUDED.asset_code,
+                                   updated_at = NOW()""",
+                        (name or code, code, market),
+                    )
             conn.commit()
             updated += 1
+        if i % 50 == 0:
+            logger.info("  [%d/%d] resolved", i, len(codes))
         time.sleep(0.2)
 
     logger.info("Market backfilled for %d ticker(s)", updated)

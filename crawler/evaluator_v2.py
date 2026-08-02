@@ -242,6 +242,52 @@ def _flush(cur, records: list[tuple], processed_ids: list) -> None:
         )
 
 
+def requeue_stale_benchmarks(conn) -> int:
+    """Reopen verdicts scored against a benchmark that is no longer the right one.
+
+    The benchmark is derived from asset_dictionary.market, which arrives late
+    (backfill_market) and can change (a KOSDAQ listing transfers to KOSPI).
+    A verdict computed under the old mapping never re-derives itself — the row
+    exists, so _fetch_pending skips the prediction forever. Deleting the
+    mismatched rows is what makes the mapping correction take effect.
+
+    The CASE below must mirror resolve_benchmark(); only settled verdicts are
+    touched, since unevaluable rows carry no benchmark to compare against.
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            DELETE FROM prediction_evaluations
+            WHERE id IN (
+                SELECT pe.id
+                FROM prediction_evaluations pe
+                JOIN predictions p ON p.id = pe.prediction_id
+                JOIN mentioned_assets ma ON ma.id = p.mentioned_asset_id
+                LEFT JOIN asset_dictionary ad ON ad.asset_code = ma.asset_code
+                WHERE pe.evaluation_version = %s
+                  AND pe.outcome IN ('hit', 'miss', 'push')
+                  AND pe.benchmark_code IS DISTINCT FROM (
+                      CASE
+                          WHEN ma.asset_type = 'stock'
+                               AND upper(COALESCE(ad.market, '')) = 'KOSDAQ' THEN 'KOSDAQ'
+                          WHEN ma.asset_type = 'stock' THEN 'KOSPI'
+                          WHEN ma.asset_type = 'coin'
+                               AND upper(ma.asset_code) = 'BTC' THEN NULL
+                          WHEN ma.asset_type = 'coin' THEN 'BTC'
+                          ELSE NULL
+                      END
+                  )
+            )
+            """,
+            (EVALUATION_VERSION,),
+        )
+        reopened = cur.rowcount
+        conn.commit()
+
+    logger.info("Requeued %d verdict(s) with a stale benchmark", reopened)
+    return reopened
+
+
 def requeue_unevaluable(conn) -> int:
     """Reopen unevaluable verdicts whose missing price has since arrived.
 

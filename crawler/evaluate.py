@@ -13,8 +13,13 @@ from db import get_conn, close_pool
 from logger import logger
 from price_history import load_benchmark_history
 from price_collector import record_daily_prices
-from backfill_prices import mark_duplicates
-from evaluator_v2 import evaluate_predictions, requeue_unevaluable, update_channel_stats
+from backfill_prices import backfill_market, mark_duplicates
+from evaluator_v2 import (
+    evaluate_predictions,
+    requeue_stale_benchmarks,
+    requeue_unevaluable,
+    update_channel_stats,
+)
 from channel_classifier import update_stale_classifications
 
 load_dotenv()
@@ -63,6 +68,17 @@ def main():
         except Exception as e:
             logger.error("Price collection failed: %s", e, exc_info=True)
 
+        # Before scoring, not after: a ticker whose market is unknown is
+        # benchmarked against KOSPI by default, so a newly mentioned KOSDAQ
+        # name would be scored against the wrong index on its first pass.
+        # Already-tagged tickers are excluded by the query, so the usual run
+        # resolves only the handful of names that appeared since last time.
+        logger.info("=== Listing Market Backfill ===")
+        try:
+            backfill_market(conn)
+        except Exception as e:
+            logger.error("Market backfill failed: %s", e, exc_info=True)
+
         logger.info("=== Duplicate / Contradiction Marking ===")
         try:
             mark_duplicates(conn)
@@ -74,6 +90,12 @@ def main():
             requeue_unevaluable(conn)
         except Exception as e:
             logger.error("Requeue failed: %s", e, exc_info=True)
+
+        logger.info("=== Requeue Stale Benchmarks (market mapping changed) ===")
+        try:
+            requeue_stale_benchmarks(conn)
+        except Exception as e:
+            logger.error("Benchmark requeue failed: %s", e, exc_info=True)
 
         logger.info("=== Prediction Evaluation (v2) ===")
         try:
